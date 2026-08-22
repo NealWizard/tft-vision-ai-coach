@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 16:50 +08:00  
+> 更新时间：2026-08-22 17:05 +08:00  
 > 当前阶段：**P1 · Knowledge 数据层（V0.2 进行中）**  
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach  
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
@@ -26,8 +26,9 @@
 | P1-002 | Raw Snapshot 存储 | DONE |
 | P1-003 | Riot/Data Dragon Adapter | DONE |
 | P1-004 | OP.GG 统计源 Adapter | DONE |
-| P1-005 | 第二统计源 Adapter | **下一步** |
-| P1-004 ~ P1-019 | 统计源 / 归一化 / Tools / Agent | TODO |
+| P1-005 | 第二统计源 Adapter | DONE |
+| P1-006 | Canonical Entity ID 映射 | **下一步** |
+| P1-007 ~ P1-019 | 归一化 / Tools / Agent | TODO |
 | M1 | V0.2 Knowledge 可复现 | TODO |
 
 ## 快速开始

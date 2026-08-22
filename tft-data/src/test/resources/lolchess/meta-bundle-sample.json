@@ -1,0 +1,51 @@
+{
+  "source_id": "lolchess",
+  "patch": "set17-16.16",
+  "region": "global",
+  "time_window": "24h",
+  "captured_at": "2026-08-22T08:30:00Z",
+  "sample_size": 412300,
+  "comps": [
+    {
+      "comp_id": "space-groove-nami",
+      "name": "Space Groove Nami",
+      "tier": "A",
+      "avg_place": 4.0,
+      "first_rate": 0.1698,
+      "top4_rate": 0.5924,
+      "pick_rate": 0.018,
+      "sample_size": 7420,
+      "core_units": ["TFT17_Nasus", "TFT17_Nami", "TFT17_Ornn"]
+    }
+  ],
+  "units": [
+    {
+      "unit_id": "TFT17_Nami",
+      "name": "Nami",
+      "win_rate": 0.51,
+      "pick_rate": 0.16,
+      "avg_place": 4.1,
+      "sample_size": 88000,
+      "top_items": ["TFT_Item_Morellonomicon"]
+    }
+  ],
+  "items": [
+    {
+      "item_id": "TFT_Item_Morellonomicon",
+      "name": "Morellonomicon",
+      "win_rate": 0.53,
+      "pick_rate": 0.09,
+      "sample_size": 52000
+    }
+  ],
+  "augments": [
+    {
+      "augment_id": "TFT_Augment_SpaceGroove",
+      "name": "Space Groove",
+      "win_rate": 0.52,
+      "pick_rate": 0.07,
+      "avg_place": 4.0,
+      "sample_size": 38000
+    }
+  ]
+}

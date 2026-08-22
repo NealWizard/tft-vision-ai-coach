@@ -40,7 +40,7 @@ com.tft.coach.data.snapshot.FileSystemRawSnapshotStore
 | P1-002 | Raw Snapshot 存储 | DONE |
 | P1-003 | Riot/Data Dragon Adapter | DONE |
 | P1-004 | OP.GG 统计源 Adapter | DONE |
-| P1-005 | 第二统计源 Adapter | TODO |
+| P1-005 | 第二统计源 Adapter | DONE |
 | … | 见 User Story 看板 | |
 
 ## Data Dragon Adapter（P1-003）
@@ -93,6 +93,27 @@ var outcome = opgg.fetchMetaBundle("set17-16.16", "global", "24h");
 MetaSnapshot meta = outcome.snapshot();
 ```
 
+## LoLChess Stats Adapter + 多源聚合（P1-005）
+
+```
+com.tft.coach.data.lolchess.LoLChessStatsAdapter
+com.tft.coach.data.meta.MultiSourceMetaFetchService
+com.tft.coach.data.meta.MetaSnapshotQuery
+```
+
+- 第二统计源：`source_id=lolchess`，URL 模板与 OP.GG 对齐（`/api/meta/bundle`）
+- 解析复用 `OpGgMetaSnapshotParser`（规范化 JSON，`source_id` 区分厂商）
+- **MultiSourceMetaFetchService**：同一 `patch + region + time_window` 并行拉取 OP.GG + LoLChess，各自保留 `source_id` 与 `FetchEvidence`
+- 单源失败不阻塞另一源；经 `SourceFetchService` 可独立降级至缓存
+
+```java
+MultiSourceMetaFetchService meta = MultiSourceMetaFetchService.createDefault(
+        Path.of("data/snapshots"),
+        new JdkOpGgStatsHttpClient(),
+        new JdkLoLChessStatsHttpClient());
+MultiSourceMetaResult result = meta.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+```
+
 ## 下一步
 
-**P1-005**：第二统计源 Adapter（lolchess.gg，交叉验证并保留 `source_id`）。
+**P1-006**：Canonical Entity ID 映射（Data Dragon + 统计源 ID 对齐）。
