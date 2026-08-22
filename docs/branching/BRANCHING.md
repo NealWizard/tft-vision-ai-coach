@@ -4,8 +4,8 @@
 
 | Branch | Purpose | Protection |
 |--------|---------|------------|
-| `main` | Production-ready releases only | MR required; CI must be green |
-| `develop` | Integration branch for V0.x | MR required; CI must be green |
+| `main` | Production-ready releases only | PR required; CI must be green |
+| `develop` | Integration branch for V0.x | PR required; CI must be green |
 | `feature/<id>-<slug>` | Single task/story work | Short-lived; rebase onto develop |
 | `hotfix/<slug>` | Urgent main fixes | Merge to main and back-port to develop |
 
@@ -17,10 +17,11 @@
 
 ## Merge rules
 
-1. No direct push to `main` / `develop` (configure in GitLab Protected Branches).
-2. MR must pass: `safety:scan`, `compile`, `unit-test`, `static-check`.
+1. No direct push to `main` / `develop` (configure in GitHub **Branch protection rules**).
+2. PR must pass CI: `safety-scan`, `build-test` (see `.github/workflows/ci.yml`).
 3. Prefer squash merge for feature branches; keep linear history on `develop`.
-4. Cross-module changes stay in one MR when they share a single acceptance criterion.
+4. Remote: `https://github.com/NealWizard/tft-vision-ai-coach`
+5. Cross-module changes stay in one PR when they share a single acceptance criterion.
 
 ## Mono-repo domains
 
