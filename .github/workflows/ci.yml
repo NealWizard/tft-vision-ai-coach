@@ -15,7 +15,7 @@ jobs:
     name: Safety boundary scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run safety scan
         shell: pwsh
@@ -33,41 +33,37 @@ jobs:
     runs-on: ubuntu-latest
     needs: safety-scan
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "21"
           distribution: temurin
           cache: maven
 
-      - name: Compile
-        run: mvn -B -ntp clean compile
-
-      - name: Unit tests
-        run: mvn -B -ntp test
+      - name: Build, test, and package
+        run: mvn -B -ntp clean verify
 
       - name: Enforcer & dependency tree
         run: |
-          mvn -B -ntp enforcer:enforce
           mvn -B -ntp dependency:tree -Dverbose=false | tee dependency-tree.txt
-          if grep -E 'SNAPSHOT' dependency-tree.txt | grep -v 'com.tft.coach' | grep -v 'Building\|Downloading\|Downloaded'; then
-            echo "Undeclared external SNAPSHOT detected"
+          # Only inspect dependency coordinate lines; ignore reactor summary noise.
+          if grep -E 'SNAPSHOT' dependency-tree.txt \
+            | grep -E '\[INFO\] [\\|+-]' \
+            | grep -v 'com.tft.coach'; then
+            echo "Undeclared external SNAPSHOT dependency detected"
             exit 1
           fi
 
-      - name: Package
-        run: mvn -B -ntp -DskipTests package
-
       - name: Upload dependency tree
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-tree
           path: dependency-tree.txt
 
       - name: Upload orchestrator jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: tft-orchestrator-jar
           path: tft-orchestrator/target/*.jar
