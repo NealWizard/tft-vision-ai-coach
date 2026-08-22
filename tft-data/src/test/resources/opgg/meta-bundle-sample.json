@@ -1,0 +1,51 @@
+{
+  "source_id": "opgg",
+  "patch": "set17-16.16",
+  "region": "global",
+  "time_window": "24h",
+  "captured_at": "2026-08-22T08:00:00Z",
+  "sample_size": 578607,
+  "comps": [
+    {
+      "comp_id": "stargazer-xayah",
+      "name": "Stargazer Xayah",
+      "tier": "S",
+      "avg_place": 3.87,
+      "first_rate": 0.2117,
+      "top4_rate": 0.6047,
+      "pick_rate": 0.015,
+      "sample_size": 8679,
+      "core_units": ["TFT17_Aatrox", "TFT17_Xayah", "TFT17_Jax"]
+    }
+  ],
+  "units": [
+    {
+      "unit_id": "TFT17_Xayah",
+      "name": "Xayah",
+      "win_rate": 0.52,
+      "pick_rate": 0.18,
+      "avg_place": 3.9,
+      "sample_size": 104000,
+      "top_items": ["TFT_Item_InfinityEdge", "TFT_Item_LastWhisper"]
+    }
+  ],
+  "items": [
+    {
+      "item_id": "TFT_Item_InfinityEdge",
+      "name": "Infinity Edge",
+      "win_rate": 0.55,
+      "pick_rate": 0.12,
+      "sample_size": 69000
+    }
+  ],
+  "augments": [
+    {
+      "augment_id": "TFT_Augment_Stargazer",
+      "name": "Stargazer",
+      "win_rate": 0.54,
+      "pick_rate": 0.08,
+      "avg_place": 3.8,
+      "sample_size": 46000
+    }
+  ]
+}

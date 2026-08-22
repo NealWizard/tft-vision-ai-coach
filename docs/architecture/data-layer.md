@@ -39,7 +39,8 @@ com.tft.coach.data.snapshot.FileSystemRawSnapshotStore
 | P1-001 | Source Adapter SPI | DONE |
 | P1-002 | Raw Snapshot 存储 | DONE |
 | P1-003 | Riot/Data Dragon Adapter | DONE |
-| P1-004 | 第一统计源 Adapter | TODO |
+| P1-004 | OP.GG 统计源 Adapter | DONE |
+| P1-005 | 第二统计源 Adapter | TODO |
 | … | 见 User Story 看板 | |
 
 ## Data Dragon Adapter（P1-003）
@@ -71,6 +72,27 @@ var outcome = ddragon.fetch(DataDragonResource.CHAMPION, "16.16.1", "en_US");
 FetchEvidence evidence = outcome.evidence();
 ```
 
+## OP.GG Stats Adapter（P1-004，PRD 推荐第一统计源）
+
+```
+com.tft.coach.data.meta.MetaSnapshot
+com.tft.coach.data.opgg.OpGgStatsAdapter
+com.tft.coach.data.opgg.OpGgStatsFetchService
+```
+
+**MetaSnapshot** 统一 DTO，覆盖 Comp / Unit / Item / Augment，含 `sample_size` 与 `captured_at`。
+
+- `source_id=opgg`，参数：`region`、`time_window`、`patch`
+- 原始 JSON append-only 存入 Snapshot；live 失败降级缓存
+- 解析：`OpGgMetaSnapshotParser`
+
+```java
+OpGgStatsFetchService opgg = OpGgStatsFetchService.createDefault(
+        Path.of("data/snapshots"), new JdkOpGgStatsHttpClient());
+var outcome = opgg.fetchMetaBundle("set17-16.16", "global", "24h");
+MetaSnapshot meta = outcome.snapshot();
+```
+
 ## 下一步
 
-**P1-004**：实现第一统计源 Adapter（MetaSnapshot 统一 DTO）。
+**P1-005**：第二统计源 Adapter（lolchess.gg，交叉验证并保留 `source_id`）。
