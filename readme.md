@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 12:35 +08:00  
+> 更新时间：2026-08-22 14:20 +08:00  
 > 当前阶段：**P0 · 工程地基（V0.1）— 已完成并通过本地门禁**
 
 ## 项目定位
@@ -16,7 +16,7 @@
 |----|------|----------|----------|
 | P0-001 | Mono-repo + 分支策略 | 根 `pom.xml` 十一模块 + `docs/branching/BRANCHING.md` + `main`/`develop` | 九大业务域齐；另加 `tft-contracts`/`tft-common` 共享地基 |
 | P0-002 | Java 21 + Spring Boot 3 基线 | Java 21 / Boot 3.3.5 / Enforcer | `mvn clean verify` 全绿；dependency-tree 已导出 |
-| P0-003 | CI/CD 基线 | `.gitlab-ci.yml` + `scripts/local-ci.ps1` | 含 compile/test/enforcer/package/safety |
+| P0-003 | CI/CD 基线 | `.github/workflows/ci.yml` + `scripts/local-ci.ps1` | GitHub Actions：safety + build/test/package |
 | P0-004 | 安全边界扫描 | `scripts/safety-scan.ps1` | 正常代码通过；违规样例在 `tools/safety-fixtures` |
 | P0-005 | Canonical Schema | `schemas/canonical/*` | 10 类实体 schema + 单测 |
 | P0-006 | Agent Contract | `schemas/agent/*` + 5 个可运行样例 | Knowledge/Meta/Economy/Shop/Composition |
@@ -60,18 +60,37 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 - `GET /api/v1/trace/demo` — 演示写入 AgentRun（可带 `X-Correlation-Id`）
 - `GET /api/v1/trace/{correlationId}` — 按 correlation_id 查询调用链
 
+## GitHub 仓库
+
+- 远端：`https://github.com/NealWizard/tft-vision-ai-coach`
+- CI：Push/PR 触发 `.github/workflows/ci.yml`
+- 分支保护：GitHub → **Settings → Branches → Branch protection rules**（保护 `main` / `develop`）
+
+### 首次推送（本地）
+
+```powershell
+cd C:\Users\ASUS\Desktop\TFT
+git remote set-url origin https://github.com/NealWizard/tft-vision-ai-coach.git
+git push -u origin develop
+git checkout -b main   # 若尚无 main
+git push -u origin main
+git checkout develop
+```
+
+HTTPS 推送需 GitHub **Personal Access Token**（Settings → Developer settings → Personal access tokens），或改用 SSH 并配置公钥。
+
 ## 自主决策与搁置项
 
 **已决策**
 
 - Maven 多模块 + Spring Boot 3.3.5（对齐 User Story Java 基线，非桌面 UI）
-- CI 以 GitLab CI 为准；本机用 Windows PowerShell 跑 safety scan
+- CI 以 **GitHub Actions** 为准；本机用 `scripts/local-ci.ps1` 对齐
 - Schema `1.0.0`；Agent 强制 `candidates[]`
 - 本机无 JDK 21 时下载 Temurin 到 `.tools/jdk-21`
 
 **搁置（请你检查时确认）**
 
-- GitLab 远端 URL 与 Protected Branch 实配（本地已有 `main`/`develop` + 分支文档，**尚未 commit/push**）
+- GitHub Branch protection 是否已开启（需先在 Actions 跑通一次再勾选 status check）
 - Schema 字段是否需与 Word 规格文档逐字段对齐
 - 是否升级本机 Maven 到 3.9
 - `LoadLibrary` 扫描规则是否过严（当前默认拦截）

@@ -1,4 +1,4 @@
-# Local CI parity for developers without GitLab runners
+# Local CI parity for developers without GitHub Actions runners
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
