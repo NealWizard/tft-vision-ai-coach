@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 15:40 +08:00  
-> 当前阶段：**P0 · 工程地基（V0.1）— 已完成**  
+> 更新时间：2026-08-22 16:50 +08:00  
+> 当前阶段：**P1 · Knowledge 数据层（V0.2 进行中）**  
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach  
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -13,9 +13,20 @@
 |------|------|
 | **Wiki（推荐）** | https://nealwizard.github.io/tft-vision-ai-coach/ |
 | Wiki 源文件 | `docs/` + `mkdocs.yml` |
+| P1 数据层 | `docs/architecture/data-layer.md` |
 | 产品 PRD | `云顶辅助决策agent需求文档.txt` |
 | 任务看板 | `TFT_Vision_AI_Coach_userstory (1).html` |
 | 代码示例 | `goodcode.md` |
+
+## P1 进度（进行中）
+
+| ID | 任务 | 状态 |
+|----|------|------|
+| P1-001 | Source Adapter SPI | DONE |
+| P1-002 | Raw Snapshot 存储 | DONE |
+| P1-003 | Riot/Data Dragon Adapter | **下一步** |
+| P1-004 ~ P1-019 | 统计源 / 归一化 / Tools / Agent | TODO |
+| M1 | V0.2 Knowledge 可复现 | TODO |
 
 ## 快速开始
 

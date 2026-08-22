@@ -60,6 +60,7 @@ nav:
   - 架构:
     - 模块一览: architecture/modules.md
     - Schema 契约: architecture/schemas.md
+    - 数据层 (P1): architecture/data-layer.md
   - 开发指南:
     - GitHub 协作: github/GITHUB.md
     - 分支策略: branching/BRANCHING.md
