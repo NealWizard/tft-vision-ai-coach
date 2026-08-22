@@ -1,0 +1,73 @@
+site_name: TFT Vision AI Coach
+site_description: 云顶之弈纯视觉辅助决策系统 — 产品文档与开发 Wiki
+site_url: https://nealwizard.github.io/tft-vision-ai-coach/
+repo_url: https://github.com/NealWizard/tft-vision-ai-coach
+repo_name: NealWizard/tft-vision-ai-coach
+edit_uri: edit/develop/docs/
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - 首页: index.md
+  - 快速开始:
+    - 环境搭建: getting-started/quickstart.md
+  - 产品:
+    - 需求概述: product/requirements.md
+    - 任务路线图: roadmap/user-story.md
+  - 架构:
+    - 模块一览: architecture/modules.md
+    - Schema 契约: architecture/schemas.md
+  - 开发指南:
+    - GitHub 协作: github/GITHUB.md
+    - 分支策略: branching/BRANCHING.md
+    - 任务完成收尾: dev/task-completion.md
+  - 代码规范:
+    - 优秀示例: goodcode/index.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/NealWizard/tft-vision-ai-coach

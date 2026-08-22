@@ -61,7 +61,7 @@ git config --local user.email "1054318578@qq.com"
 
 发版或多人协作后再对 `main` / `develop` 启用 Branch protection。
 
-详见：`docs/branching/BRANCHING.md`
+详见：[分支策略](../branching/BRANCHING.md)
 
 ## GitHub Actions CI
 
@@ -115,7 +115,30 @@ User Story 任务 ID（如 `P1-003`）可映射为 **GitHub Issues**：
 2. 运行 `scripts/gen-commit-msg.ps1` 生成 commit message
 3. **开发者手动** `git commit` / `git push`（AI 不自动提交）
 
-规则：`.cursor/rules/task-completion.mdc`
+规则：[任务完成收尾](../dev/task-completion.md)
+
+## Wiki 文档站
+
+| 项 | 值 |
+|----|-----|
+| 线上地址 | https://nealwizard.github.io/tft-vision-ai-coach/ |
+| 源文件 | `docs/` + 根目录 `mkdocs.yml` |
+| 构建工具 | MkDocs + Material |
+| 部署 Workflow | `.github/workflows/docs.yml` |
+| 触发分支 | `main`（push 到 `docs/**` 或 `mkdocs.yml` 变更） |
+
+首次启用 GitHub Pages：
+
+1. 仓库 **Settings → Pages**
+2. **Build and deployment → Source** 选 **GitHub Actions**
+3. 将本分支 merge 到 `main` 并 push，等待 **Docs** workflow 跑绿
+
+本地预览：
+
+```powershell
+pip install -r requirements-docs.txt
+mkdocs serve
+```
 
 ## 与 GitLab 文档的差异
 
