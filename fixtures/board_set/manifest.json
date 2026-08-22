@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "board_set",
+  "description": "Ground-truth board/bench unit, star level, and item fixtures.",
+  "version": "0.1.0",
+  "patch_scope": ["set17-*"],
+  "sample_count": 0,
+  "label_fields": ["cell", "champion_id", "stars", "items"],
+  "samples_dir": "samples",
+  "naming_rule": "{patch}_{resolution}_{stage}_{seq}.png + .json sidecar"
+}

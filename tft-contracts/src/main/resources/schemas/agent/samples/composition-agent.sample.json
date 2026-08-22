@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "agent_id": "composition-agent-v1",
+  "agent_type": "composition",
+  "version": "0.1.0",
+  "input": {
+    "type": "composition.recommend",
+    "payload": {
+      "board": ["champ.jinx", "champ.ornn"],
+      "items": ["item.bf_sword", "item.recurve_bow"],
+      "augments": ["augment.combat-training"],
+      "stage": "2-5"
+    },
+    "patch": "set17-14.23",
+    "correlation_id": "corr-comp-demo-001"
+  },
+  "output": {
+    "candidates": [
+      {
+        "option_id": "comp-stargazer-adc",
+        "summary": "Pivot to Stargazer ADC; already own AD components and Jinx.",
+        "score": 0.79,
+        "risk": {
+          "upside": "High item synergy",
+          "downside": "Needs more vertical traits",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:meta:opgg-24h-001"],
+        "confidence": { "score": 0.79, "level": "high" },
+        "tradeoffs": ["Contest may be high"]
+      },
+      {
+        "option_id": "comp-flex-bruiser",
+        "summary": "Flex into bruiser frontline if ADC contested.",
+        "score": 0.62,
+        "risk": {
+          "upside": "Lower contest",
+          "downside": "Item mismatch on AD components",
+          "uncertainty": "high"
+        },
+        "evidence": ["evidence:meta:opgg-24h-003"],
+        "confidence": { "score": 0.6, "level": "medium" }
+      }
+    ]
+  },
+  "tools": [
+    { "tool_id": "meta-snapshot-tool", "version": "1.0.0", "required": true },
+    { "tool_id": "champion-tool", "version": "1.0.0", "required": true }
+  ],
+  "timeout_ms": 800,
+  "fallback": { "strategy": "cached_snapshot", "message": "Recommend from last Meta Top comps." },
+  "confidence": { "score": 0.72, "level": "medium" },
+  "trace": {
+    "correlation_id": "corr-comp-demo-001",
+    "agent_run_id": "run-comp-001",
+    "status": "ok",
+    "latency_ms": 160,
+    "tool_calls": [
+      { "tool_id": "meta-snapshot-tool", "status": "ok", "latency_ms": 90, "version": "1.0.0" },
+      { "tool_id": "champion-tool", "status": "ok", "latency_ms": 12, "version": "1.0.0" }
+    ]
+  }
+}

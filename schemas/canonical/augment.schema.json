@@ -1,0 +1,20 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/augment.schema.json",
+  "title": "Augment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "patch", "name", "tier"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "id": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" },
+    "patch": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/patchId" },
+    "name": { "type": "string", "minLength": 1 },
+    "tier": { "type": "string", "enum": ["silver", "gold", "prismatic"] },
+    "description": { "type": "string" },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/evidenceRef" }
+    }
+  }
+}

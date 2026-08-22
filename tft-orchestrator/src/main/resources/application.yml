@@ -1,0 +1,27 @@
+tft:
+  flags:
+    offline-lab: true
+    post-game: true
+    pre-game-meta: true
+    live-experiment: false
+    live-dynamic-recommendation: false
+    live-opponent-analysis: false
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:tft},%X{correlation_id},%X{agent_run_id}]"
+  level:
+    com.tft.coach: INFO
+
+spring:
+  application:
+    name: tft-orchestrator

@@ -1,0 +1,24 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/rule.schema.json",
+  "title": "Rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "patch", "category", "key", "value"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "id": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" },
+    "patch": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/patchId" },
+    "category": {
+      "type": "string",
+      "enum": ["economy", "shop", "xp", "combat", "stage", "other"]
+    },
+    "key": { "type": "string", "minLength": 1 },
+    "value": {},
+    "formula_version": { "type": "string" },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/evidenceRef" }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/evidence.schema.json",
+  "title": "Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "source_type", "captured_at", "patch"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "source_type": {
+      "type": "string",
+      "enum": ["riot", "stats", "community", "vision", "manual", "derived"]
+    },
+    "source_id": { "type": "string" },
+    "source_url": { "type": "string" },
+    "captured_at": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/isoDateTime" },
+    "patch": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/patchId" },
+    "sample_size": { "type": "integer", "minimum": 0 },
+    "freshness_hours": { "type": "number", "minimum": 0 },
+    "reliability": { "type": "number", "minimum": 0, "maximum": 1 },
+    "payload_ref": { "type": "string", "description": "Pointer to raw snapshot storage key" }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "patch_regression_set",
+  "description": "Knowledge/patch regression cases: entity diffs and rule stability checks.",
+  "version": "0.1.0",
+  "patch_scope": ["set17-*"],
+  "sample_count": 0,
+  "label_fields": ["from_patch", "to_patch", "entity_type", "entity_id", "expected_change"],
+  "samples_dir": "samples",
+  "naming_rule": "{from_patch}_to_{to_patch}_{entity_type}_{seq}.json"
+}

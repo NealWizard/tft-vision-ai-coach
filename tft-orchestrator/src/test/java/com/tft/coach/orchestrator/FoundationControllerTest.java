@@ -1,0 +1,45 @@
+package com.tft.coach.orchestrator;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class FoundationControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void foundationHealthExposesDefaultFlags() throws Exception {
+        mockMvc.perform(get("/api/v1/health/foundation"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.flags.offline_lab", is(true)))
+                .andExpect(jsonPath("$.flags.post_game", is(true)))
+                .andExpect(jsonPath("$.flags.pre_game_meta", is(true)))
+                .andExpect(jsonPath("$.flags.live_experiment", is(false)))
+                .andExpect(jsonPath("$.flags.live_dynamic_recommendation", is(false)))
+                .andExpect(jsonPath("$.flags.live_opponent_analysis", is(false)))
+                .andExpect(jsonPath("$.live_any_enabled", is(false)));
+    }
+
+    @Test
+    void traceDemoWritableAndQueryable() throws Exception {
+        mockMvc.perform(get("/api/v1/trace/demo").header("X-Correlation-Id", "corr-test-42"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correlation_id", is("corr-test-42")))
+                .andExpect(jsonPath("$.status", is("ok")));
+
+        mockMvc.perform(get("/api/v1/trace/corr-test-42"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].correlationId", is("corr-test-42")));
+    }
+}

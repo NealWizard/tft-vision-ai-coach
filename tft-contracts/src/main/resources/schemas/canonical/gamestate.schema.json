@@ -1,0 +1,47 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/gamestate.schema.json",
+  "title": "GameState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "match_id", "patch", "stage", "player", "observed_at"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "match_id": { "type": "string", "minLength": 1 },
+    "patch": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/patchId" },
+    "stage": { "type": "string", "pattern": "^[0-9]+-[0-9]+$" },
+    "observed_at": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/isoDateTime" },
+    "player": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "gold", "hp"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "xp": { "type": "integer", "minimum": 0 },
+        "gold": { "type": "integer", "minimum": 0 },
+        "hp": { "type": "integer", "minimum": 0 },
+        "streak": { "type": "integer" }
+      }
+    },
+    "shop": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["slot", "champion_id"],
+        "properties": {
+          "slot": { "type": "integer", "minimum": 0, "maximum": 4 },
+          "champion_id": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" },
+          "cost": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      }
+    },
+    "board": { "type": "array", "items": { "type": "object" } },
+    "bench": { "type": "array", "items": { "type": "object" } },
+    "items": { "type": "array", "items": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" } },
+    "traits": { "type": "array", "items": { "type": "object" } },
+    "augments": { "type": "array", "items": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" } },
+    "mechanics": { "type": "array", "items": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/canonicalId" } },
+    "confidence": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/confidence" }
+  }
+}

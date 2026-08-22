@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "agent_id": "knowledge-agent-v1",
+  "agent_type": "knowledge",
+  "version": "0.1.0",
+  "input": {
+    "type": "knowledge.query",
+    "payload": { "question": "What does interest gold rule look like at 50 gold?" },
+    "patch": "set17-14.23",
+    "correlation_id": "corr-knowledge-demo-001"
+  },
+  "output": {
+    "candidates": [
+      {
+        "option_id": "rule-interest-cap-5",
+        "summary": "At 50 gold, interest is capped at +5 per round under standard economy rules.",
+        "score": 0.96,
+        "risk": {
+          "upside": "Deterministic rule lookup",
+          "downside": "Encounter/augment may alter economy",
+          "uncertainty": "low"
+        },
+        "evidence": ["evidence:rule:interest-v1"],
+        "confidence": { "score": 0.96, "level": "high" },
+        "tradeoffs": ["Does not account for encounter modifiers"]
+      }
+    ],
+    "notes": "Tool-backed answer only; no free-form invention."
+  },
+  "tools": [
+    { "tool_id": "game-rule-tool", "version": "1.0.0", "required": true }
+  ],
+  "timeout_ms": 800,
+  "fallback": {
+    "strategy": "cached_snapshot",
+    "message": "Return last known rule snapshot for the requested patch."
+  },
+  "confidence": { "score": 0.96, "level": "high" },
+  "trace": {
+    "correlation_id": "corr-knowledge-demo-001",
+    "agent_run_id": "run-knowledge-001",
+    "started_at": "2026-08-22T04:00:00Z",
+    "ended_at": "2026-08-22T04:00:00.120Z",
+    "status": "ok",
+    "latency_ms": 120,
+    "tool_calls": [
+      { "tool_id": "game-rule-tool", "status": "ok", "latency_ms": 40, "version": "1.0.0" }
+    ]
+  }
+}
