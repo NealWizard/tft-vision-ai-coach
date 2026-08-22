@@ -1,0 +1,53 @@
+---
+description: 任务完成时更新 User Story 并生成 commit message，由用户手动提交
+alwaysApply: true
+---
+
+# 任务完成收尾流程
+
+每完成一个或多个 User Story 任务（如 P0-001、M0）后，**必须**执行：
+
+## 1. 更新 US 文档
+
+文件：`TFT_Vision_AI_Coach_userstory (1).html`
+
+使用脚本写入源文件（不要只改浏览器 localStorage）：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/update-us-status.ps1 `
+  -TaskIds P0-001,P0-002 `
+  -Status DONE -Owner NealWizard -CompletionDate 2026-08-22
+```
+
+字段：`status`（DONE）、`owner`（NealWizard）、`actual_completion`（YYYY-MM-DD）。
+
+## 2. 同步 readme.md
+
+若任务改变项目能力或用法，更新根目录 `readme.md` 的对应章节与时间戳。
+
+## 3. 生成 commit message（不自动 commit/push）
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gen-commit-msg.ps1 `
+  -Tasks P0-001,P0-002 -Type docs -Scope us
+```
+
+将输出完整 message 给用户；**由用户执行** `git add` / `git commit` / `git push`。
+
+## 4. Commit message 格式
+
+```
+<type>(<scope>): <subject>
+
+Tasks: P0-001, P0-002
+Changed files:
+- TFT_Vision_AI_Coach_userstory (1).html
+- readme.md
+```
+
+type 参考：`feat` | `fix` | `docs` | `chore` | `ci` | `test` | `refactor`
+
+## 禁止
+
+- 未经用户明确要求，不得 `git commit` 或 `git push`
+- 不得跳过 US 文档更新直接宣称任务完成
