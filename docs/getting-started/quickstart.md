@@ -33,8 +33,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 ## 4. Git 提交身份
 
 ```powershell
-git config --local user.name "NealWizard"
-git config --local user.email "your-email@users.noreply.github.com"
+git config --local user.name ""
+git config --local user.email ""
 ```
 
 邮箱须在 GitHub **Settings → Emails** 中验证。

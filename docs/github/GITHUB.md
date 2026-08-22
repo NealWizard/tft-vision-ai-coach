@@ -32,11 +32,11 @@ git remote set-url origin https://github.com/NealWizard/tft-vision-ai-coach.git
 GitHub 按 **commit 邮箱** 关联账号，与登录名无关。本仓库已配置：
 
 ```powershell
-git config --local user.name "NealWizard"
-git config --local user.email "your-email@users.noreply.github.com"
+git config --local user.name ""
+git config --local user.email ""
 ```
 
-请确保 `your-email@users.noreply.github.com` 已在 GitHub **Settings → Emails** 中验证，否则提交显示为未关联用户。
+请确保 `` 已在 GitHub **Settings → Emails** 中验证，否则提交显示为未关联用户。
 
 ## 认证方式
 
@@ -139,6 +139,27 @@ User Story 任务 ID（如 `P1-003`）可映射为 **GitHub Issues**：
 pip install -r requirements-docs.txt
 mkdocs serve
 ```
+
+### Wiki 部署失败排查
+
+**报错**：`Branch "main" is not allowed to deploy to github-pages due to environment protection rules`
+
+原因：`github-pages` **Environment** 限制了可部署分支，默认可能未包含 `main`。
+
+**修复步骤**（仓库管理员）：
+
+1. **Settings → Environments → github-pages**
+2. **Deployment branches and tags** → 选 **All branches**（或 **Selected branches** 并添加 `main`）
+3. 若启用了 **Required reviewers** / **Wait timer**，单人开发期请**关闭**（否则会一直 pending / rejected）
+4. 保存后，到 **Actions → Docs → Re-run all jobs**
+
+**仍失败时检查**：
+
+| 检查项 | 路径 |
+|--------|------|
+| Pages 来源 | Settings → Pages → Source = **GitHub Actions** |
+| 仓库可见性 | 免费 GitHub Pages 需 **Public** 仓库 |
+| Workflow 权限 | Settings → Actions → General → Workflow permissions 含 **Read and write**（或至少允许 `pages: write`） |
 
 ## 与 GitLab 文档的差异
 
