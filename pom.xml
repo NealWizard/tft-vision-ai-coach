@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.5</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.tft.coach</groupId>
+  <artifactId>tft-vision-ai-coach</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>TFT Vision AI Coach</name>
+  <description>TFT Vision AI Coach mono-repo — V0.1 engineering foundation</description>
+
+  <modules>
+    <module>tft-contracts</module>
+    <module>tft-common</module>
+    <module>tft-data</module>
+    <module>tft-knowledge</module>
+    <module>tft-vision</module>
+    <module>tft-state</module>
+    <module>tft-meta</module>
+    <module>tft-decision</module>
+    <module>tft-replay</module>
+    <module>tft-learning</module>
+    <module>tft-orchestrator</module>
+  </modules>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <json-schema-validator.version>1.5.3</json-schema-validator.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.tft.coach</groupId>
+        <artifactId>tft-contracts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tft.coach</groupId>
+        <artifactId>tft-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${json-schema-validator.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <release>${maven.compiler.release}</release>
+            <encoding>UTF-8</encoding>
+            <compilerArgs>
+              <arg>-parameters</arg>
+              <arg>-proc:none</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <useModulePath>false</useModulePath>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.5.0</version>
+          <executions>
+            <execution>
+              <id>enforce-baseline</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireJavaVersion>
+                    <version>[21,)</version>
+                  </requireJavaVersion>
+                  <requireMavenVersion>
+                    <version>[3.6.3,)</version>
+                  </requireMavenVersion>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

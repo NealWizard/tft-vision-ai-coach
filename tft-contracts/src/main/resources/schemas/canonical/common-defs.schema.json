@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/common-defs.schema.json",
+  "title": "CommonDefs",
+  "$defs": {
+    "canonicalId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9_.:-]{0,127}$",
+      "description": "Stable canonical entity id across sources"
+    },
+    "patchId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Game patch identifier, e.g. 14.23 or set17-14.23"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "level"],
+      "properties": {
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "certain"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "source_type"],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 1 },
+        "source_type": {
+          "type": "string",
+          "enum": ["riot", "stats", "community", "vision", "manual", "derived"]
+        },
+        "source_url": { "type": "string" },
+        "captured_at": { "$ref": "#/$defs/isoDateTime" },
+        "sample_size": { "type": "integer", "minimum": 0 },
+        "reliability": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "agent_id": "meta-agent-v1",
+  "agent_type": "meta",
+  "version": "0.1.0",
+  "input": {
+    "type": "meta.comps.query",
+    "payload": { "rank": "diamond+", "window": "24h", "limit": 3 },
+    "patch": "set17-14.23",
+    "correlation_id": "corr-meta-demo-001"
+  },
+  "output": {
+    "candidates": [
+      {
+        "option_id": "comp-stargazer-adc",
+        "summary": "Top meta ADC shell with strong top4 rate in 24h diamond+.",
+        "score": 0.82,
+        "risk": {
+          "upside": "High sample size and freshness",
+          "downside": "Contest risk rising",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:meta:opgg-24h-001"],
+        "confidence": { "score": 0.82, "level": "high" }
+      },
+      {
+        "option_id": "comp-reroll-3cost",
+        "summary": "Stable 3-cost reroll with lower contest.",
+        "score": 0.74,
+        "risk": {
+          "upside": "Lower contest",
+          "downside": "Lower ceiling vs high-roll ADC",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:meta:opgg-24h-002"],
+        "confidence": { "score": 0.74, "level": "medium" }
+      }
+    ]
+  },
+  "tools": [
+    { "tool_id": "meta-snapshot-tool", "version": "1.0.0", "required": true }
+  ],
+  "timeout_ms": 1000,
+  "fallback": { "strategy": "cached_snapshot", "message": "Serve previous MetaSnapshot." },
+  "confidence": { "score": 0.8, "level": "high" },
+  "trace": {
+    "correlation_id": "corr-meta-demo-001",
+    "agent_run_id": "run-meta-001",
+    "status": "ok",
+    "latency_ms": 210,
+    "tool_calls": [
+      { "tool_id": "meta-snapshot-tool", "status": "ok", "latency_ms": 180, "version": "1.0.0" }
+    ]
+  }
+}

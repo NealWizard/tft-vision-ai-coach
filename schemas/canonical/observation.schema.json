@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/observation.schema.json",
+  "title": "Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "field", "value", "confidence", "source", "timestamp"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "field": { "type": "string", "minLength": 1 },
+    "value": {},
+    "confidence": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/confidence" },
+    "source": {
+      "type": "string",
+      "enum": ["ocr", "icon", "manual", "derived", "fixture"]
+    },
+    "timestamp": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/isoDateTime" },
+    "roi": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number" },
+        "h": { "type": "number" }
+      }
+    },
+    "frame_id": { "type": "string" }
+  }
+}

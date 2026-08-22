@@ -1,0 +1,17 @@
+target/
+.tools/
+.m2/
+.idea/
+*.iml
+.vscode/
+*.class
+*.jar
+*.war
+*.log
+dependency-tree.txt
+.DS_Store
+Thumbs.db
+*.tmp
+.env
+.env.*
+!.env.example

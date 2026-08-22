@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "shop_set",
+  "description": "Ground-truth shop five-slot champion name/cost recognition fixtures.",
+  "version": "0.1.0",
+  "patch_scope": ["set17-*"],
+  "sample_count": 0,
+  "label_fields": ["slot", "champion_id", "champion_name", "cost"],
+  "samples_dir": "samples",
+  "naming_rule": "{patch}_{resolution}_{stage}_{seq}.png + .json sidecar"
+}

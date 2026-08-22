@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "agent_id": "shop-agent-v1",
+  "agent_type": "shop",
+  "version": "0.1.0",
+  "input": {
+    "type": "shop.decide",
+    "payload": {
+      "shop": ["champ.ahri", "champ.garen", "champ.jinx", "champ.ornn", "champ.lux"],
+      "gold": 32,
+      "level": 7,
+      "target_comp": "comp-stargazer-adc"
+    },
+    "patch": "set17-14.23",
+    "correlation_id": "corr-shop-demo-001"
+  },
+  "output": {
+    "candidates": [
+      {
+        "option_id": "shop-buy-jinx-hold",
+        "summary": "Buy Jinx (key carry) and hold gold otherwise.",
+        "score": 0.84,
+        "risk": {
+          "upside": "Progress toward 3-star / 2-star spike",
+          "downside": "Opportunity cost if wrong pivot",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:comp:stargazer-adc"],
+        "confidence": { "score": 0.84, "level": "high" }
+      },
+      {
+        "option_id": "shop-roll-once",
+        "summary": "Buy Jinx then roll once looking for second copy.",
+        "score": 0.61,
+        "risk": {
+          "upside": "Faster spike",
+          "downside": "Gold variance",
+          "uncertainty": "high"
+        },
+        "evidence": ["evidence:prob:level7-4cost"],
+        "confidence": { "score": 0.6, "level": "medium" }
+      }
+    ]
+  },
+  "tools": [
+    { "tool_id": "champion-tool", "version": "1.0.0", "required": true },
+    { "tool_id": "probability-tool", "version": "1.0.0", "required": true }
+  ],
+  "timeout_ms": 500,
+  "fallback": { "strategy": "degraded_candidates", "message": "Return buy/hold heuristics without probability." },
+  "confidence": { "score": 0.78, "level": "high" },
+  "trace": {
+    "correlation_id": "corr-shop-demo-001",
+    "agent_run_id": "run-shop-001",
+    "status": "ok",
+    "latency_ms": 140,
+    "tool_calls": [
+      { "tool_id": "champion-tool", "status": "ok", "latency_ms": 15, "version": "1.0.0" },
+      { "tool_id": "probability-tool", "status": "ok", "latency_ms": 30, "version": "1.0.0" }
+    ]
+  }
+}

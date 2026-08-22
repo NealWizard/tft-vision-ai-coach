@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/agent/agent-contract.schema.json",
+  "title": "AgentContract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "agent_id",
+    "agent_type",
+    "version",
+    "input",
+    "output",
+    "tools",
+    "timeout_ms",
+    "fallback",
+    "confidence",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "agent_id": { "type": "string", "minLength": 1 },
+    "agent_type": {
+      "type": "string",
+      "enum": ["knowledge", "meta", "economy", "shop", "composition", "item", "augment", "transition", "risk", "orchestrator"]
+    },
+    "version": { "type": "string", "minLength": 1 },
+    "input": {
+      "type": "object",
+      "required": ["type", "payload"],
+      "properties": {
+        "type": { "type": "string" },
+        "payload": { "type": "object" },
+        "patch": { "type": "string" },
+        "correlation_id": { "type": "string" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["candidates"],
+      "properties": {
+        "candidates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["option_id", "summary", "score", "risk", "evidence", "confidence"],
+            "properties": {
+              "option_id": { "type": "string" },
+              "summary": { "type": "string" },
+              "score": { "type": "number" },
+              "risk": {
+                "type": "object",
+                "required": ["upside", "downside", "uncertainty"],
+                "properties": {
+                  "upside": { "type": "string" },
+                  "downside": { "type": "string" },
+                  "uncertainty": { "type": "string", "enum": ["low", "medium", "high"] }
+                }
+              },
+              "evidence": { "type": "array", "items": { "type": "string" } },
+              "confidence": {
+                "type": "object",
+                "required": ["score", "level"],
+                "properties": {
+                  "score": { "type": "number", "minimum": 0, "maximum": 1 },
+                  "level": { "type": "string", "enum": ["low", "medium", "high", "certain"] }
+                }
+              },
+              "tradeoffs": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool_id", "version"],
+        "properties": {
+          "tool_id": { "type": "string" },
+          "version": { "type": "string" },
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "timeout_ms": { "type": "integer", "minimum": 1 },
+    "fallback": {
+      "type": "object",
+      "required": ["strategy"],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["cached_snapshot", "static_rules", "degraded_candidates", "fail_closed"]
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "required": ["score", "level"],
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "level": { "type": "string", "enum": ["low", "medium", "high", "certain"] }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "required": ["correlation_id", "agent_run_id"],
+      "properties": {
+        "correlation_id": { "type": "string" },
+        "agent_run_id": { "type": "string" },
+        "parent_run_id": { "type": "string" },
+        "started_at": { "type": "string", "format": "date-time" },
+        "ended_at": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["ok", "degraded", "failed"] },
+        "latency_ms": { "type": "integer", "minimum": 0 },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tool_id", "status", "latency_ms"],
+            "properties": {
+              "tool_id": { "type": "string" },
+              "status": { "type": "string", "enum": ["ok", "timeout", "error"] },
+              "latency_ms": { "type": "integer", "minimum": 0 },
+              "version": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

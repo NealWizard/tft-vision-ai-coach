@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "agent_id": "economy-agent-v1",
+  "agent_type": "economy",
+  "version": "0.1.0",
+  "input": {
+    "type": "economy.advise",
+    "payload": {
+      "level": 6,
+      "gold": 52,
+      "hp": 68,
+      "stage": "3-2"
+    },
+    "patch": "set17-14.23",
+    "correlation_id": "corr-econ-demo-001"
+  },
+  "output": {
+    "candidates": [
+      {
+        "option_id": "econ-hold-interest",
+        "summary": "Hold 50 interest and level on tempo next stage.",
+        "score": 0.71,
+        "risk": {
+          "upside": "Preserve econ",
+          "downside": "May lose HP if board is weak",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:rule:interest-v1"],
+        "confidence": { "score": 0.7, "level": "medium" }
+      },
+      {
+        "option_id": "econ-level-now",
+        "summary": "Spend 4 gold to level to 7 for stronger board.",
+        "score": 0.66,
+        "risk": {
+          "upside": "Immediate power",
+          "downside": "Break interest temporarily",
+          "uncertainty": "medium"
+        },
+        "evidence": ["evidence:rule:xp-table-v1"],
+        "confidence": { "score": 0.65, "level": "medium" }
+      }
+    ]
+  },
+  "tools": [
+    { "tool_id": "game-rule-tool", "version": "1.0.0", "required": true },
+    { "tool_id": "probability-tool", "version": "1.0.0", "required": false }
+  ],
+  "timeout_ms": 500,
+  "fallback": { "strategy": "static_rules", "message": "Use deterministic economy heuristics." },
+  "confidence": { "score": 0.68, "level": "medium" },
+  "trace": {
+    "correlation_id": "corr-econ-demo-001",
+    "agent_run_id": "run-econ-001",
+    "status": "ok",
+    "latency_ms": 95,
+    "tool_calls": [
+      { "tool_id": "game-rule-tool", "status": "ok", "latency_ms": 20, "version": "1.0.0" }
+    ]
+  }
+}
