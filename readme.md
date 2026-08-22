@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 15:10 +08:00  
+> 更新时间：2026-08-22 15:20 +08:00  
 > 当前阶段：**P0 · 工程地基（V0.1）— 已完成**  
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 
@@ -100,9 +100,28 @@ git config --local user.email "1054318578@qq.com"
 
 1. 在 `develop` 分支开发
 2. 提交前运行 `scripts/local-ci.ps1`
-3. `git push origin develop`
-4. 到 GitHub Actions 确认 CI 全绿
-5. 新增 Schema / Agent 时先改 `schemas/`，再写代码
+3. **任务完成时**：更新 US 文档 → 生成 commit message → **你手动提交**
+4. `git push origin develop`
+5. 到 GitHub Actions 确认 CI 全绿
+6. 新增 Schema / Agent 时先改 `schemas/`，再写代码
+
+### 任务完成收尾（必做）
+
+```powershell
+# 1. 更新 User Story 任务状态（写入 HTML 源文件）
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\update-us-status.ps1 `
+  -TaskIds P0-001,M0 -Status DONE -Owner NealWizard -CompletionDate 2026-08-22
+
+# 2. 生成 commit message（AI/脚本输出，你来 commit）
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\gen-commit-msg.ps1 -Tasks P0-001,M0
+
+# 3. 你手动执行
+git add -A
+git commit -m "<上一步输出的 message>"
+git push origin develop
+```
+
+规则详见：`.cursor/rules/task-completion.mdc`
 
 ## 使用方法
 
