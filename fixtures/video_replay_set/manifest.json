@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "video_replay_set",
+  "description": "Ground-truth video timeline cases for deterministic replay and state reconstruction.",
+  "version": "0.1.0",
+  "patch_scope": ["set17-*"],
+  "sample_count": 0,
+  "label_fields": ["video_ref", "frame_rate", "timeline_ref", "expected_events"],
+  "samples_dir": "samples",
+  "naming_rule": "{patch}_{resolution}_{duration}_{seq}.json"
+}

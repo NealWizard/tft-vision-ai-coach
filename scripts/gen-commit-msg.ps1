@@ -20,13 +20,13 @@ if (-not $changed) {
 
 if (-not $Subject) {
     $files = ($changed | ForEach-Object { $_.Substring(3).Trim() }) -join "`n"
-    if ($files -match 'TFT_Vision_AI_Coach_userstory') {
+    if ($files -match 'TFT_Vision_AI_Coach_Complete_Roadmap_V3_1') {
         $Type = "docs"
-        $Scope = "us"
+        $Scope = "roadmap"
         if ($Tasks -and $Tasks.Count -gt 0) {
-            $Subject = "mark $($Tasks -join ', ') DONE in User Story"
+            $Subject = "mark $($Tasks -join ', ') DONE in Roadmap V3.1"
         } else {
-            $Subject = "update User Story task status"
+            $Subject = "update Roadmap V3.1 task status"
         }
     }
     elseif ($files -match '\.github/workflows') {

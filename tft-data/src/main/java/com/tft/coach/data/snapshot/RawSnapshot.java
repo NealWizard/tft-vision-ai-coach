@@ -18,7 +18,9 @@ public record RawSnapshot(
         String patch,
         String contentType,
         String bodyPath,
-        long bodyBytes
+        long bodyBytes,
+        Instant storedAt,
+        String checksumSha256
 ) {
     public RawSnapshot {
         Objects.requireNonNull(snapshotId, "snapshotId");
@@ -27,10 +29,19 @@ public record RawSnapshot(
         Objects.requireNonNull(resourceKey, "resourceKey");
         Objects.requireNonNull(capturedAt, "capturedAt");
         Objects.requireNonNull(bodyPath, "bodyPath");
+        storedAt = storedAt == null ? capturedAt : storedAt;
     }
 
     /** Pointer for {@code evidence.payload_ref}. */
     public String payloadRef() {
-        return snapshotId;
+        return String.join("/",
+                sourceType.wireValue(),
+                sanitize(sourceId),
+                sanitize(resourceKey),
+                snapshotId);
+    }
+
+    private static String sanitize(String segment) {
+        return segment.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 }

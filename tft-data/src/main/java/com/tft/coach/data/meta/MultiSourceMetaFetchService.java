@@ -5,6 +5,7 @@ import com.tft.coach.data.fetch.FetchResult;
 import com.tft.coach.data.fetch.SourceFetchService;
 import com.tft.coach.data.lolchess.LoLChessStatsAdapter;
 import com.tft.coach.data.lolchess.LoLChessStatsHttpClient;
+import com.tft.coach.data.lolchess.LoLChessStatsResource;
 import com.tft.coach.data.lolchess.LoLChessStatsUrls;
 import com.tft.coach.data.lolchess.JdkLoLChessStatsHttpClient;
 import com.tft.coach.data.opgg.JdkOpGgStatsHttpClient;
@@ -28,7 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Fetches {@link MetaSnapshot} from multiple stats sources for the same query (P1-005).
+ * Fetches {@link MetaSnapshot} from multiple stats sources for the same query
+ * (`P1-DATA-Stats-002`).
  */
 public class MultiSourceMetaFetchService {
 
@@ -42,19 +44,27 @@ public class MultiSourceMetaFetchService {
 
     public MultiSourceMetaResult fetch(MetaSnapshotQuery query) throws IOException, AdapterFetchException {
         List<MetaSnapshotOutcome> outcomes = new ArrayList<>();
-        outcomes.add(fetchOne(OpGgStatsAdapter.ADAPTER_ID, OpGgStatsUrls.metaBundle(
-                OpGgStatsUrls.DEFAULT_BASE, query.region(), query.patch(), query.timeWindow()), query));
-        outcomes.add(fetchOne(LoLChessStatsAdapter.ADAPTER_ID, LoLChessStatsUrls.metaBundle(
-                LoLChessStatsUrls.DEFAULT_BASE, query.region(), query.patch(), query.timeWindow()), query));
+        outcomes.add(fetchOne(
+                OpGgStatsAdapter.ADAPTER_ID,
+                OpGgStatsResource.META_BUNDLE.resourceKey(),
+                OpGgStatsUrls.metaBundle(
+                        OpGgStatsUrls.DEFAULT_BASE, query.region(), query.patch(), query.timeWindow()),
+                query));
+        outcomes.add(fetchOne(
+                LoLChessStatsAdapter.ADAPTER_ID,
+                LoLChessStatsResource.META_BUNDLE.resourceKey(),
+                LoLChessStatsUrls.metaBundle(
+                        LoLChessStatsUrls.DEFAULT_BASE, query.region(), query.patch(), query.timeWindow()),
+                query));
         return new MultiSourceMetaResult(query, outcomes);
     }
 
-    private MetaSnapshotOutcome fetchOne(String sourceId, String url, MetaSnapshotQuery query)
+    private MetaSnapshotOutcome fetchOne(String sourceId, String resourceKey, String url, MetaSnapshotQuery query)
             throws IOException, AdapterFetchException {
         FetchRequest request = new FetchRequest(
                 SourceType.STATS,
                 sourceId,
-                OpGgStatsResource.META_BUNDLE.resourceKey(),
+                resourceKey,
                 url,
                 query.patch(),
                 Map.of(
@@ -80,18 +90,6 @@ public class MultiSourceMetaFetchService {
         ));
         return new MultiSourceMetaFetchService(
                 new SourceFetchService(registry, store),
-                new NormalizedMetaSnapshotParser());
-    }
-
-    /**
-     * Parses normalized meta bundle JSON; {@code source_id} in payload identifies vendor.
-     */
-    public static class NormalizedMetaSnapshotParser implements MetaSnapshotParser {
-        private final OpGgMetaSnapshotParser delegate = new OpGgMetaSnapshotParser();
-
-        @Override
-        public MetaSnapshot parse(byte[] rawJson) throws AdapterFetchException {
-            return delegate.parse(rawJson);
-        }
+                new OpGgMetaSnapshotParser());
     }
 }

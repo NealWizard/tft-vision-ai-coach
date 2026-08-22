@@ -13,6 +13,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileSystemRawSnapshotStoreTest {
 
@@ -41,6 +42,11 @@ class FileSystemRawSnapshotStoreTest {
         assertEquals(2, all.size());
         assertEquals("v1", new String(store.readBody(all.get(0))));
         assertEquals("v2", new String(store.readBody(all.get(1))));
+        assertTrue(second.storedAt().isAfter(first.storedAt()));
+        assertEquals(64, second.checksumSha256().length());
+        assertEquals("stats/meta-source-a/comps/" + second.snapshotId(), second.payloadRef());
+        assertEquals("v2", new String(store.readBody(store.findLatest(
+                new RawSnapshotQuery(SourceType.STATS, "meta-source-a", "comps")).orElseThrow())));
     }
 
     private static AdapterFetchPayload payload(String value) {

@@ -21,12 +21,15 @@ jobs:
         shell: pwsh
         run: ./scripts/safety-scan.ps1
 
-      - name: Verify violation fixture marker
+      - name: Verify scanner rejects a violation
         shell: pwsh
         run: |
-          $content = Get-Content tools/safety-fixtures/ForbiddenInputSimulation.java -Raw
-          if ($content -notmatch 'SendInput') { throw 'fixture missing SendInput marker' }
-          Write-Host 'Fixture marker present'
+          $testRoot = Join-Path $env:RUNNER_TEMP "safety-negative"
+          New-Item -ItemType Directory -Force -Path $testRoot | Out-Null
+          Copy-Item tools/safety-fixtures/ForbiddenInputSimulation.java $testRoot
+          pwsh -NoProfile -File ./scripts/safety-scan.ps1 -ScanRoot $testRoot
+          if ($LASTEXITCODE -eq 0) { throw "Safety scanner accepted a forbidden fixture" }
+          Write-Host "Safety scanner correctly rejected the forbidden fixture"
 
   build-test:
     name: Build & test

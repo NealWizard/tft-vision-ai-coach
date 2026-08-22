@@ -1,4 +1,4 @@
-# Fixtures Versioning Rules (P0-009)
+# Fixtures Versioning Rules (`P0-FOUND-TestData-001`)
 
 ## Directory layout
 
@@ -9,6 +9,8 @@ fixtures/
   board_set/
   augment_set/
   patch_regression_set/
+  knowledge_qa_set/
+  video_replay_set/
 ```
 
 Each dataset contains:

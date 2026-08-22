@@ -1,4 +1,4 @@
-# Branching Strategy (P0-001)
+# Branching Strategy (`P0-FOUND-Repo-001`)
 
 > 平台：**GitHub** · 仓库：https://github.com/NealWizard/tft-vision-ai-coach
 
@@ -13,14 +13,14 @@
 
 ## Naming examples
 
-- `feature/P0-005-canonical-schemas`
-- `feature/P1-003-datadragon-adapter`
+- `feature/P0-FOUND-Contract-001-canonical-schemas`
+- `feature/P1-DATA-Riot-001-datadragon-adapter`
 - `hotfix/ci-snapshot-false-positive`
 
 ## 单人开发（当前）
 
 1. 在 `develop` 上开发，`git push origin develop`
-2. **不启用** Branch protection
+2. **暂不启用** Branch protection；这是单人开发阶段的显式例外
 3. Push 后查看 [GitHub Actions](https://github.com/NealWizard/tft-vision-ai-coach/actions) 是否全绿
 4. 提交前建议本地跑 `scripts/local-ci.ps1`
 

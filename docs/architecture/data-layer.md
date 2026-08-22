@@ -7,9 +7,9 @@
 | 模块 | 职责 |
 |------|------|
 | `tft-data` | Source Adapter SPI、Raw Snapshot、外部源抓取 |
-| `tft-knowledge` | 归一化、Patch、Tools、Knowledge Agent（P1-007+） |
+| `tft-knowledge` | 归一化、Patch、Tools、RAG、Knowledge Agent |
 
-## Source Adapter SPI（P1-001）
+## Source Adapter SPI（P1-DATA-SourceAdapter-001）
 
 ```
 com.tft.coach.data.spi.SourceAdapter
@@ -21,7 +21,7 @@ com.tft.coach.data.fetch.SourceFetchService
 - `SourceFetchService`：live 成功 → 追加快照；失败 → 返回最近可用 Snapshot（`degraded=true`）
 - `SourceType` 与 `evidence.schema.json` 的 `source_type` 对齐
 
-## Raw Snapshot（P1-002）
+## Raw Snapshot（P1-DATA-Snapshot-001）
 
 ```
 com.tft.coach.data.snapshot.RawSnapshotStore
@@ -31,19 +31,21 @@ com.tft.coach.data.snapshot.FileSystemRawSnapshotStore
 - 默认存储路径：`data/snapshots/`（gitignore，本地运行时）
 - **append-only**：每次抓取新 UUID 目录，不覆盖历史
 - 可按 `sourceType + sourceId + resourceKey + 时间窗` 查询
+- 元数据包含 SHA-256 checksum、采集时间和本地写入时间
 
 ## P1 任务进度
 
 | ID | 任务 | 状态 |
 |----|------|------|
-| P1-001 | Source Adapter SPI | DONE |
-| P1-002 | Raw Snapshot 存储 | DONE |
-| P1-003 | Riot/Data Dragon Adapter | DONE |
-| P1-004 | OP.GG 统计源 Adapter | DONE |
-| P1-005 | 第二统计源 Adapter | DONE |
-| … | 见 User Story 看板 | |
+| P1-DATA-SourceAdapter-001 | Source Adapter SPI | V3.1 重验收 |
+| P1-DATA-Snapshot-001 | Raw Snapshot Store | V3.1 重验收 |
+| P1-DATA-Riot-001 | Riot/Data Dragon Adapter | V3.1 重验收 |
+| P1-DATA-Stats-001 | 第一统计源 Adapter | V3.1 重验收 |
+| P1-DATA-Stats-002 | 第二统计源 Adapter | V3.1 重验收 |
+| P1-DATA-EntityResolve-001 | Canonical Entity Resolver | TODO |
+| … | 见 Roadmap V3.1 | |
 
-## Data Dragon Adapter（P1-003）
+## Data Dragon Adapter（P1-DATA-Riot-001）
 
 ```
 com.tft.coach.data.datadragon.DataDragonAdapter
@@ -72,7 +74,7 @@ var outcome = ddragon.fetch(DataDragonResource.CHAMPION, "16.16.1", "en_US");
 FetchEvidence evidence = outcome.evidence();
 ```
 
-## OP.GG Stats Adapter（P1-004，PRD 推荐第一统计源）
+## OP.GG Stats Adapter（P1-DATA-Stats-001）
 
 ```
 com.tft.coach.data.meta.MetaSnapshot
@@ -93,7 +95,7 @@ var outcome = opgg.fetchMetaBundle("set17-16.16", "global", "24h");
 MetaSnapshot meta = outcome.snapshot();
 ```
 
-## LoLChess Stats Adapter + 多源聚合（P1-005）
+## LoLChess Stats Adapter + 多源聚合（P1-DATA-Stats-002）
 
 ```
 com.tft.coach.data.lolchess.LoLChessStatsAdapter
@@ -103,7 +105,7 @@ com.tft.coach.data.meta.MetaSnapshotQuery
 
 - 第二统计源：`source_id=lolchess`，URL 模板与 OP.GG 对齐（`/api/meta/bundle`）
 - 解析复用 `OpGgMetaSnapshotParser`（规范化 JSON，`source_id` 区分厂商）
-- **MultiSourceMetaFetchService**：同一 `patch + region + time_window` 并行拉取 OP.GG + LoLChess，各自保留 `source_id` 与 `FetchEvidence`
+- **MultiSourceMetaFetchService**：同一 `patch + region + time_window` 拉取 OP.GG + LoLChess，各自保留 `source_id` 与 `FetchEvidence`
 - 单源失败不阻塞另一源；经 `SourceFetchService` 可独立降级至缓存
 
 ```java
@@ -116,4 +118,4 @@ MultiSourceMetaResult result = meta.fetch(MetaSnapshotQuery.of("set17-16.16", "g
 
 ## 下一步
 
-**P1-006**：Canonical Entity ID 映射（Data Dragon + 统计源 ID 对齐）。
+**P1-DATA-EntityResolve-001**：Canonical Entity Resolver（Data Dragon + 统计源 ID 对齐）。

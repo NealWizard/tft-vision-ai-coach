@@ -11,7 +11,7 @@
 | `schemas/agent/samples/` | 5 个 Agent 样例 JSON |
 | `tft-contracts/` | Schema 打包与校验模块 |
 
-## Canonical Schema（P0-005）
+## Canonical Schema（P0-FOUND-Contract-001）
 
 | 文件 | 用途 |
 |------|------|
@@ -29,7 +29,7 @@
 
 源码：[schemas/canonical/](https://github.com/NealWizard/tft-vision-ai-coach/tree/develop/schemas/canonical)
 
-## Agent Contract（P0-006）
+## Agent Contract（P0-FOUND-AgentContract-001）
 
 - 主 Schema：`schemas/agent/agent-contract.schema.json`
 - 样例：`composition-agent`、`shop-agent`、`economy-agent`、`meta-agent`、`knowledge-agent`
@@ -50,3 +50,5 @@ mvn -pl tft-contracts -am test
 2. 同步到 `tft-contracts/src/main/resources/schemas/`（或通过构建复制）
 3. 补充/更新 `schemas/agent/samples/` 样例
 4. 在本 Wiki 补充说明（如有业务语义变化）
+
+版本规则见根目录 `schemas/README.md`；测试会校验源码与打包副本完全一致。

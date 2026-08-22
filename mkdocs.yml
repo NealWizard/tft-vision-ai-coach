@@ -55,12 +55,14 @@ nav:
   - 快速开始:
     - 环境搭建: getting-started/quickstart.md
   - 产品:
+    - 整合需求与开发规格 V3.1: product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md
     - 需求概述: product/requirements.md
     - 任务路线图: roadmap/user-story.md
   - 架构:
     - 模块一览: architecture/modules.md
     - Schema 契约: architecture/schemas.md
     - 数据层 (P1): architecture/data-layer.md
+    - 云端降级矩阵: architecture/degrade-matrix.md
   - 开发指南:
     - GitHub 协作: github/GITHUB.md
     - 分支策略: branching/BRANCHING.md

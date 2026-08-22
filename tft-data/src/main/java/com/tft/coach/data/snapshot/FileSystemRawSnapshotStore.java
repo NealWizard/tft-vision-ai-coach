@@ -10,9 +10,12 @@ import com.tft.coach.data.spi.SourceType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +31,7 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
 
     private final Path root;
     private final ObjectMapper mapper;
+    private Instant lastStoredAt = Instant.EPOCH;
 
     public FileSystemRawSnapshotStore(Path root) {
         this.root = root;
@@ -37,7 +41,7 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
     }
 
     @Override
-    public RawSnapshot append(FetchRequest request, AdapterFetchPayload payload) throws IOException {
+    public synchronized RawSnapshot append(FetchRequest request, AdapterFetchPayload payload) throws IOException {
         String snapshotId = UUID.randomUUID().toString();
         Path dir = root
                 .resolve(request.sourceType().wireValue())
@@ -59,7 +63,9 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
                 payload.patch(),
                 payload.contentType(),
                 bodyPath.toString(),
-                payload.body().length
+                payload.body().length,
+                nextStoredAt(),
+                sha256(payload.body())
         );
         mapper.writeValue(dir.resolve(META_FILE).toFile(), snapshot);
         return snapshot;
@@ -68,7 +74,7 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
     @Override
     public Optional<RawSnapshot> findLatest(RawSnapshotQuery query) throws IOException {
         return findByQuery(query).stream()
-                .max(Comparator.comparing(RawSnapshot::capturedAt));
+                .max(snapshotOrder());
     }
 
     @Override
@@ -95,7 +101,7 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
                 results.add(snapshot);
             }
         }
-        results.sort(Comparator.comparing(RawSnapshot::capturedAt));
+        results.sort(snapshotOrder());
         return List.copyOf(results);
     }
 
@@ -116,5 +122,25 @@ public class FileSystemRawSnapshotStore implements RawSnapshotStore {
 
     private static String sanitize(String segment) {
         return segment.replaceAll("[^a-zA-Z0-9._-]", "_");
+    }
+
+    private Instant nextStoredAt() {
+        Instant now = Instant.now();
+        lastStoredAt = now.isAfter(lastStoredAt) ? now : lastStoredAt.plusNanos(1);
+        return lastStoredAt;
+    }
+
+    private static Comparator<RawSnapshot> snapshotOrder() {
+        return Comparator.comparing(RawSnapshot::capturedAt)
+                .thenComparing(RawSnapshot::storedAt)
+                .thenComparing(RawSnapshot::snapshotId);
+    }
+
+    private static String sha256(byte[] body) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(body));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 is unavailable", ex);
+        }
     }
 }

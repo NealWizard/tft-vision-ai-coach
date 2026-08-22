@@ -53,6 +53,8 @@ class SourceFetchServiceTest {
 
         assertTrue(result.live());
         assertFalse(result.degraded());
+        assertEquals(SourceHealthStatus.HEALTHY,
+                service.health(SourceType.RIOT, "riot-datadragon").status());
         assertEquals(1, store.findByQuery(new RawSnapshotQuery(
                 SourceType.RIOT, "riot-datadragon", "tft-champion")).size());
     }
@@ -72,6 +74,8 @@ class SourceFetchServiceTest {
         assertFalse(result.live());
         assertTrue(result.degraded());
         assertEquals("forced-failure", result.message());
+        assertEquals(SourceHealthStatus.DEGRADED,
+                service.health(SourceType.RIOT, "riot-datadragon").status());
         assertEquals("v1", new String(result.body()));
         assertEquals(1, store.findByQuery(new RawSnapshotQuery(
                 SourceType.RIOT, "riot-datadragon", "tft-champion")).size());

@@ -3,7 +3,8 @@ package com.tft.coach.common.flags;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Feature flags. Live capabilities stay off by default (P0-008).
+ * Feature flags. Live capabilities stay off by default
+ * (`P0-FOUND-FeatureFlag-001`).
  */
 @ConfigurationProperties(prefix = "tft.flags")
 public class FeatureFlags {

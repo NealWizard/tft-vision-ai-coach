@@ -1,4 +1,4 @@
-# Update task status in User Story HTML TASKS JSON (source file, not localStorage)
+# Update task status in Roadmap V3.1 TASKS JSON (source file, not localStorage)
 param(
     [Parameter(Mandatory = $true)][string[]]$TaskIds,
     [string]$Status,
@@ -8,11 +8,15 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$TaskIds = @($TaskIds |
+    ForEach-Object { $_ -split "," } |
+    ForEach-Object { $_.Trim() } |
+    Where-Object { $_ })
 if (-not $Status) { $Status = "DONE" }
 if (-not $Owner) { $Owner = "NealWizard" }
 if (-not $CompletionDate) { $CompletionDate = Get-Date -Format "yyyy-MM-dd" }
 if (-not $HtmlPath) {
-    $HtmlPath = Join-Path (Split-Path $PSScriptRoot -Parent) "TFT_Vision_AI_Coach_userstory (1).html"
+    $HtmlPath = Join-Path (Split-Path $PSScriptRoot -Parent) "TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html"
 }
 if (-not (Test-Path $HtmlPath)) { throw "HTML not found: $HtmlPath" }
 

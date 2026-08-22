@@ -103,15 +103,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 
 ## Issue 与任务追踪
 
-User Story 任务 ID（如 `P1-003`）可映射为 **GitHub Issues**：
+Roadmap V3.1 任务 ID（如 `P1-DATA-Riot-001`）可映射为 **GitHub Issues**：
 
-- **Label**：Domain（如 `DATA`、`VISION`）
+- **Label**：Epic / Capability（如 `DATA`、`Riot`）
 - **Milestone**：Phase（如 `P1`）
-- **Title**：`[P1-003] 实现 Riot/Data Dragon Adapter`
+- **Title**：`[P1-DATA-Riot-001] 实现 Riot/Data Dragon Adapter`
 
 ### 任务完成收尾
 
-1. 更新 `TFT_Vision_AI_Coach_userstory (1).html` 中对应任务为 `DONE`（用 `scripts/update-us-status.ps1`）
+1. 更新 `TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html` 中对应任务为 `DONE`（用 `scripts/update-us-status.ps1`）
 2. 运行 `scripts/gen-commit-msg.ps1` 生成 commit message
 3. **开发者手动** `git commit` / `git push`（AI 不自动提交）
 

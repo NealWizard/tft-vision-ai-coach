@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "dataset": "knowledge_qa_set",
+  "description": "Ground-truth questions for rules, entities, patch changes, and evidence citations.",
+  "version": "0.1.0",
+  "patch_scope": ["set17-*"],
+  "sample_count": 0,
+  "label_fields": ["question_type", "question", "expected_facts", "expected_evidence"],
+  "samples_dir": "samples",
+  "naming_rule": "{patch}_{question_type}_{seq}.json"
+}
