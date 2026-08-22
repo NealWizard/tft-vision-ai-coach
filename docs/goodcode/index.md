@@ -1,11 +1,11 @@
-# Good Code Examples
+# 优秀代码示例
 
-> 更新时间：2026-08-22 15:10 +08:00
+> 更新时间：2026-08-22
 
 ## 1. Feature Flag 默认关闭 Live（P0-008）
 
 ```java
-ConfigurationProperties(prefix = "tft.flags")
+@ConfigurationProperties(prefix = "tft.flags")
 public class FeatureFlags {
     private boolean offlineLab = true;
     private boolean postGame = true;
@@ -31,3 +31,5 @@ List<AgentRun> chain = traceService.findByCorrelationId(ctx.correlationId());
 ## 3. Schema 先行（P0-005/006）
 
 Agent 样例必须通过 `agent-contract.schema.json` 校验；Domain Agent 不允许输出单一强制动作，必须是 `candidates[]`。
+
+完整文件见仓库 [`goodcode.md`](https://github.com/NealWizard/tft-vision-ai-coach/blob/develop/goodcode.md)。

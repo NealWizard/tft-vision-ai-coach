@@ -9,9 +9,11 @@ target/
 *.war
 *.log
 dependency-tree.txt
+site/
 .DS_Store
 Thumbs.db
 *.tmp
 .env
 .env.*
 !.env.example
+.git-filter/
