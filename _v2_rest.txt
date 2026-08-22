@@ -1,0 +1,44 @@
+﻿--- P1-006 Canonical Entity ID 设计与映射
+acc: 同实体跨来源映射准确；未知实体进入待确认队列。
+--- P1-007 Knowledge Normalizer
+acc: 同一实体不同来源可以归一；不丢失 source-specific raw payload。
+--- P1-008 Patch Manager
+acc: 所有知识查询必须指定/推断 Patch；旧 Patch 不可无标识混入当前查询。
+--- P1-009 Patch Diff Tool
+acc: 输入 from/to patch，输出新增/删除/数值变化及受影响实体。
+--- P1-010 Knowledge Conflict Queue
+acc: 冲突可查询、标记处理状态、查看双方原始数据。
+--- P1-011 Source Reliability / Freshness / SampleSize 评分
+acc: 相同实体跨来源可以得到可解释权重；公式可配置。
+--- P1-012 Evidence Store
+acc: Knowledge 查询返回 evidence；不可追溯事实不得作为确定性事实输出。
+--- P1-013 Game Rule Tool
+acc: 核心规则可通过 API/Tool 查询；规则值有 Patch 版本。
+--- P1-014 Champion / Trait / Item / Augment Tools
+acc: 四类 Tool 均支持 get/search；结果带 evidence。
+--- P1-015 Mechanic Tool
+acc: Mechanic 与 Augment 分离；支持按 Set/Patch 查询。
+--- P1-016 Probability Tool
+acc: 给定等级/牌池参数输出概率；带公式版本；单元测试覆盖边界。
+--- P1-017 Knowledge Agent v1
+acc: 至少支持“是什么/规则/版本变化/装备交互”四类问题；答案包含证据。
+--- P1-018 Knowledge Regression Set
+acc: 每次数据更新自动回归；关键事实变更可被发现。
+--- P1-019 数据健康检查与采集降级
+acc: 源故障场景可切换缓存；健康状态可观测。
+--- P1-RAG-001 Document Ingestion Pipeline
+acc: 支持 URL/HTML/Text 输入；原文、source_url、captured_at、patch、source_type 可追溯。
+--- P1-LLM-001 Cloud LLM Gateway
+acc: 可切换至少两个 provider/兼容接口；云端故障可降级；调用可追踪。
+--- P1-LLM-002 Prompt Template Registry
+acc: AgentRun 可反查 Prompt Version；模板变更有 diff。
+--- P1-LLM-003 LLM Cost / Token / Latency Meter
+acc: 每次云调用都有成本数据；支持按 Agent/Provider 汇总。
+--- P1-LLM-004 Cloud LLM Safety Guard
+acc: 所有云调用都经过 Guard；拒绝/截断有原因码。
+--- P1-RAG-009 Knowledge RAG API
+acc: Knowledge Agent/Research Agent 均通过统一 API；调用链可追踪。
+--- P1-RAG-010 Knowledge Agent v1
+acc: 100 条知识问答回归通过；答案明确区分事实、RAG 内容和推断。
+--- P1-RAG-011 Web Research Agent v1
+acc: 每个候选事实有来源、时间、Patch 判断、可信度；不能直接覆盖官方事实。

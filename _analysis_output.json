@@ -1,0 +1,943 @@
+{
+  "v31_p1_tasks": [
+    {
+      "id": "P1-AGENT-Knowledge-001",
+      "phase": "P1",
+      "epic": "AGENT",
+      "capability": "Knowledge",
+      "type": "Story",
+      "title": "Knowledge Agent v1",
+      "requirement": "统一编排 Structured Knowledge Tools + Knowledge RAG + Cloud LLM，回答“这是什么/规则是什么/版本改了什么/机制如何理解”。",
+      "acceptance": "100 条知识问答回归通过；事实、RAG 内容、模型推断明确区分；每个关键事实带 Evidence。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-KNOW-Rules-001",
+        "P1-KNOW-Champion-001",
+        "P1-KNOW-Trait-001",
+        "P1-KNOW-Item-001",
+        "P1-KNOW-Augment-001",
+        "P1-KNOW-Mechanic-001",
+        "P1-RAG-API-001",
+        "P1-LLM-Gateway-001",
+        "P1-LLM-Prompt-001",
+        "P1-LLM-Guard-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 8,
+      "risk": "中",
+      "planned_start": "2026-10-12",
+      "planned_end": "2026-10-19",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-AGENT-Research-001",
+      "phase": "P1",
+      "epic": "AGENT",
+      "capability": "Research",
+      "type": "Task",
+      "title": "Web Research Agent v1",
+      "requirement": "针对最新 Patch、社区趋势、争议主题搜索、交叉验证并形成候选事实。",
+      "acceptance": "输出来源、时间、Patch 判断、可信度；不能覆盖官方事实。",
+      "priority": "P1",
+      "dependencies": [
+        "P1-AGENT-Knowledge-001",
+        "P1-RAG-API-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-10-15",
+      "planned_end": "2026-10-21",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Conflict-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Conflict",
+      "type": "Task",
+      "title": "Conflict Queue",
+      "requirement": "多来源冲突不覆盖，进入冲突队列。",
+      "acceptance": "可查看冲突双方、来源、Patch、时间。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Patch-001"
+      ],
+      "sp": 3,
+      "risk": "中",
+      "planned_start": "2026-09-28",
+      "planned_end": "2026-10-01",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-EntityResolve-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "EntityResolve",
+      "type": "Story",
+      "title": "Canonical Entity Resolver",
+      "requirement": "统一不同来源的实体 ID 与别名。",
+      "acceptance": "跨源映射可验证；未知实体进入待处理队列。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Riot-001",
+        "P1-DATA-Stats-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-09-15",
+      "planned_end": "2026-09-22",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Evidence-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Evidence",
+      "type": "Story",
+      "title": "Evidence Store",
+      "requirement": "保存 source_url、captured_at、patch、sample_size、source_type、reference_id。",
+      "acceptance": "每条事实可反查 Evidence。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Snapshot-001",
+        "P1-DATA-Normalize-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-01",
+      "planned_end": "2026-10-06",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Normalize-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Normalize",
+      "type": "Story",
+      "title": "Knowledge Normalizer",
+      "requirement": "把多来源数据归一到 Canonical DTO，同时保留 raw payload。",
+      "acceptance": "同实体统一查询；原始字段不丢失。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-EntityResolve-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-09-22",
+      "planned_end": "2026-09-26",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Patch-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Patch",
+      "type": "Story",
+      "title": "Patch Manager",
+      "requirement": "管理 Set/Patch、生效时间、当前版本、TTL。",
+      "acceptance": "所有查询明确 Patch；旧 Patch 不可无标识混入。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Riot-001"
+      ],
+      "sp": 5,
+      "risk": "高",
+      "planned_start": "2026-09-18",
+      "planned_end": "2026-09-25",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Patch-002",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Patch",
+      "type": "Story",
+      "title": "Patch Diff Tool",
+      "requirement": "输出实体新增/删除/数值变化/受影响对象。",
+      "acceptance": "输入 from/to patch 可生成 diff。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Patch-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-09-28",
+      "planned_end": "2026-10-02",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Quality-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Quality",
+      "type": "Task",
+      "title": "Source Reliability / Freshness / SampleSize 评分",
+      "requirement": "统一来源可信度和数据新鲜度评分。",
+      "acceptance": "公式配置化；结果可解释。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Conflict-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-01",
+      "planned_end": "2026-10-05",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Riot-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Riot",
+      "type": "Story",
+      "title": "Riot / Data Dragon Adapter",
+      "requirement": "获取 Set、Champion、Trait、Item、Augment 等官方静态数据。",
+      "acceptance": "指定 Patch 可重复获取；带 Evidence。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-SourceAdapter-001",
+        "P1-DATA-Snapshot-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-09-08",
+      "planned_end": "2026-09-15",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Snapshot-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Snapshot",
+      "type": "Story",
+      "title": "Raw Snapshot Store",
+      "requirement": "保存原始响应、URL、checksum、captured_at、source、patch 推断。",
+      "acceptance": "历史快照可回放；新数据不覆盖旧数据。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-SourceAdapter-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-09-09",
+      "planned_end": "2026-09-11",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-SourceAdapter-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "SourceAdapter",
+      "type": "Story",
+      "title": "建立 Source Adapter SPI",
+      "requirement": "统一 Riot/统计站/社区来源抓取、解析、健康检查、缓存降级。",
+      "acceptance": "所有来源通过 SPI 接入。",
+      "priority": "P0",
+      "dependencies": [
+        "P0-FOUND-Contract-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-09-07",
+      "planned_end": "2026-09-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Stats-001",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Stats",
+      "type": "Story",
+      "title": "第一统计源 Adapter",
+      "requirement": "获取 Comp/Unit/Item/Augment/Trend 统计。",
+      "acceptance": "统一 Meta DTO；样本量和时间完整。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-SourceAdapter-001",
+        "P1-DATA-Snapshot-001"
+      ],
+      "sp": 5,
+      "risk": "中",
+      "planned_start": "2026-09-11",
+      "planned_end": "2026-09-18",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-DATA-Stats-002",
+      "phase": "P1",
+      "epic": "DATA",
+      "capability": "Stats",
+      "type": "Story",
+      "title": "第二统计源 Adapter",
+      "requirement": "第二数据源用于交叉验证和冲突发现。",
+      "acceptance": "同一查询可以保留多个来源。",
+      "priority": "P1",
+      "dependencies": [
+        "P1-DATA-Stats-001"
+      ],
+      "sp": 3,
+      "risk": "中",
+      "planned_start": "2026-09-16",
+      "planned_end": "2026-09-23",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Augment-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Augment",
+      "type": "Story",
+      "title": "Augment Tool",
+      "requirement": "强化类型、条件、效果、限制、历史版本。",
+      "acceptance": "支持 get/search；静态定义与统计分离。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Champion-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Champion",
+      "type": "Story",
+      "title": "Champion Tool",
+      "requirement": "棋子属性、费用、星级成长、技能、机制、历史版本。",
+      "acceptance": "支持 get/search；返回 Evidence。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Item-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Item",
+      "type": "Story",
+      "title": "Item Tool",
+      "requirement": "组件、成装、属性、被动、合成、交互。",
+      "acceptance": "支持 get/search；返回 Evidence。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Mechanic-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Mechanic",
+      "type": "Story",
+      "title": "Mechanic Tool",
+      "requirement": "奇遇、Portal、特殊选择、特殊羁绊、临时规则。",
+      "acceptance": "与 Augment 解耦；可按 Set/Patch 查询。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001",
+        "P1-DATA-Patch-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-06",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Probability-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Probability",
+      "type": "Story",
+      "title": "Probability Tool",
+      "requirement": "商店、滚牌、三星等概率计算。",
+      "acceptance": "公式可验证；边界单测通过。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-KNOW-Rules-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Rules-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Rules",
+      "type": "Story",
+      "title": "Game Rule Tool",
+      "requirement": "结构化等级、金币、利息、经验、商店、回合、战斗与特殊规则。",
+      "acceptance": "规则可通过 Tool 查询；规则值有 Patch 版本。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Patch-001",
+        "P1-DATA-Evidence-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-09-28",
+      "planned_end": "2026-10-06",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-Trait-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "Trait",
+      "type": "Story",
+      "title": "Trait Tool",
+      "requirement": "羁绊单位集合、阈值、效果、历史版本。",
+      "acceptance": "支持 get/search；阈值结构化。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-Normalize-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-KNOW-UnitPool-001",
+      "phase": "P1",
+      "epic": "KNOW",
+      "capability": "UnitPool",
+      "type": "Task",
+      "title": "Unit Pool Tool",
+      "requirement": "牌池基础定义与统计所需配置。",
+      "acceptance": "按 Set/Patch 查询牌池参数；不依赖 LLM。",
+      "priority": "P1",
+      "dependencies": [
+        "P1-KNOW-Rules-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-12",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-LLM-Gateway-001",
+      "phase": "P1",
+      "epic": "LLM",
+      "capability": "Gateway",
+      "type": "Story",
+      "title": "Cloud LLM Gateway",
+      "requirement": "统一云端模型接入、Provider 切换、超时、重试、Fallback。",
+      "acceptance": "上层不依赖厂商 SDK；云故障可降级。",
+      "priority": "P0",
+      "dependencies": [
+        "P0-FOUND-Degrade-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-09-21",
+      "planned_end": "2026-09-29",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-LLM-Guard-001",
+      "phase": "P1",
+      "epic": "LLM",
+      "capability": "Guard",
+      "type": "Story",
+      "title": "Cloud LLM Safety Guard",
+      "requirement": "防 Prompt Injection、超长上下文、无关/敏感数据上传。",
+      "acceptance": "所有云调用均经过 Guard。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-LLM-Gateway-001",
+        "P0-FOUND-Safety-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-10",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-LLM-Meter-001",
+      "phase": "P1",
+      "epic": "LLM",
+      "capability": "Meter",
+      "type": "Task",
+      "title": "Token / Cost / Latency Meter",
+      "requirement": "记录 tokens、latency、cost estimate。",
+      "acceptance": "每次云调用均可追踪；支持聚合。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-LLM-Gateway-001",
+        "P0-FOUND-Observability-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-01",
+      "planned_end": "2026-10-07",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-LLM-Prompt-001",
+      "phase": "P1",
+      "epic": "LLM",
+      "capability": "Prompt",
+      "type": "Task",
+      "title": "Prompt Template Registry",
+      "requirement": "集中管理 Prompt、变量 Schema、版本、发布状态。",
+      "acceptance": "AgentRun 可反查 Prompt Version。",
+      "priority": "P0",
+      "dependencies": [
+        "P0-FOUND-AgentContract-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-09-29",
+      "planned_end": "2026-10-03",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-API-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "API",
+      "type": "Story",
+      "title": "Knowledge RAG API",
+      "requirement": "统一 retrieve/rerank/citation/metadata filter API。",
+      "acceptance": "Agent 不能直接访问向量库；调用可追踪。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Rerank-001",
+        "P1-RAG-Metadata-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-08",
+      "planned_end": "2026-10-14",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Chunk-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Chunk",
+      "type": "Story",
+      "title": "Semantic Chunking",
+      "requirement": "按章节/实体/机制/表格语义切分。",
+      "acceptance": "chunk 有 document_id/section/patch/source。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Ingest-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-09-21",
+      "planned_end": "2026-09-24",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Embedding-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Embedding",
+      "type": "Story",
+      "title": "Embedding Provider SPI",
+      "requirement": "支持云端与本地 Embedding 模型切换。",
+      "acceptance": "模型可替换；记录 version/provider。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Chunk-001",
+        "P0-FOUND-Degrade-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-09-23",
+      "planned_end": "2026-09-29",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Eval-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Eval",
+      "type": "Task",
+      "title": "RAG Evaluation Dataset",
+      "requirement": "规则、机制、Patch、装备、趋势检索评测集。",
+      "acceptance": "至少 100 条；输出 Recall@K/MRR/Citation Coverage。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Hybrid-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-08",
+      "planned_end": "2026-10-13",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Hybrid-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Hybrid",
+      "type": "Story",
+      "title": "Hybrid Search",
+      "requirement": "BM25 + Vector Search 组合召回。",
+      "acceptance": "100 条 benchmark 有 Recall@K 指标。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Vector-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-10-01",
+      "planned_end": "2026-10-07",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Ingest-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Ingest",
+      "type": "Story",
+      "title": "Document Ingestion Pipeline",
+      "requirement": "把 Patch Notes、Wiki、攻略、社区文章、机制说明纳入文档流。",
+      "acceptance": "URL/HTML/Text 可入库；保留 source/patch/captured_at。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-DATA-SourceAdapter-001",
+        "P1-DATA-Snapshot-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-09-14",
+      "planned_end": "2026-09-22",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Metadata-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Metadata",
+      "type": "Task",
+      "title": "RAG Metadata Governance",
+      "requirement": "强制 patch/set/source_type/captured_at 等元数据。",
+      "acceptance": "缺元数据文档不能进入生产索引。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Chunk-001",
+        "P1-DATA-Patch-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Rerank-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Rerank",
+      "type": "Story",
+      "title": "Reranker Provider SPI",
+      "requirement": "对 TopK 做二次排序。",
+      "acceptance": "有 baseline 比较；失败可 fallback。",
+      "priority": "P1",
+      "dependencies": [
+        "P1-RAG-Hybrid-001"
+      ],
+      "sp": 3,
+      "risk": "低",
+      "planned_start": "2026-10-05",
+      "planned_end": "2026-10-09",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    },
+    {
+      "id": "P1-RAG-Vector-001",
+      "phase": "P1",
+      "epic": "RAG",
+      "capability": "Vector",
+      "type": "Story",
+      "title": "Vector Store",
+      "requirement": "优先 pgvector，支持 metadata filter。",
+      "acceptance": "按 patch/set/source_type/region/rank 过滤。",
+      "priority": "P0",
+      "dependencies": [
+        "P1-RAG-Embedding-001"
+      ],
+      "sp": 5,
+      "risk": "低",
+      "planned_start": "2026-09-28",
+      "planned_end": "2026-10-02",
+      "status": "TODO",
+      "owner": "",
+      "actual_completion": ""
+    }
+  ],
+  "v2_p1_count": 35,
+  "v31_p1_count": 35,
+  "mapping_compare": {
+    "P1-001": {
+      "new_id": "P1-DATA-SourceAdapter-001",
+      "v2": {
+        "title": "设计 Source Adapter SPI",
+        "requirement": "统一 Riot/统计站/社区来源的抓取、解析、快照、失败降级接口。",
+        "acceptance": "所有 Adapter 遵循统一接口；失败时可返回缓存 Snapshot。",
+        "dependency": "P0-005",
+        "story_points": 3
+      },
+      "v31": {
+        "title": "建立 Source Adapter SPI",
+        "requirement": "统一 Riot/统计站/社区来源抓取、解析、健康检查、缓存降级。",
+        "acceptance": "所有来源通过 SPI 接入。",
+        "dependencies": [
+          "P0-FOUND-Contract-001"
+        ],
+        "sp": 3
+      }
+    },
+    "P1-002": {
+      "new_id": "P1-DATA-Snapshot-001",
+      "v2": {
+        "title": "实现 Raw Snapshot 存储",
+        "requirement": "每次抓取保存原始响应、source、URL、captured_at、patch 推断信息。",
+        "acceptance": "可按 source+time 查询原始快照；重复抓取不会覆盖历史。",
+        "dependency": "P1-001",
+        "story_points": 3
+      },
+      "v31": {
+        "title": "Raw Snapshot Store",
+        "requirement": "保存原始响应、URL、checksum、captured_at、source、patch 推断。",
+        "acceptance": "历史快照可回放；新数据不覆盖旧数据。",
+        "dependencies": [
+          "P1-DATA-SourceAdapter-001"
+        ],
+        "sp": 3
+      }
+    },
+    "P1-003": {
+      "new_id": "P1-DATA-Riot-001",
+      "v2": {
+        "title": "实现 Riot/Data Dragon Adapter",
+        "requirement": "获取 Set、Champion、Trait、Item、Augment 等官方静态数据。",
+        "acceptance": "指定 Patch 可重复获取；失败可降级到最近可用快照；带 source/evidence 元数据。",
+        "dependency": "P1-001,P1-002",
+        "story_points": 5
+      },
+      "v31": {
+        "title": "Riot / Data Dragon Adapter",
+        "requirement": "获取 Set、Champion、Trait、Item、Augment 等官方静态数据。",
+        "acceptance": "指定 Patch 可重复获取；带 Evidence。",
+        "dependencies": [
+          "P1-DATA-SourceAdapter-001",
+          "P1-DATA-Snapshot-001"
+        ],
+        "sp": 5
+      }
+    },
+    "P1-004": {
+      "new_id": "P1-DATA-Stats-001",
+      "v2": {
+        "title": "实现第一个统计源 Adapter",
+        "requirement": "接入一个可靠统计来源，获取阵容/英雄/装备/强化统计。",
+        "acceptance": "MetaSnapshot 统一 DTO；至少覆盖 Comp/Unit/Item/Augment；样本量与时间完整。",
+        "dependency": "P1-001,P1-002",
+        "story_points": 5
+      },
+      "v31": {
+        "title": "第一统计源 Adapter",
+        "requirement": "获取 Comp/Unit/Item/Augment/Trend 统计。",
+        "acceptance": "统一 Meta DTO；样本量和时间完整。",
+        "dependencies": [
+          "P1-DATA-SourceAdapter-001",
+          "P1-DATA-Snapshot-001"
+        ],
+        "sp": 5
+      }
+    },
+    "P1-005": {
+      "new_id": "P1-DATA-Stats-002",
+      "v2": {
+        "title": "实现第二统计源 Adapter",
+        "requirement": "接入第二个来源用于交叉验证。",
+        "acceptance": "同一查询可以得到两个来源结果并保留 source_id。",
+        "dependency": "P1-004",
+        "story_points": 3
+      },
+      "v31": {
+        "title": "第二统计源 Adapter",
+        "requirement": "第二数据源用于交叉验证和冲突发现。",
+        "acceptance": "同一查询可以保留多个来源。",
+        "dependencies": [
+          "P1-DATA-Stats-001"
+        ],
+        "sp": 3
+      }
+    }
+  },
+  "v2_p1_ids": [
+    "P1-001",
+    "P1-002",
+    "P1-003",
+    "P1-004",
+    "P1-005",
+    "P1-006",
+    "P1-007",
+    "P1-008",
+    "P1-009",
+    "P1-010",
+    "P1-011",
+    "P1-012",
+    "P1-013",
+    "P1-014",
+    "P1-015",
+    "P1-016",
+    "P1-017",
+    "P1-018",
+    "P1-019",
+    "M1",
+    "P1-RAG-001",
+    "P1-RAG-002",
+    "P1-RAG-003",
+    "P1-RAG-004",
+    "P1-RAG-005",
+    "P1-RAG-006",
+    "P1-RAG-007",
+    "P1-RAG-008",
+    "P1-LLM-001",
+    "P1-LLM-002",
+    "P1-LLM-003",
+    "P1-LLM-004",
+    "P1-RAG-009",
+    "P1-RAG-010",
+    "P1-RAG-011"
+  ],
+  "v31_p1_ids": [
+    "P1-AGENT-Knowledge-001",
+    "P1-AGENT-Research-001",
+    "P1-DATA-Conflict-001",
+    "P1-DATA-EntityResolve-001",
+    "P1-DATA-Evidence-001",
+    "P1-DATA-Normalize-001",
+    "P1-DATA-Patch-001",
+    "P1-DATA-Patch-002",
+    "P1-DATA-Quality-001",
+    "P1-DATA-Riot-001",
+    "P1-DATA-Snapshot-001",
+    "P1-DATA-SourceAdapter-001",
+    "P1-DATA-Stats-001",
+    "P1-DATA-Stats-002",
+    "P1-KNOW-Augment-001",
+    "P1-KNOW-Champion-001",
+    "P1-KNOW-Item-001",
+    "P1-KNOW-Mechanic-001",
+    "P1-KNOW-Probability-001",
+    "P1-KNOW-Rules-001",
+    "P1-KNOW-Trait-001",
+    "P1-KNOW-UnitPool-001",
+    "P1-LLM-Gateway-001",
+    "P1-LLM-Guard-001",
+    "P1-LLM-Meter-001",
+    "P1-LLM-Prompt-001",
+    "P1-RAG-API-001",
+    "P1-RAG-Chunk-001",
+    "P1-RAG-Embedding-001",
+    "P1-RAG-Eval-001",
+    "P1-RAG-Hybrid-001",
+    "P1-RAG-Ingest-001",
+    "P1-RAG-Metadata-001",
+    "P1-RAG-Rerank-001",
+    "P1-RAG-Vector-001"
+  ]
+}

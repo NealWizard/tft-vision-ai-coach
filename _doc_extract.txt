@@ -1,0 +1,2224 @@
+====================================================================================================
+[blueprint_v2] TFT_Vision_AI_Coach_整合版需求与总体开发蓝图_v2.0.docx (485 lines)
+====================================================================================================
+   1| TFT Vision AI Coach - 整合版需求与总体开发蓝图
+   2| 从工具型 Agent 到多 Agent 编排平台：统一需求、模块边界、数据底座与演进路线
+   3| 版本：v2.0  |  日期：2026-08-22
+   4| 0. 文档定位
+   5| 本文件整合此前的产品需求、技术架构和工具/Agent 拆分，作为当前项目的“总纲”。目标不是直接定义一个万能 Agent，而是先构建可验证、可复用、可观测的 TFT Domain Platform，再在其上编排 Coach Orchestrator。
+   6| 核心原则：游戏客户端对本系统始终保持黑盒。系统只接收玩家可见的信息（截图、视频帧、摄像头画面及经许可的公开数据），不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟鼠标键盘、不自动执行游戏操作。
+   7| 合规原则：“不读内存”只解决技术边界的一部分，不等于获得 Riot 的产品政策许可。Riot 当前 TFT 开发者政策明确不批准动态实时信息、基于当前局面的动态实时建议、实时对手 Scout/预测等场景；赛前静态数据和赛后训练/复盘是明确更适合的方向。正式 Live 能力必须通过独立 Feature Flag 隔离并以当期政策/官方沟通结果为准。
+   8| 1. 产品愿景
+   9| 将产品构建为“Personal TFT AI Coach”：它不仅能回答版本/阵容/装备问题，还能够理解结构化 GameState，调用知识、规则、统计和模拟工具生成多方案建议，并通过“玩家采用/否定/忽略 + 实际结果”的闭环逐步学习玩家自己的打法。
+  10| 第一阶段验证“纯视觉 + 知识 + Agent”能否可靠理解 TFT。
+  11| 第二阶段形成赛后逐回合复盘系统。
+  12| 第三阶段形成个人打法画像与长期学习。
+  13| 第四阶段再评估实时实验能力，并严格受政策与授权约束。
+  14| 2. 产品目标与非目标
+  15| 类别
+  16| 目标/非目标
+  17| 目标
+  18| 建立版本化 TFT 知识库、规则库、统计库与证据链
+  19| 目标
+  20| 建立 Vision -> Observation -> GameState 标准管线
+  21| 目标
+  22| 通过多个 Domain Agent 协作形成可解释决策
+  23| 目标
+  24| 完整记录每局状态、推荐、玩家选择与结果
+  25| 目标
+  26| 建立个人画像、错误模式和个性化策略
+  27| 非目标
+  28| 不做自动购买、刷新、升级、装备、站位或任何游戏输入自动化
+  29| 非目标
+  30| 不读取/修改游戏进程、内存、客户端文件或网络通信
+  31| 非目标
+  32| 不把所有模块都实现为独立 LLM Agent
+  33| 非目标
+  34| 不默认上线实时动态对手分析/实时行动处方
+  35| 3. 总体架构
+  36| 建议采用“9 个工程域 + 内部 Tool/Agent”而非几十个微服务。逻辑能力可以拆成 40+ 项，但物理工程边界保持收敛。
+  37| 工程域
+  38| 核心职责
+  39| 首期优先级
+  40| tft-data
+  41| 采集、标准化、来源、版本、冲突、证据
+  42| P0
+  43| tft-knowledge
+  44| 游戏规则/棋子/羁绊/装备/强化/奇遇/机制查询
+  45| P0
+  46| tft-vision
+  47| 截图/视频/摄像头输入、ROI、OCR、图标识别
+  48| P1
+  49| tft-state
+  50| Observation、状态融合、State Diff、Timeline
+  51| P1
+  52| tft-meta
+  53| 版本环境、阵容/英雄/装备/强化统计、趋势
+  54| P0
+  55| tft-decision
+  56| 经济/商店/阵容/转型/装备/强化/风险/模拟
+  57| P2
+  58| tft-replay
+  59| 整局重建、关键节点、决策评估、复盘报告
+  60| P2
+  61| tft-learning
+  62| 玩家画像、反馈、错误模式、个性化学习
+  63| P3
+  64| tft-orchestrator
+  65| 最终 Agent 编排、上下文路由、证据汇总、解释
+  66| P3
+  67| 4. 能力全家桶：Tool、Domain Agent、Orchestrator
+  68| 4.1 Tool 层：优先确定性实现
+  69| Tool
+  70| 职责
+  71| 是否依赖 LLM
+  72| Game Rule Tool
+  73| 等级、金币、利息、经验、商店、战斗和特殊规则查询
+  74| 否
+  75| Champion Tool
+  76| 棋子属性、星级成长、技能、费用、羁绊、历史版本
+  77| 否
+  78| Trait Tool
+  79| 羁绊阈值、效果、单位集合、版本差异
+  80| 否
+  81| Item Tool
+  82| 装备属性、合成、交互、版本统计索引
+  83| 否
+  84| Augment Tool
+  85| 强化定义、条件、效果、版本索引
+  86| 否
+  87| Mechanic Tool
+  88| 奇遇/特殊机制/Portal/临时规则
+  89| 否/可配规则
+  90| Probability Tool
+  91| 商店概率、滚牌概率、三星概率等
+  92| 否
+  93| Unit Pool Tool
+  94| 棋子池、剩余池估计、竞争度计算基础
+  95| 否
+  96| Patch Diff Tool
+  97| 版本前后差异与受影响实体
+  98| 否
+  99| State Diff Tool
+ 100| 两个 GameState 的变化量
+ 101| 否
+ 102| Evidence Tool
+ 103| 来源、样本、抓取时间、Patch、可信度
+ 104| 否
+ 105| 4.2 Domain Agent 层
+ 106| Agent
+ 107| 核心问题
+ 108| 主要依赖
+ 109| Knowledge Agent
+ 110| “这是什么/规则是什么/当前版本有什么变化？”
+ 111| Knowledge/Rule/Evidence
+ 112| Meta Agent
+ 113| “当前版本环境是什么？”
+ 114| Data/Statistics/Patch
+ 115| Patch Intelligence Agent
+ 116| “这个版本改了什么，会影响什么？”
+ 117| Patch Diff/Knowledge/Meta
+ 118| Shop Agent
+ 119| “当前 5 张牌有哪些价值？”
+ 120| State/Probability/Champion/Meta
+ 121| Economy Agent
+ 122| “存钱、升级还是刷新？”
+ 123| Rule/Probability/State/Simulation
+ 124| Composition Agent
+ 125| “当前更适合什么阵容？”
+ 126| State/Meta/Items/Augments
+ 127| Transition Agent
+ 128| “从 A 转 B 是否值得、何时转？”
+ 129| State/Composition/Simulation
+ 130| Item Agent
+ 131| “组件/装备给谁、什么时候合？”
+ 132| Item/Champion/Composition/Meta
+ 133| Augment Decision Agent
+ 134| “当前场景选哪个强化？”
+ 135| Augment/State/Meta
+ 136| Risk Agent
+ 137| “每个方案的收益、风险、下限是什么？”
+ 138| Simulation/Statistics
+ 139| Replay Agent
+ 140| “这一局发生了什么？”
+ 141| Timeline/State/Decision
+ 142| Decision Evaluation Agent
+ 143| “当时那个决定是否合理？”
+ 144| State/Decision/Outcome
+ 145| Personal Coach Agent
+ 146| “结合你自己的历史，你更适合怎么做？”
+ 147| History/Profile/Meta
+ 148| 4.3 Orchestrator 层
+ 149| TFT Coach Orchestrator 不直接承担所有知识，而是根据用户问题或 GameState 选择工具和 Agent，控制调用顺序、预算、超时、证据、置信度与冲突处理。
+ 150| 输入
+ 151| 路由示例
+ 152| 输出
+ 153| 百科问题
+ 154| Knowledge Agent -> Evidence Tool
+ 155| 事实 + 来源
+ 156| 版本趋势
+ 157| Patch Intelligence -> Meta Trend -> Evidence
+ 158| 趋势 + Patch 依据
+ 159| 局内候选状态
+ 160| State -> Shop/Economy/Composition -> Risk
+ 161| 2~3 个方案
+ 162| 赛后复盘
+ 163| Replay -> Decision Evaluation -> Personal Coach
+ 164| 关键节点 + 改进建议
+ 165| 自然语言问题
+ 166| Intent Router -> 对应 Tool/Agent
+ 167| 解释性答案
+ 168| 5. Knowledge Platform 需求
+ 169| 基础资料模块升级为 Knowledge Platform，而不是一张简单的“英雄/装备表”。所有知识都必须带 Canonical ID、Set、Patch、生效时间、来源、抓取时间、可信度和版本状态。
+ 170| 知识域
+ 171| 最少数据范围
+ 172| 备注
+ 173| Set
+ 174| Set、主题、起止时间、Set 机制、特殊规则
+ 175| 必须版本化
+ 176| Game Rules
+ 177| 等级、金币、利息、经验、商店、回合、战斗、伤害等
+ 178| 结构化规则优先
+ 179| Champion
+ 180| 属性、费用、星级成长、技能、Mana、羁绊、机制
+ 181| 保留历史版本
+ 182| Trait
+ 183| 单位集合、阈值、效果、特殊交互
+ 184| 结构化阈值
+ 185| Item
+ 186| 组件、成装、属性、被动、合成、交互
+ 187| 装备关系图
+ 188| Augment
+ 189| 类型、描述、条件、限制、效果、版本变化
+ 190| 禁止把动态统计写入静态定义
+ 191| Game Mechanic
+ 192| 奇遇、Portal、特殊选择、临时规则、特殊羁绊
+ 193| 独立于普通强化
+ 194| Probability
+ 195| 商店费率、牌池、滚牌等
+ 196| 确定性计算
+ 197| Meta
+ 198| 阵容/英雄/装备/强化统计
+ 199| 必须绑定 Patch/Rank/Region/Queue
+ 200| Community
+ 201| 讨论、攻略、趋势、争议
+ 202| 标记为社区观点
+ 203| 6. 数据源与采集体系
+ 204| 建立 Source Adapter，不允许 Agent 直接“随手爬网站”。每个来源都经过抓取、解析、规范化、去重、版本识别、校验、冲突处理和证据入库。
+ 205| 来源类型
+ 206| 主要用途
+ 207| 优先级
+ 208| Riot 官方 API / Data Dragon / Patch Notes
+ 209| 基础事实、版本、账号和公开数据
+ 210| 最高
+ 211| OP.GG / Tactics.tools / LoLCHESS / MetaTFT 等
+ 212| 统计、Meta、阵容/装备/强化数据
+ 213| 高
+ 214| 社区/论坛/内容创作者
+ 215| 新套路、观点、异常、讨论趋势
+ 216| 中
+ 217| LLM/Web Research
+ 218| 补充解释和发现候选事实
+ 219| 最低；不能直接覆盖官方事实
+ 220| 7. 数据治理
+ 221| 所有实体使用 Canonical ID，维护各数据源 Source ID 映射。
+ 222| 所有统计数据强制绑定 Set / Patch / Region / Rank / Queue / CapturedAt / SampleSize。
+ 223| 所有抓取结果保存 Raw Snapshot，便于回放和发现站点结构变化。
+ 224| 冲突不自动覆盖：进入 Conflict Queue，由 Source Reliability + Patch Match + Freshness + Sample Size 决定。
+ 225| Patch 更新时执行受影响实体级联失效或重算。
+ 226| 所有 Agent 输出必须能够回溯到 Evidence。
+ 227| 8. Vision 与 GameState 需求
+ 228| Vision 是输入层，不是决策层。支持 Screenshot、Video File、Desktop Capture、Camera 四种 FrameSource，但统一进入同一 VisionFrame 协议。
+ 229| 层级
+ 230| 职责
+ 231| 关键产物
+ 232| FrameSource
+ 233| 产生单帧或视频帧
+ 234| Frame
+ 235| ROI Detector
+ 236| 识别商店/棋盘/强化/经济等区域
+ 237| Region
+ 238| OCR/CV
+ 239| 文字/图标/对象识别
+ 240| Observation
+ 241| State Builder
+ 242| 多帧融合、去抖、状态重建
+ 243| GameState
+ 244| State Diff
+ 245| 比较前后状态
+ 246| Event
+ 247| Timeline
+ 248| 按时间形成完整事件链
+ 249| MatchTimeline
+ 250| 质量要求：关键字段必须有 confidence、timestamp、source 和 region。低置信度信息不能直接驱动关键决策，应进入人工确认或降级路径。
+ 251| 9. GameState 标准模型
+ 252| GameState 至少包含 Match、Patch、Round、PlayerState、ShopState、BoardState、BenchState、Items、Traits、Augments、Mechanics、OpponentSnapshot（默认仅赛后策略）、Confidence 和 SourceMeta。模型必须前向兼容 Set/机制变化。
+ 253| 对象
+ 254| 核心字段
+ 255| PlayerState
+ 256| HP、Gold、Level、XP、Streak、Round、Interest
+ 257| ShopState
+ 258| 5 个候选棋子、费用、识别置信度、锁定状态
+ 259| BoardState
+ 260| 棋子、星级、装备、位置、羁绊
+ 261| InventoryState
+ 262| 组件、成装、特殊装备、可装备槽
+ 263| AugmentState
+ 264| 已选强化、可选强化、状态/约束
+ 265| MechanicState
+ 266| 奇遇、特殊规则、临时效果
+ 267| MetaContext
+ 268| Patch、Region、Rank、数据时间、TopComps
+ 269| EvidenceContext
+ 270| 来源、样本、置信度、抓取时间
+ 271| 10. 决策系统需求
+ 272| 任何决策 Agent 不应输出单一“必须动作”，而应返回 2~3 个可选方案，并为每个方案提供适配度、收益、风险、证据、前置条件和不确定性。
+ 273| 决策维度
+ 274| 主要输入
+ 275| 输出
+ 276| 经济
+ 277| Gold/XP/Level/HP/Streak/Round
+ 278| 保存、升级、刷新、All-in、慢D/快9 等方案
+ 279| 商店
+ 280| 5 张牌 + CurrentBoard + Meta
+ 281| 购买价值、锁店价值、转型价值
+ 282| 阵容
+ 283| Board + Items + Augments + Meta
+ 284| 候选阵容及适配度
+ 285| 转型
+ 286| CurrentComp + TargetComp + Cost
+ 287| 保留/出售/目标牌/转型时机
+ 288| 装备
+ 289| Components + Carry + Comp + Meta
+ 290| 装备优先级与替代方案
+ 291| 强化
+ 292| Augment Choices + State + Meta
+ 293| 强化选项比较
+ 294| 风险
+ 295| 以上所有候选方案
+ 296| 收益/风险/下限/不确定性
+ 297| 模拟
+ 298| State + Action
+ 299| 短期/中期结果估计
+ 300| 11. Replay 与 Personal Learning
+ 301| 每局形成完整 Match Timeline：状态快照、商店、板面、玩家动作、Agent 建议、玩家采用/否定/忽略/部分采用、结果。赛后按“感知错误 / 状态错误 / 知识错误 / 决策错误”分类。
+ 302| 反馈
+ 303| 必须记录的信息
+ 304| 采用
+ 305| RecommendationId、SelectedOption、实际行动、Outcome
+ 306| 否定
+ 307| RecommendationId、拒绝原因、玩家实际方案、Outcome
+ 308| 忽略
+ 309| 是否因信息不足/时机不合适/界面不可见
+ 310| 部分采用
+ 311| 采用了哪部分、保留了哪部分
+ 312| 修正 OCR
+ 313| 错误字段、正确字段、人工确认时间
+ 314| 12. 个人成长模型
+ 315| 经济风格：稳健/平衡/激进。
+ 316| 风险偏好：赌 3 星、All-in、转型容忍度。
+ 317| 阵容偏好：常用阵容、喜欢的棋子/羁绊。
+ 318| 错误模式：过度贪经济、转型过晚、D 太深、装备制作延迟等。
+ 319| 个性化推荐：通用统计最优 vs 玩家历史最优。
+ 320| 13. 可观测性与质量体系
+ 321| 指标
+ 322| 目标
+ 323| OCR 关键字段准确率
+ 324| MVP 目标 >= 97%，稳定版本逐步提升至 >= 99%
+ 325| State Reconstruction 完整率
+ 326| 关键回合 >= 95%
+ 327| Knowledge Freshness
+ 328| Patch 发布后进入待更新状态，不允许无标识使用旧 Patch
+ 329| Evidence Coverage
+ 330| 关键推荐 100% 有来源/规则/模型依据
+ 331| Agent Traceability
+ 332| 每次决策记录 Agent、Prompt/Rule/Model 版本
+ 333| Replay Reproducibility
+ 334| 同一输入 + 同一版本可复现相同结果或解释差异
+ 335| 14. 合规与安全边界
+ 336| 不读取进程内存、不注入、不 Hook、不修改客户端、不拦截网络、不模拟输入。
+ 337| 生产工程中不引入 ReadProcessMemory、DLL 注入、输入模拟等相关库和能力。
+ 338| Live Dynamic Recommendation、实时 Opponent Scout、根据当前状态即时改变建议必须独立 Feature Flag，默认关闭。
+ 339| 研发阶段优先 OFFLINE / POST-GAME / PRE-GAME；正式验证 Live 先遵守 Riot 当前开发者政策并优先使用官方推荐的测试环境。
+ 340| 任何产品注册、API 使用、数据展示和商业化均需以当前 Riot 政策为准。
+ 341| Riot 当前 TFT Developer Policy 明确列出：产品需要注册；允许赛前静态数据和训练/赛后分析；不批准 scouting、动态实时信息、动态改变建议并直接处方玩家行为等场景。Riot Vanguard FAQ 说明外部读取游戏内存的工具将不再工作，并建议第三方开发者使用 PBE 验证影响；Riot Terms of Service 同样禁止未经授权的与服务交互的第三方程序及内存读取型信息收集。
+ 342| 15. 成功标准
+ 343| 项目成功不以“Agent 会说话”为标准，而以以下闭环打通为标准：
+ 344| 指定 Patch 的基础知识可稳定查询且有证据链。
+ 345| 同一实体在多个数据源中能够正确对齐。
+ 346| 截图/视频能转成可验证的 GameState。
+ 347| GameState 能被经济/阵容/装备等 Domain Agent 正确消费。
+ 348| Agent 输出多个方案，并可追溯到规则/统计/历史。
+ 349| 玩家采用/否定能够完整记录。
+ 350| 整局能重建并定位关键决策节点。
+ 351| 累计数据能够形成玩家画像，并改善下一次推荐。
+ 352| 16. 参考资料与政策依据
+ 353| Riot TFT Developer Policy: https://developer.riotgames.com/docs/tft
+ 354| Riot Vanguard FAQ for Third Party Applications: https://www.riotgames.com/en/DevRel/vanguard-faq
+ 355| Riot Terms of Service: https://www.riotgames.com/en/terms-of-service
+ 356| Riot Developer General Policies: https://developer.riotgames.com/policies/general
+ 357| Riot Developer FAQ / RSO: https://developer.riotgames.com/docs/faqs
+ 358| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 359| 本次版本更新说明
+ 360| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 361| Cloud LLM 与 RAG 总体架构
+ 362| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 363| Level 0 / Deterministic Tools：规则、概率、状态 Diff、结构化查询。
+ 364| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 365| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 366| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 367| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 368| RAG 数据分层
+ 369| 层次
+ 370| 技术/存储
+ 371| 职责
+ 372| 是否允许直接作为事实
+ 373| Structured Knowledge
+ 374| MySQL / JSON Schema
+ 375| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 376| 是
+ 377| Document Search
+ 378| OpenSearch/Elasticsearch
+ 379| Patch Notes、Wiki、攻略、社区文章
+ 380| 需 Evidence
+ 381| Vector Knowledge
+ 382| pgvector（优先）/ Milvus
+ 383| 语义召回、机制说明、案例
+ 384| 需 Evidence
+ 385| Meta Statistics
+ 386| MySQL + ClickHouse
+ 387| 阵容/棋子/装备/强化统计
+ 388| 需 Patch + 样本量
+ 389| Personal Memory
+ 390| pgvector + MySQL
+ 391| 玩家历史决策、Outcome、错误模式
+ 392| 仅作为个人证据
+ 393| Cloud LLM 引入时机
+ 394| 阶段
+ 395| LLM
+ 396| RAG
+ 397| 使用范围
+ 398| P0
+ 399| 不作为业务依赖
+ 400| 不接
+ 401| 工程、契约、安全边界
+ 402| P1
+ 403| 首次接入
+ 404| 首次接入
+ 405| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 406| P2
+ 407| Vision Fallback
+ 408| 继续
+ 409| 仅低置信度 OCR/CV 二次确认
+ 410| P3
+ 411| 正式进入决策链
+ 412| Decision RAG
+ 413| Economy/Shop/Composition/Item/Transition 等多 Agent 决策综合
+ 414| P4
+ 415| Personal Coach
+ 416| Personal RAG
+ 417| 相似局、玩家历史、个人最佳策略
+ 418| P5
+ 419| Model Router
+ 420| RAG Router
+ 421| 按任务选择不调用 LLM/本地模型/云模型
+ 422| P6
+ 423| 独立实验
+ 424| 按需
+ 425| Live 默认关闭，政策允许后再验证
+ 426| P7
+ 427| 产品化治理
+ 428| 质量治理
+ 429| 成本、预算、质量、灰度、回滚
+ 430| Model Router / RAG Router
+ 431| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 432| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 433| 新增数据治理要求
+ 434| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 435| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 436| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 437| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 438| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 439| 更新后的分期计划
+ 440| Phase
+ 441| 计划时间
+ 442| 目标
+ 443| 主要新增能力
+ 444| P0
+ 445| 2026-08-24 ~ 2026-09-04
+ 446| 工程地基与安全边界
+ 447| Schema、Agent Contract、CI、Feature Flag
+ 448| P1
+ 449| 2026-09-07 ~ 2026-10-23
+ 450| Knowledge + Data + RAG + Cloud LLM Foundation
+ 451| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 452| P2
+ 453| 2026-10-26 ~ 2026-11-27
+ 454| Vision + GameState
+ 455| OCR/CV、State Builder、Timeline、Cloud Vision Fallback
+ 456| P3
+ 457| 2026-11-30 ~ 2027-01-15
+ 458| Meta + Decision + Decision RAG
+ 459| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 460| P4
+ 461| 2027-01-18 ~ 2027-02-26
+ 462| Replay + Personal RAG + Personal Coach
+ 463| 反馈、复盘、相似局、个人画像
+ 464| P5
+ 465| 2027-03-01 ~ 2027-03-26
+ 466| Orchestrator + Model/RAG Router
+ 467| 多 Agent 编排、路由、Trace、Evaluation
+ 468| P6
+ 469| 2027-03-29 ~ 2027-04-23
+ 470| Live Experimental
+ 471| 默认关闭；仅政策允许后进行实验
+ 472| P7
+ 473| 2027-04-26 ~ 2027-06-04
+ 474| Productization
+ 475| 成本、隐私、注册、部署、灰度、回滚
+ 476| 新增验收指标
+ 477| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 478| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 479| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 480| Model Router：简单事实问题应能在不调用高级云模型的情况下完成。
+ 481| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 482| 成本：所有云模型调用都有 token/cost 记录，支持按用户、Agent、Provider 聚合。
+ 483| 可回放：同一 GameState + 相同知识快照 + 相同模型版本应可复现，差异必须有版本证据。
+ 484| 当前版本基线结论
+ 485| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+--- P1/KEYWORD HITS ---
+  32| 不把所有模块都实现为独立 LLM Agent
+  43| tft-knowledge
+  48| P1
+  51| P1
+  71| 是否依赖 LLM
+  96| Patch Diff Tool
+ 102| Evidence Tool
+ 103| 来源、样本、抓取时间、Patch、可信度
+ 109| Knowledge Agent
+ 111| Knowledge/Rule/Evidence
+ 114| Data/Statistics/Patch
+ 115| Patch Intelligence Agent
+ 117| Patch Diff/Knowledge/Meta
+ 154| Knowledge Agent -> Evidence Tool
+ 157| Patch Intelligence -> Meta Trend -> Evidence
+ 158| 趋势 + Patch 依据
+ 168| 5. Knowledge Platform 需求
+ 169| 基础资料模块升级为 Knowledge Platform，而不是一张简单的“英雄/装备表”。所有知识都必须带 Canonical ID、Set、Patch、生效时间、来源、抓取时间、可信度和版本状态。
+ 199| 必须绑定 Patch/Rank/Region/Queue
+ 204| 建立 Source Adapter，不允许 Agent 直接“随手爬网站”。每个来源都经过抓取、解析、规范化、去重、版本识别、校验、冲突处理和证据入库。
+ 208| Riot 官方 API / Data Dragon / Patch Notes
+ 217| LLM/Web Research
+ 222| 所有统计数据强制绑定 Set / Patch / Region / Rank / Queue / CapturedAt / SampleSize。
+ 224| 冲突不自动覆盖：进入 Conflict Queue，由 Source Reliability + Patch Match + Freshness + Sample Size 决定。
+ 225| Patch 更新时执行受影响实体级联失效或重算。
+ 226| 所有 Agent 输出必须能够回溯到 Evidence。
+ 252| GameState 至少包含 Match、Patch、Round、PlayerState、ShopState、BoardState、BenchState、Items、Traits、Augments、Mechanics、OpponentSnapshot（默认仅赛后策略）、Confidence 和 SourceMeta。模型必须前向兼容 Set/机制变化。
+ 268| Patch、Region、Rank、数据时间、TopComps
+ 269| EvidenceContext
+ 327| Knowledge Freshness
+ 328| Patch 发布后进入待更新状态，不允许无标识使用旧 Patch
+ 329| Evidence Coverage
+ 344| 指定 Patch 的基础知识可稳定查询且有证据链。
+ 358| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 360| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 361| Cloud LLM 与 RAG 总体架构
+ 362| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 364| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 365| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 366| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 367| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 368| RAG 数据分层
+ 373| Structured Knowledge
+ 374| MySQL / JSON Schema
+ 375| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 379| Patch Notes、Wiki、攻略、社区文章
+ 380| 需 Evidence
+ 381| Vector Knowledge
+ 382| pgvector（优先）/ Milvus
+ 384| 需 Evidence
+ 386| MySQL + ClickHouse
+ 388| 需 Patch + 样本量
+ 390| pgvector + MySQL
+ 393| Cloud LLM 引入时机
+ 395| LLM
+ 396| RAG
+ 402| P1
+ 405| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 412| Decision RAG
+ 416| Personal RAG
+ 420| RAG Router
+ 421| 按任务选择不调用 LLM/本地模型/云模型
+ 430| Model Router / RAG Router
+ 431| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 432| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 434| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 435| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 436| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 437| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 438| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 448| P1
+ 450| Knowledge + Data + RAG + Cloud LLM Foundation
+ 451| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 458| Meta + Decision + Decision RAG
+ 459| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 462| Replay + Personal RAG + Personal Coach
+ 466| Orchestrator + Model/RAG Router
+ 477| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 478| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 479| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 481| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 485| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+====================================================================================================
+[prd_v2] TFT_Vision_AI_Coach_完整需求文档_PRD_v2.0.docx (405 lines)
+====================================================================================================
+   1| TFT Vision AI Coach - 完整需求文档（PRD）
+   2| 纯视觉输入、只读、无自动操作、外部数据融合、赛后学习与个性化教练
+   3| 版本：V2.0  |  文档日期：2026-08-22  |  状态：研发基线
+   4| 文档结论
+   5| 本产品首先验证“仅使用玩家可见画面 + 外部公开数据 + AI 推理”能否形成高质量 TFT 决策教练。严禁读取游戏进程内存、进程注入、DLL Hook、网络拦截、修改游戏文件、模拟键鼠或自动执行游戏操作。实时动态建议单独隔离，并以 Riot 当前政策与后续官方确认结果为准。
+   6| 1. 产品概述
+   7| 产品名称：TFT Vision AI Coach。产品不是传统的“阵容查询器”，而是一个能够理解当前局势、融合版本 Meta、解释多个决策方案，并通过玩家“采用/否定”反馈持续形成个性化策略模型的 AI Coach。
+   8| 核心闭环：视觉采集 → OCR/CV → Canonical GameState → 外部知识与 Meta → 多 Agent 决策 → 多方案解释 → 玩家选择 → 结果归因 → 整局复盘 → 个性化学习。
+   9| 2. 产品目标与非目标
+  10| 2.1 产品目标
+  11| 验证纯视觉采集能否在不读取游戏内部状态的情况下还原关键 TFT GameState。
+  12| 建立 Patch 感知、来源可信度、数据新鲜度、样本量约束的数据智能层。
+  13| 通过 Economy / Composition / Item / Shop / Transition 等 Agent 生成多个候选方案，而非单一指令。
+  14| 记录每个关键决策点的 Agent 建议、玩家实际选择、后续结果与最终排名。
+  15| 建立玩家风险偏好、阵容偏好、经济风格、常见错误等个人画像。
+  16| 支持赛前研究、赛后复盘和离线视频实验，确保即使 Live 模式不可上线，核心产品仍完整。
+  17| 2.2 非目标
+  18| 不实现任何内存读取、DLL 注入、Hook、网络抓包/拦截、游戏文件修改。
+  19| 不自动点击、不自动键盘操作、不自动购买/刷新/升级/装备/站位/选择强化。
+  20| 不以绕过 Vanguard、反作弊或 Riot 技术措施为产品目标。
+  21| 不保证实时辅助一定获得 Riot 的产品政策许可。
+  22| 不在第一版训练“万能 TFT 大模型”；优先采用结构化规则、统计、搜索/优化器与 LLM 解释组合。
+  23| 3. 运行模式
+  24| 模式
+  25| 输入
+  26| 主要能力
+  27| V1.0优先级
+  28| 政策定位
+  29| OFFLINE LAB
+  30| 截图/视频文件
+  31| OCR、GameState、Agent、回放重建
+  32| P0
+  33| 首选研发环境
+  34| POST-GAME
+  35| 录像/截图/人工确认
+  36| 整局复盘、关键决策、个人学习
+  37| P0
+  38| 重点产品能力
+  39| PRE-GAME
+  40| 公开/官方/社区数据
+  41| 版本 Meta、热门阵容、装备/强化统计
+  42| P0
+  43| 政策允许的核心能力
+  44| LIVE-EXPERIMENT
+  45| 屏幕视觉/摄像头
+  46| 实时视觉状态与研究性建议
+  47| P2
+  48| 独立 Feature Flag，须核验政策
+  49| 政策基线
+  50| Riot 当前 TFT Developer Policy 明确：赛前静态数据和赛后训练是允许/鼓励方向；根据当前游戏状态实时改变建议、动态实时信息、对局内追踪/预测对手等属于不批准用例。Riot 还要求面向玩家的产品进行注册，即使不使用官方 API。V1.0 因此不把 Live Coach 当成默认上线能力。来源：developer.riotgames.com/docs/tft；riotgames.com/en/DevRel/vanguard-faq。
+  51| 4. 安全与平台边界
+  52| 边界项
+  53| 要求
+  54| 实现策略
+  55| 测试验收
+  56| 进程内存
+  57| 禁止
+  58| 工程依赖中不引入读进程内存能力
+  59| 代码扫描/依赖扫描/人工审查
+  60| 进程注入/Hook
+  61| 禁止
+  62| 不使用 DLL 注入、API Hook、native attach
+  63| 静态扫描
+  64| 网络拦截
+  65| 禁止
+  66| 只调用公开 Web/API/抓取适配器，不拦截游戏通信
+  67| 网络层白名单
+  68| 游戏文件
+  69| 禁止
+  70| Agent 不写入 Riot/TFT 安装目录
+  71| 目录权限/代码扫描
+  72| 键鼠自动化
+  73| 禁止
+  74| 无 SendInput / AutoHotKey 等路径
+  75| 依赖与行为测试
+  76| 输出
+  77| 只读建议
+  78| 输出方案、风险、依据，不执行游戏动作
+  79| E2E 验证
+  80| 5. 用户场景
+  81| 玩家在赛前查看当前 Patch 的热门阵容、装备、强化、热门趋势。
+  82| 玩家结束一局后导入视频，系统逐回合还原状态并生成复盘。
+  83| 研发人员使用固定截图集测试 OCR 和 GameState 准确率。
+  84| 玩家对某条建议选择“采用/否定/部分采用/忽略”，系统记录实际决策。
+  85| 累计多局后，系统形成个人打法画像，并在赛后给出“通用最优 vs 个人历史最优”对比。
+  86| 6. 核心功能需求
+  87| 6.1 Vision Input
+  88| ScreenshotFrameSource：单张截图输入。
+  89| VideoFileFrameSource：视频逐帧输入。
+  90| CameraFrameSource：外接摄像头/视频流输入。
+  91| DesktopCaptureFrameSource：桌面采集输入，作为可选技术实现，不与“规避检测”绑定。
+  92| 所有输入统一转换为 Frame，不让上层 Agent 感知输入来源。
+  93| 6.2 OCR / CV
+  94| 识别回合、血量、金币、等级、经验、商店 5 个候选棋子。
+  95| 识别棋盘、备战区、星级、装备、羁绊、强化、特殊事件/规则。
+  96| 在支持的版本中识别特殊奇遇、特殊羁绊及其动态效果。
+  97| 每个识别字段必须带 confidence、source、timestamp、ROI。
+  98| 低置信度字段进入人工确认，不得直接污染 GameState。
+  99| 6.3 Canonical GameState
+ 100| GameState = PlayerState + ShopState + BoardState + BenchState + ItemState + TraitState + AugmentState + EncounterState + RuleState + OptionalOpponentState
+ 101| OpponentState 必须与 Live 模式隔离。Post-Game 可以进行完整重建与分析；Live 展示在当前政策下默认关闭。
+ 102| 6.4 数据智能层
+ 103| 官方静态：Riot Data Dragon、官方 Patch Notes、可用的官方 API。
+ 104| 社区/统计：OP.GG、Tactics.tools、LoLCHESS、MetaTFT 等，通过 Source Adapter 统一。
+ 105| Web Research Agent：负责近期版本变化、社区趋势、讨论热度和来源交叉验证。
+ 106| 每条数据绑定 set/patch/region/rank/queue/timestamp/sample_size。
+ 107| 6.5 Meta 与统计
+ 108| 阵容：使用率、Top4、平均名次、吃鸡率、样本量。
+ 109| 英雄：使用率、星级表现、装备组合。
+ 110| 装备：英雄-阵容-版本关联表现。
+ 111| 强化：选择率、Top4、平均名次，并遵循 Riot 对特定数据的限制。
+ 112| 趋势：6h/24h/7d 变化、Patch 衰减、样本量修正。
+ 113| 6.6 Decision Agents
+ 114| Agent
+ 115| 输入
+ 116| 核心输出
+ 117| Economy Agent
+ 118| Gold/XP/Level/HP/Streak/Round
+ 119| 存钱、升级、D、买牌、锁店的多方案
+ 120| Shop Agent
+ 121| 5卡商店 + Board + Bench + Meta
+ 122| 购买价值、升级价值、转型价值
+ 123| Composition Agent
+ 124| 当前阵容 + 装备 + 强化 + Meta
+ 125| 继续/转型候选阵容
+ 126| Item Agent
+ 127| 组件/成装 + Carry + Comp
+ 128| 装备优先级与替代方案
+ 129| Transition Agent
+ 130| 当前状态 + 候选目标
+ 131| 转型路径、保留/出售/寻找目标
+ 132| Decision Optimizer
+ 133| 所有 Agent 输出
+ 134| 综合评分、风险、多个候选方案
+ 135| Explanation Agent
+ 136| 决策结果 + Evidence
+ 137| 自然语言解释、依据、风险、反事实
+ 138| 6.7 推荐输出标准
+ 139| 默认输出 2~3 个候选方案。
+ 140| 每个方案必须包含：score、confidence、why、risk、evidence、expected_tradeoff。
+ 141| 不使用“必须”“立即”“点击”等自动执行式语言。
+ 142| 允许玩家选择不同偏好：稳健、平衡、激进。
+ 143| 允许“通用最优 / 个人历史最优 / 风险最小”三种视角。
+ 144| 6.8 玩家反馈
+ 145| 反馈
+ 146| 含义
+ 147| 必填数据
+ 148| 采用
+ 149| 完全执行
+ 150| recommendation_id、action、time、actual_action
+ 151| 部分采用
+ 152| 执行部分建议
+ 153| selected_options、actual_action
+ 154| 否定
+ 155| 不认可建议
+ 156| reject_reason、actual_action
+ 157| 忽略
+ 158| 暂不决策
+ 159| timestamp
+ 160| 纠错
+ 161| OCR/状态错误
+ 162| field、correct_value
+ 163| 6.9 整局记录与复盘
+ 164| 每局生成 MatchSession。
+ 165| 每回合生成 RoundSnapshot。
+ 166| 每个建议生成 Recommendation + RecommendationOption。
+ 167| 记录玩家最终选择与结果。
+ 168| 自动识别关键决策点并生成复盘。
+ 169| 复盘输出：做得好的 3 点、最值得改进的 3 点、重复错误、可执行训练建议。
+ 170| 7. 个性化学习
+ 171| 建立 PlayerProfile，不以单局输赢直接训练模型。重点学习玩家的风险偏好、经济节奏、阵容偏好、转型时机、强化倾向和常见错误。
+ 172| Player Profile = Style + Preference + Historical Decisions + Error Patterns + Outcome Statistics
+ 173| Recommendation Outcome 应区分 Immediate / Mid-term / Final Outcome，避免把“最终第 6 名”简单等同为某个单回合建议错误。
+ 174| 8. 知识图谱
+ 175| 节点：Champion、Trait、Item、Augment、Encounter、Comp、Patch、Player、Round、Decision、Outcome。
+ 176| 关系：Champion→Trait、Champion→Comp、Item→Comp、Augment→Comp、Comp→Patch、Decision→Outcome、Player→Preference。
+ 177| 知识图谱用于解释和检索，不承担精确概率计算。
+ 178| 9. Web Research & Source Governance
+ 179| 来源等级
+ 180| 示例
+ 181| 默认权重
+ 182| 用途
+ 183| Official
+ 184| Riot
+ 185| 1.00
+ 186| 规则/补丁/静态数据
+ 187| Statistics
+ 188| Tactics.tools / OP.GG / LoLCHESS / MetaTFT
+ 189| 0.85~0.95
+ 190| 统计趋势
+ 191| Community
+ 192| 论坛/Reddit/Discord
+ 193| 0.40~0.65
+ 194| 趋势/观点
+ 195| LLM Inference
+ 196| 模型推断
+ 197| 0.20
+ 198| 解释/假设，不作为事实源
+ 199| 所有外部事实必须保留 source_url、captured_at、patch、sample_size、source_type；对于多源冲突，优先官方规则，再用统计源交叉验证。
+ 200| 10. 非功能需求
+ 201| 维度
+ 202| 目标
+ 203| OCR准确率
+ 204| 关键字段 ≥99%（在版本内固定 UI 的受控测试集）
+ 205| GameState 完整率
+ 206| 关键字段覆盖率 ≥98%
+ 207| 低置信度拦截
+ 208| 关键字段 confidence <0.90 时进入确认流程
+ 209| P95 解析延迟
+ 210| 离线单帧 <1.5s；实时实验目标 <500ms（非上线承诺）
+ 211| 可追溯性
+ 212| 每条建议可回溯至 GameState、Meta Snapshot、Evidence、Model/Rule Version
+ 213| 安全边界
+ 214| 不得出现进程内存/注入/输入自动化依赖
+ 215| 数据版本
+ 216| 所有 Meta 数据强制绑定 Patch
+ 217| 11. 风险与应对
+ 218| 风险
+ 219| 级别
+ 220| 应对
+ 221| Riot政策变化
+ 222| P0
+ 223| Live 功能独立 Flag；持续核验官方政策
+ 224| 账号处罚风险
+ 225| P0
+ 226| 不做安全承诺；优先 OFFLINE LAB / POST-GAME；需要时使用官方推荐的测试环境
+ 227| OCR误识别
+ 228| P0
+ 229| confidence + 人工确认 + 可回放纠错
+ 230| 旧Patch污染
+ 231| P0
+ 232| Patch Isolation + TTL + 数据衰减
+ 233| 第三方来源不可用
+ 234| P1
+ 235| 多 Source Adapter + 缓存 + 降级
+ 236| Agent幻觉
+ 237| P0
+ 238| Evidence 必须结构化；LLM 不直接创造统计事实
+ 239| 玩家反馈偏差
+ 240| P1
+ 241| 区分纠错、偏好与策略性逆向选择
+ 242| 隐私/截图泄露
+ 243| P1
+ 244| 本地优先、最小化上传、可配置保留期
+ 245| 12. MVP 范围
+ 246| 阶段
+ 247| 范围
+ 248| 完成标准
+ 249| MVP-1
+ 250| Screenshot + OCR + GameState + Patch Meta
+ 251| 固定截图集准确解析
+ 252| MVP-2
+ 253| Replay + Recommendation + Feedback
+ 254| 可重建一局并记录选择
+ 255| MVP-3
+ 256| Post-Game Coach + Personal Profile
+ 257| 生成可解释复盘与画像
+ 258| MVP-4
+ 259| Web Research + Community Trends
+ 260| 跨来源 Meta 研究
+ 261| MVP-5
+ 262| Live Experiment（默认关闭）
+ 263| 仅做技术验证，不默认作为生产能力
+ 264| 13. 验收指标
+ 265| 1000 张标注截图上的关键字段 OCR Accuracy ≥99%。
+ 266| 至少覆盖：金币、等级、XP、HP、回合、商店 5 卡、棋盘单位、星级、装备、强化。
+ 267| 完整导入一段录像后，可生成 Round-by-Round Timeline。
+ 268| 每个 Recommendation 可追溯到至少 3 类证据：GameState、版本统计、规则/知识。
+ 269| 玩家“否定”建议后可记录原因并进入个人历史。
+ 270| 20+ 局后可生成基础 Player Profile；50+ 局后可输出重复错误模式。
+ 271| 14. 官方参考与政策依据
+ 272| Riot TFT Developer API Policy：https://developer.riotgames.com/docs/tft
+ 273| Riot Vanguard FAQ for Third Party Applications：https://www.riotgames.com/en/DevRel/vanguard-faq
+ 274| Riot Terms of Service：https://www.riotgames.com/en/terms-of-service
+ 275| Riot Privacy Notice：https://www.riotgames.com/en/privacy-notice
+ 276| 重要备注
+ 277| 以上政策信息截至 2026-08-22 检索时可见版本。Riot 明确说明政策会变化；开发前、测试前、发布前都应重新核验。Riot 还建议使用 PBE 测试受 Vanguard 影响的第三方应用。
+ 278| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 279| 本次版本更新说明
+ 280| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 281| Cloud LLM 与 RAG 总体架构
+ 282| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 283| Level 0 / Deterministic Tools：规则、概率、状态 Diff、结构化查询。
+ 284| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 285| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 286| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 287| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 288| RAG 数据分层
+ 289| 层次
+ 290| 技术/存储
+ 291| 职责
+ 292| 是否允许直接作为事实
+ 293| Structured Knowledge
+ 294| MySQL / JSON Schema
+ 295| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 296| 是
+ 297| Document Search
+ 298| OpenSearch/Elasticsearch
+ 299| Patch Notes、Wiki、攻略、社区文章
+ 300| 需 Evidence
+ 301| Vector Knowledge
+ 302| pgvector（优先）/ Milvus
+ 303| 语义召回、机制说明、案例
+ 304| 需 Evidence
+ 305| Meta Statistics
+ 306| MySQL + ClickHouse
+ 307| 阵容/棋子/装备/强化统计
+ 308| 需 Patch + 样本量
+ 309| Personal Memory
+ 310| pgvector + MySQL
+ 311| 玩家历史决策、Outcome、错误模式
+ 312| 仅作为个人证据
+ 313| Cloud LLM 引入时机
+ 314| 阶段
+ 315| LLM
+ 316| RAG
+ 317| 使用范围
+ 318| P0
+ 319| 不作为业务依赖
+ 320| 不接
+ 321| 工程、契约、安全边界
+ 322| P1
+ 323| 首次接入
+ 324| 首次接入
+ 325| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 326| P2
+ 327| Vision Fallback
+ 328| 继续
+ 329| 仅低置信度 OCR/CV 二次确认
+ 330| P3
+ 331| 正式进入决策链
+ 332| Decision RAG
+ 333| Economy/Shop/Composition/Item/Transition 等多 Agent 决策综合
+ 334| P4
+ 335| Personal Coach
+ 336| Personal RAG
+ 337| 相似局、玩家历史、个人最佳策略
+ 338| P5
+ 339| Model Router
+ 340| RAG Router
+ 341| 按任务选择不调用 LLM/本地模型/云模型
+ 342| P6
+ 343| 独立实验
+ 344| 按需
+ 345| Live 默认关闭，政策允许后再验证
+ 346| P7
+ 347| 产品化治理
+ 348| 质量治理
+ 349| 成本、预算、质量、灰度、回滚
+ 350| Model Router / RAG Router
+ 351| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 352| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 353| 新增数据治理要求
+ 354| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 355| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 356| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 357| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 358| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 359| 更新后的分期计划
+ 360| Phase
+ 361| 计划时间
+ 362| 目标
+ 363| 主要新增能力
+ 364| P0
+ 365| 2026-08-24 ~ 2026-09-04
+ 366| 工程地基与安全边界
+ 367| Schema、Agent Contract、CI、Feature Flag
+ 368| P1
+ 369| 2026-09-07 ~ 2026-10-23
+ 370| Knowledge + Data + RAG + Cloud LLM Foundation
+ 371| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 372| P2
+ 373| 2026-10-26 ~ 2026-11-27
+ 374| Vision + GameState
+ 375| OCR/CV、State Builder、Timeline、Cloud Vision Fallback
+ 376| P3
+ 377| 2026-11-30 ~ 2027-01-15
+ 378| Meta + Decision + Decision RAG
+ 379| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 380| P4
+ 381| 2027-01-18 ~ 2027-02-26
+ 382| Replay + Personal RAG + Personal Coach
+ 383| 反馈、复盘、相似局、个人画像
+ 384| P5
+ 385| 2027-03-01 ~ 2027-03-26
+ 386| Orchestrator + Model/RAG Router
+ 387| 多 Agent 编排、路由、Trace、Evaluation
+ 388| P6
+ 389| 2027-03-29 ~ 2027-04-23
+ 390| Live Experimental
+ 391| 默认关闭；仅政策允许后进行实验
+ 392| P7
+ 393| 2027-04-26 ~ 2027-06-04
+ 394| Productization
+ 395| 成本、隐私、注册、部署、灰度、回滚
+ 396| 新增验收指标
+ 397| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 398| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 399| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 400| Model Router：简单事实问题应能在不调用高级云模型的情况下完成。
+ 401| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 402| 成本：所有云模型调用都有 token/cost 记录，支持按用户、Agent、Provider 聚合。
+ 403| 可回放：同一 GameState + 相同知识快照 + 相同模型版本应可复现，差异必须有版本证据。
+ 404| 当前版本基线结论
+ 405| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+--- P1/KEYWORD HITS ---
+  12| 建立 Patch 感知、来源可信度、数据新鲜度、样本量约束的数据智能层。
+  22| 不在第一版训练“万能 TFT 大模型”；优先采用结构化规则、统计、搜索/优化器与 LLM 解释组合。
+  81| 玩家在赛前查看当前 Patch 的热门阵容、装备、强化、热门趋势。
+  91| DesktopCaptureFrameSource：桌面采集输入，作为可选技术实现，不与“规避检测”绑定。
+ 103| 官方静态：Riot Data Dragon、官方 Patch Notes、可用的官方 API。
+ 104| 社区/统计：OP.GG、Tactics.tools、LoLCHESS、MetaTFT 等，通过 Source Adapter 统一。
+ 106| 每条数据绑定 set/patch/region/rank/queue/timestamp/sample_size。
+ 112| 趋势：6h/24h/7d 变化、Patch 衰减、样本量修正。
+ 136| 决策结果 + Evidence
+ 140| 每个方案必须包含：score、confidence、why、risk、evidence、expected_tradeoff。
+ 175| 节点：Champion、Trait、Item、Augment、Encounter、Comp、Patch、Player、Round、Decision、Outcome。
+ 176| 关系：Champion→Trait、Champion→Comp、Item→Comp、Augment→Comp、Comp→Patch、Decision→Outcome、Player→Preference。
+ 195| LLM Inference
+ 199| 所有外部事实必须保留 source_url、captured_at、patch、sample_size、source_type；对于多源冲突，优先官方规则，再用统计源交叉验证。
+ 212| 每条建议可回溯至 GameState、Meta Snapshot、Evidence、Model/Rule Version
+ 216| 所有 Meta 数据强制绑定 Patch
+ 230| 旧Patch污染
+ 232| Patch Isolation + TTL + 数据衰减
+ 234| P1
+ 235| 多 Source Adapter + 缓存 + 降级
+ 238| Evidence 必须结构化；LLM 不直接创造统计事实
+ 240| P1
+ 243| P1
+ 250| Screenshot + OCR + GameState + Patch Meta
+ 278| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 280| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 281| Cloud LLM 与 RAG 总体架构
+ 282| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 284| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 285| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 286| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 287| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 288| RAG 数据分层
+ 293| Structured Knowledge
+ 294| MySQL / JSON Schema
+ 295| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 299| Patch Notes、Wiki、攻略、社区文章
+ 300| 需 Evidence
+ 301| Vector Knowledge
+ 302| pgvector（优先）/ Milvus
+ 304| 需 Evidence
+ 306| MySQL + ClickHouse
+ 308| 需 Patch + 样本量
+ 310| pgvector + MySQL
+ 313| Cloud LLM 引入时机
+ 315| LLM
+ 316| RAG
+ 322| P1
+ 325| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 332| Decision RAG
+ 336| Personal RAG
+ 340| RAG Router
+ 341| 按任务选择不调用 LLM/本地模型/云模型
+ 350| Model Router / RAG Router
+ 351| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 352| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 354| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 355| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 356| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 357| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 358| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 368| P1
+ 370| Knowledge + Data + RAG + Cloud LLM Foundation
+ 371| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 378| Meta + Decision + Decision RAG
+ 379| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 382| Replay + Personal RAG + Personal Coach
+ 386| Orchestrator + Model/RAG Router
+ 397| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 398| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 399| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 401| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 405| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+====================================================================================================
+[v2spec] TFT_Vision_AI_Coach_V2.x_分期开发实施与可开发规格_v2.0.docx (521 lines)
+====================================================================================================
+   1| TFT Vision AI Coach - 分期开发实施与 V2.x 规格
+   2| 一期、二期、三期……：从知识底座到多 Agent 编排与个性化学习
+   3| 版本：v2.0  |  日期：2026-08-22
+   4| 0. 开发策略
+   5| 开发顺序遵循“先确定性、后概率；先数据、后视觉；先状态、后决策；先离线、后在线；先记录、后学习；先单体模块、后 Orchestrator”。避免一开始就搭建万能 Agent。
+   6| 阶段
+   7| 目标
+   8| 交付物
+   9| 不做什么
+  10| Phase 0
+  11| 研发地基
+  12| Repo、规范、数据契约、测试框架、Feature Flag
+  13| 不做 Live
+  14| Phase 1
+  15| Knowledge/Data Foundation
+  16| 数据采集、规范化、知识库、Patch/Evidence
+  17| 不做复杂决策
+  18| Phase 2
+  19| Vision & State
+  20| 截图/视频 OCR、GameState、Timeline
+  21| 不做自动操作
+  22| Phase 3
+  23| Meta & Decision
+  24| Meta、经济/商店/阵容/装备等 Agent
+  25| 不做在线自动执行
+  26| Phase 4
+  27| Replay & Personal Coach
+  28| 整局复盘、反馈、画像、个性化
+  29| 不做实时对手 Scout
+  30| Phase 5
+  31| Orchestration Platform
+  32| 统一 Router、Tool Registry、Trace、预算
+  33| 不把所有能力微服务化
+  34| Phase 6
+  35| Live Experimental Track
+  36| 在政策允许前提下验证实时 Vision/建议
+  37| 默认关闭，非主线
+  38| Phase 7
+  39| Productization
+  40| 注册、权限、部署、商业化、运维
+  41| 不绕过平台政策
+  42| 1. Phase 0：项目地基（建议先做）
+  43| 模块
+  44| 任务
+  45| 验收标准
+  46| Repo
+  47| GitLab 仓库、多模块 Maven、CI
+  48| 一键 build/test
+  49| Coding Rules
+  50| Java 21、Spring Boot 3、Checkstyle/Spotless
+  51| CI 阻断不合规代码
+  52| Data Contract
+  53| Canonical ID、Patch、Evidence、Confidence
+  54| JSON Schema 固化
+  55| Agent Contract
+  56| Input/Output/Tool/Timeout/Fallback
+  57| 每个 Agent 有契约模板
+  58| Observability
+  59| TraceId、AgentRun、ToolCall、ErrorCode
+  60| 一条请求可完整追踪
+  61| Safety Guard
+  62| 禁止内存/输入/网络拦截相关依赖
+  63| CI/依赖扫描无违规依赖
+  64| Feature Flag
+  65| OFFLINE/POSTGAME/PREGAME/LIVE_EXPERIMENT
+  66| Live 默认 false
+  67| 2. Phase 1：Knowledge & Data Foundation（最优先）
+  68| 这是第一个真正可以独立交付的产品能力。目标是让任何后续 Agent 都可以可靠地问：“某个实体是什么？这个规则是什么？这个版本变了什么？这条统计从哪里来的？”
+  69| 实现 Source Adapter：Riot、至少一个统计站、一个社区来源。
+  70| 实现 Raw Snapshot 保存。
+  71| 实现 Entity Resolver 与 Canonical ID。
+  72| 实现 Knowledge Normalizer。
+  73| 实现 Patch Manager 和 Patch Diff。
+  74| 实现 Data Validator 与 Conflict Queue。
+  75| 实现 Evidence Store。
+  76| 实现 Champion/Trait/Item/Augment/Mechanic/Rule 查询 Tool。
+  77| 实现 Knowledge Agent v1：支持自然语言查询 + 证据输出。
+  78| 核心 API/Tool
+  79| 示例
+  80| getChampion
+  81| getChampion(canonicalId, patch)
+  82| searchChampion
+  83| searchChampion(query, patch)
+  84| getTrait
+  85| getTrait(traitId, patch)
+  86| getItem
+  87| getItem(itemId, patch)
+  88| getAugment
+  89| getAugment(augmentId, patch)
+  90| getMechanic
+  91| getMechanic(mechanicId, patch)
+  92| getRule
+  93| getRule(ruleType, patch)
+  94| getPatchDiff
+  95| getPatchDiff(fromPatch,toPatch)
+  96| getEvidence
+  97| getEvidence(entityId, patch)
+  98| getMetaSnapshot
+  99| getMetaSnapshot(patch, region, rank, queue)
+ 100| Phase 1 Done Definition：任意 Agent 不直接抓网页；全部通过 Data/Knowledge Tool 获取事实。任何事实都可追溯到 Patch、Source、CapturedAt、SampleSize 和 Evidence。
+ 101| 3. Phase 2：Vision & GameState Foundation
+ 102| 目标是先完成“看懂画面”，再考虑“建议”。建议优先 Offline Video/File Mode，再进入 POST-GAME。
+ 103| 模块
+ 104| 一期工作
+ 105| 关键指标
+ 106| FrameSource
+ 107| 截图、视频文件
+ 108| 支持重复回放
+ 109| ROI Detector
+ 110| 棋盘、商店、经济、强化、装备区域
+ 111| 固定分辨率准确检测
+ 112| OCR
+ 113| 数值/文本
+ 114| 关键字段 >= 97%
+ 115| Icon Recognition
+ 116| 英雄/装备/强化图标
+ 117| Top-1/Top-k 统计
+ 118| Observation
+ 119| 原始识别结果 + confidence
+ 120| 可审计
+ 121| State Builder
+ 122| 多帧融合/去抖
+ 123| 状态稳定
+ 124| State Diff
+ 125| 状态变化
+ 126| 事件可重建
+ 127| Timeline
+ 128| 完整时间线
+ 129| 可导出 JSON
+ 130| 建立 VisionFrame JSON Schema。
+ 131| 建立 Observation Schema。
+ 132| 建立 GameState Schema。
+ 133| 做 30~50 组固定截图 Fixture。
+ 134| 做 10~20 局录屏 Dataset。
+ 135| 建立人工 Ground Truth。
+ 136| 实现离线批量 OCR 评估脚本。
+ 137| 实现状态重建回放。
+ 138| 4. Phase 3：Meta + Decision Domain Agents
+ 139| 这一阶段开始产生“教练能力”，但仍建议以 Offline/Post-Game/Research 为主。
+ 140| Agent
+ 141| 首版范围
+ 142| 输入
+ 143| 输出
+ 144| Meta Agent
+ 145| 阵容/英雄/装备/强化统计
+ 146| MetaSnapshot
+ 147| MetaContext
+ 148| Shop Agent
+ 149| 5 张牌价值排序
+ 150| GameState
+ 151| 候选价值
+ 152| Economy Agent
+ 153| 升/存/D 三类方案
+ 154| GameState + Rules
+ 155| 2~3 方案
+ 156| Composition Agent
+ 157| 候选阵容匹配
+ 158| Board+Items+Augments+Meta
+ 159| Comp Candidates
+ 160| Transition Agent
+ 161| A -> B 转型成本
+ 162| Current/Target Comp
+ 163| Transition Plan
+ 164| Item Agent
+ 165| 组件/装备分配
+ 166| Items+Carry+Comp
+ 167| Item Plan
+ 168| Augment Decision Agent
+ 169| 强化比较
+ 170| Choices+State+Meta
+ 171| Augment Options
+ 172| Risk Agent
+ 173| 收益/风险分析
+ 174| Candidate Options
+ 175| Risk Profile
+ 176| Decision Simulator
+ 177| 简单情景模拟
+ 178| State+Action
+ 179| Expected Outcome
+ 180| 关键原则：Agent 输出必须是 Candidate Set，不是单一动作命令。每个候选必须带 score、risk、reasoning、evidence、confidence。
+ 181| 5. Phase 4：Replay + Feedback + Personal Coach
+ 182| 这一阶段是产品真正形成长期价值的阶段。
+ 183| 建立 Match / Round / Recommendation / Feedback / Outcome 数据模型。
+ 184| 记录每回合 Agent 建议和玩家采用/否定/忽略/部分采用。
+ 185| 建立关键决策点识别。
+ 186| 建立 Decision Evaluation Agent。
+ 187| 生成赛后报告。
+ 188| 建立 Player Profile。
+ 189| 统计常见错误与打法偏好。
+ 190| 将个人历史作为 Recommendation Context，但不覆盖通用事实。
+ 191| 个人画像维度
+ 192| 示例
+ 193| 经济风格
+ 194| 稳健/平衡/激进
+ 195| 风险偏好
+ 196| 高/中/低
+ 197| 转型风格
+ 198| 早转/中转/晚转
+ 199| D牌风格
+ 200| 慢D/中D/深D
+ 201| 阵容偏好
+ 202| 常玩羁绊/费用曲线
+ 203| 错误模式
+ 204| 贪经济、过晚转型等
+ 205| 结果指标
+ 206| Top4、平均名次、相似场景表现
+ 207| 6. Phase 5：Orchestrator Platform
+ 208| 此时才正式把多个 Domain Agent 编排起来。
+ 209| 组件
+ 210| 职责
+ 211| Intent Router
+ 212| 识别用户问题/当前任务
+ 213| Context Builder
+ 214| 装配 GameState + Meta + History + Evidence
+ 215| Tool Registry
+ 216| 统一 Tool 定义、Schema、权限
+ 217| Agent Registry
+ 218| Agent 能力声明、版本、健康度
+ 219| Planner
+ 220| 决定调用顺序和预算
+ 221| Conflict Resolver
+ 222| 不同 Agent 意见冲突处理
+ 223| Response Composer
+ 224| 把多个候选合并为可读结果
+ 225| Trace Viewer
+ 226| 展示 Agent/Tool 调用链
+ 227| Evaluation Harness
+ 228| 离线比较 Agent 版本
+ 229| 推荐调用链示例：
+ 230| 用户：“这个版本什么阵容强？” -> Meta Agent -> Evidence -> 返回趋势。
+ 231| 用户：“为什么这个装备适合这个英雄？” -> Item Tool + Champion Tool + Knowledge Agent -> 返回机制解释。
+ 232| GameState：“当前 5 张商店怎么理解？” -> Shop + Economy + Composition + Risk -> 形成 2~3 个候选方案。
+ 233| 赛后：“这盘我哪里做错了？” -> Replay + Decision Evaluation + Personal Coach -> 关键节点复盘。
+ 234| 7. Phase 6：Live Experimental Track（独立、默认关闭）
+ 235| 前置条件：只有在确认当前 Riot 第三方政策、产品注册及具体用例允许后才推进。否则停止在 Phase 5/4，项目仍然完整可用。
+ 236| Camera / Desktop Capture 实时帧输入。
+ 237| 实时 State Builder。
+ 238| 实时延迟与帧率评估。
+ 239| 实时建议实验仅在实验 Flag 下运行。
+ 240| Opponents 数据默认不进入实时 Decision Context。
+ 241| 所有 Live 输出保留实验日志，便于比较“建议时效 vs 建议质量”。
+ 242| 8. Phase 7：产品化
+ 243| 正式开发者产品注册与产品说明。
+ 244| API Key/RSO/Secrets 安全治理。
+ 245| 用户数据与截图隐私策略。
+ 246| 数据源协议、抓取频率和版权/品牌展示审查。
+ 247| 客户端安装、更新、崩溃恢复。
+ 248| 性能监控、错误上报、灰度发布。
+ 249| 免费层/商业化仅在政策允许时评估。
+ 250| 9. 研发任务拆分模板
+ 251| 任务字段
+ 252| 要求
+ 253| Task ID
+ 254| 例如 KNOW-001
+ 255| Domain
+ 256| DATA/KNOWLEDGE/VISION/STATE/META/DECISION/REPLAY/LEARNING/ORCH
+ 257| Input/Output
+ 258| 必须引用 Schema
+ 259| Dependencies
+ 260| 上游 Tool/Agent/Data
+ 261| Acceptance
+ 262| 可自动化验证的验收条件
+ 263| Observability
+ 264| 需要的 Trace/Metric/Log
+ 265| Fallback
+ 266| 失败后的降级行为
+ 267| Risk
+ 268| 数据/模型/性能/政策风险
+ 269| 10. 建议的 Sprint 顺序
+ 270| Sprint
+ 271| 主题
+ 272| 核心产出
+ 273| S1
+ 274| 工程地基
+ 275| Repo + Data Contract + Agent Contract + CI
+ 276| S2
+ 277| Patch/Data
+ 278| Patch Manager + Source Adapter + Raw Snapshot
+ 279| S3
+ 280| Knowledge
+ 281| Entity Resolver + Normalizer + Champion/Trait/Item
+ 282| S4
+ 283| Knowledge 完整化
+ 284| Augment/Mechanic/Rule + Conflict + Evidence
+ 285| S5
+ 286| Knowledge Agent
+ 287| 自然语言查询 + 引用 + 版本过滤
+ 288| S6
+ 289| Vision 基础
+ 290| FrameSource + ROI + OCR
+ 291| S7
+ 292| GameState
+ 293| Observation + State Builder + State Diff
+ 294| S8
+ 295| Replay
+ 296| Timeline + Match Reconstruction
+ 297| S9
+ 298| Meta
+ 299| Meta Snapshot + Trend + Patch Impact
+ 300| S10
+ 301| Decision 1
+ 302| Shop + Economy + Risk
+ 303| S11
+ 304| Decision 2
+ 305| Composition + Item + Augment
+ 306| S12
+ 307| Decision 3
+ 308| Transition + Simulator
+ 309| S13
+ 310| Feedback
+ 311| Recommendation + Accept/Reject + Outcome
+ 312| S14
+ 313| Personal
+ 314| Profile + Mistakes + Personal Coach
+ 315| S15
+ 316| Orchestrator
+ 317| Router + Planner + Registry + Trace
+ 318| S16
+ 319| End-to-end
+ 320| 离线/赛后全链路 + 回归测试
+ 321| 11. 版本门禁
+ 322| 版本
+ 323| 必须满足后才能进入下一阶段
+ 324| V0.1
+ 325| 数据模型稳定、可抓取、可验证
+ 326| V0.2
+ 327| Knowledge 查询可复现，Evidence 完整
+ 328| V0.3
+ 329| OCR/GameState 达到目标准确率
+ 330| V0.4
+ 331| Meta 数据有 Patch 隔离
+ 332| V0.5
+ 333| Domain Agent 可离线评测
+ 334| V0.6
+ 335| 整局 Replay 可重建
+ 336| V0.7
+ 337| 玩家反馈闭环可用
+ 338| V0.8
+ 339| Personal Coach 有可复现实验结果
+ 340| V0.9
+ 341| Orchestrator 可端到端调用
+ 342| V1.0
+ 343| 离线/赛后能力完整、可部署、可回归；Live 默认为关闭
+ 344| 12. 关键风险与应对
+ 345| 风险
+ 346| 影响
+ 347| 应对
+ 348| Patch 快速变化
+ 349| 知识过期
+ 350| Patch Manager + TTL + Diff
+ 351| 来源网页改版
+ 352| 采集失败
+ 353| Adapter 隔离 + Raw Snapshot + 健康检查
+ 354| 不同来源冲突
+ 355| 错误知识
+ 356| Conflict Queue + Evidence
+ 357| OCR 误识别
+ 358| 错误决策
+ 359| Confidence + 人工确认 + State Diff
+ 360| LLM 幻觉
+ 361| 错误事实
+ 362| Knowledge Tool First + Evidence First
+ 363| Agent 过度复杂
+ 364| 不可维护
+ 365| Tool 优先、Agent 能力收敛
+ 366| 实时能力政策风险
+ 367| 产品不可上线
+ 368| 独立 Live Flag + 赛后主线
+ 369| 数据成本/网络波动
+ 370| 体验下降
+ 371| 缓存 + 快照 + 离线优先
+ 372| 个人数据隐私
+ 373| 合规风险
+ 374| 本地优先、最小化采集、可删除
+ 375| 13. 第一批可立刻开工的任务
+ 376| 创建 GitLab mono-repo：tft-data / tft-knowledge / tft-vision / tft-state / tft-meta / tft-decision / tft-replay / tft-learning / tft-orchestrator。
+ 377| 定义 Canonical Entity：Champion/Trait/Item/Augment/Mechanic/Rule/Patch。
+ 378| 定义 Evidence、SourceSnapshot、PatchVersion、Confidence 四个公共 Schema。
+ 379| 实现 Patch Manager。
+ 380| 实现 Riot/Data Dragon Source Adapter。
+ 381| 实现一个社区统计源 Adapter，并创建 Source Adapter SPI。
+ 382| 实现 Entity Resolver + Normalizer。
+ 383| 实现 Knowledge Query Tool 和 Knowledge Agent v1。
+ 384| 建立 100~300 条人工 Ground Truth 的 Knowledge 回归集。
+ 385| 然后再进入 Vision/State。
+ 386| 14. 项目最终形态
+ 387| 最终系统不是“一个超级 Agent”，而是一个 Domain Platform：Knowledge + Rules + Vision + State + Meta + Simulation + Decision + Replay + Learning，由 Orchestrator 在最上层组合。每个能力均可独立测试、独立替换和独立评估。
+ 388| 15. 参考政策资料
+ 389| Riot TFT Developer Policy: https://developer.riotgames.com/docs/tft
+ 390| Riot Vanguard FAQ for Third Party Applications: https://www.riotgames.com/en/DevRel/vanguard-faq
+ 391| Riot Terms of Service: https://www.riotgames.com/en/terms-of-service
+ 392| Riot Developer General Policies: https://developer.riotgames.com/policies/general
+ 393| Riot Developer FAQ / RSO: https://developer.riotgames.com/docs/faqs
+ 394| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 395| 本次版本更新说明
+ 396| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 397| Cloud LLM 与 RAG 总体架构
+ 398| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 399| Level 0 / Deterministic Tools：规则、概率、状态 Diff、结构化查询。
+ 400| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 401| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 402| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 403| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 404| RAG 数据分层
+ 405| 层次
+ 406| 技术/存储
+ 407| 职责
+ 408| 是否允许直接作为事实
+ 409| Structured Knowledge
+ 410| MySQL / JSON Schema
+ 411| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 412| 是
+ 413| Document Search
+ 414| OpenSearch/Elasticsearch
+ 415| Patch Notes、Wiki、攻略、社区文章
+ 416| 需 Evidence
+ 417| Vector Knowledge
+ 418| pgvector（优先）/ Milvus
+ 419| 语义召回、机制说明、案例
+ 420| 需 Evidence
+ 421| Meta Statistics
+ 422| MySQL + ClickHouse
+ 423| 阵容/棋子/装备/强化统计
+ 424| 需 Patch + 样本量
+ 425| Personal Memory
+ 426| pgvector + MySQL
+ 427| 玩家历史决策、Outcome、错误模式
+ 428| 仅作为个人证据
+ 429| Cloud LLM 引入时机
+ 430| 阶段
+ 431| LLM
+ 432| RAG
+ 433| 使用范围
+ 434| P0
+ 435| 不作为业务依赖
+ 436| 不接
+ 437| 工程、契约、安全边界
+ 438| P1
+ 439| 首次接入
+ 440| 首次接入
+ 441| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 442| P2
+ 443| Vision Fallback
+ 444| 继续
+ 445| 仅低置信度 OCR/CV 二次确认
+ 446| P3
+ 447| 正式进入决策链
+ 448| Decision RAG
+ 449| Economy/Shop/Composition/Item/Transition 等多 Agent 决策综合
+ 450| P4
+ 451| Personal Coach
+ 452| Personal RAG
+ 453| 相似局、玩家历史、个人最佳策略
+ 454| P5
+ 455| Model Router
+ 456| RAG Router
+ 457| 按任务选择不调用 LLM/本地模型/云模型
+ 458| P6
+ 459| 独立实验
+ 460| 按需
+ 461| Live 默认关闭，政策允许后再验证
+ 462| P7
+ 463| 产品化治理
+ 464| 质量治理
+ 465| 成本、预算、质量、灰度、回滚
+ 466| Model Router / RAG Router
+ 467| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 468| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 469| 新增数据治理要求
+ 470| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 471| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 472| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 473| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 474| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 475| 更新后的分期计划
+ 476| Phase
+ 477| 计划时间
+ 478| 目标
+ 479| 主要新增能力
+ 480| P0
+ 481| 2026-08-24 ~ 2026-09-04
+ 482| 工程地基与安全边界
+ 483| Schema、Agent Contract、CI、Feature Flag
+ 484| P1
+ 485| 2026-09-07 ~ 2026-10-23
+ 486| Knowledge + Data + RAG + Cloud LLM Foundation
+ 487| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 488| P2
+ 489| 2026-10-26 ~ 2026-11-27
+ 490| Vision + GameState
+ 491| OCR/CV、State Builder、Timeline、Cloud Vision Fallback
+ 492| P3
+ 493| 2026-11-30 ~ 2027-01-15
+ 494| Meta + Decision + Decision RAG
+ 495| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 496| P4
+ 497| 2027-01-18 ~ 2027-02-26
+ 498| Replay + Personal RAG + Personal Coach
+ 499| 反馈、复盘、相似局、个人画像
+ 500| P5
+ 501| 2027-03-01 ~ 2027-03-26
+ 502| Orchestrator + Model/RAG Router
+ 503| 多 Agent 编排、路由、Trace、Evaluation
+ 504| P6
+ 505| 2027-03-29 ~ 2027-04-23
+ 506| Live Experimental
+ 507| 默认关闭；仅政策允许后进行实验
+ 508| P7
+ 509| 2027-04-26 ~ 2027-06-04
+ 510| Productization
+ 511| 成本、隐私、注册、部署、灰度、回滚
+ 512| 新增验收指标
+ 513| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 514| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 515| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 516| Model Router：简单事实问题应能在不调用高级云模型的情况下完成。
+ 517| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 518| 成本：所有云模型调用都有 token/cost 记录，支持按用户、Agent、Provider 聚合。
+ 519| 可回放：同一 GameState + 相同知识快照 + 相同模型版本应可复现，差异必须有版本证据。
+ 520| 当前版本基线结论
+ 521| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+--- P1/KEYWORD HITS ---
+  14| Phase 1
+  15| Knowledge/Data Foundation
+  16| 数据采集、规范化、知识库、Patch/Evidence
+  53| Canonical ID、Patch、Evidence、Confidence
+  67| 2. Phase 1：Knowledge & Data Foundation（最优先）
+  69| 实现 Source Adapter：Riot、至少一个统计站、一个社区来源。
+  72| 实现 Knowledge Normalizer。
+  73| 实现 Patch Manager 和 Patch Diff。
+  75| 实现 Evidence Store。
+  77| 实现 Knowledge Agent v1：支持自然语言查询 + 证据输出。
+  81| getChampion(canonicalId, patch)
+  83| searchChampion(query, patch)
+  85| getTrait(traitId, patch)
+  87| getItem(itemId, patch)
+  89| getAugment(augmentId, patch)
+  91| getMechanic(mechanicId, patch)
+  93| getRule(ruleType, patch)
+  94| getPatchDiff
+  95| getPatchDiff(fromPatch,toPatch)
+  96| getEvidence
+  97| getEvidence(entityId, patch)
+  99| getMetaSnapshot(patch, region, rank, queue)
+ 100| Phase 1 Done Definition：任意 Agent 不直接抓网页；全部通过 Data/Knowledge Tool 获取事实。任何事实都可追溯到 Patch、Source、CapturedAt、SampleSize 和 Evidence。
+ 180| 关键原则：Agent 输出必须是 Candidate Set，不是单一动作命令。每个候选必须带 score、risk、reasoning、evidence、confidence。
+ 214| 装配 GameState + Meta + History + Evidence
+ 230| 用户：“这个版本什么阵容强？” -> Meta Agent -> Evidence -> 返回趋势。
+ 231| 用户：“为什么这个装备适合这个英雄？” -> Item Tool + Champion Tool + Knowledge Agent -> 返回机制解释。
+ 256| DATA/KNOWLEDGE/VISION/STATE/META/DECISION/REPLAY/LEARNING/ORCH
+ 277| Patch/Data
+ 278| Patch Manager + Source Adapter + Raw Snapshot
+ 280| Knowledge
+ 283| Knowledge 完整化
+ 284| Augment/Mechanic/Rule + Conflict + Evidence
+ 286| Knowledge Agent
+ 299| Meta Snapshot + Trend + Patch Impact
+ 326| V0.2
+ 327| Knowledge 查询可复现，Evidence 完整
+ 331| Meta 数据有 Patch 隔离
+ 348| Patch 快速变化
+ 350| Patch Manager + TTL + Diff
+ 356| Conflict Queue + Evidence
+ 360| LLM 幻觉
+ 362| Knowledge Tool First + Evidence First
+ 376| 创建 GitLab mono-repo：tft-data / tft-knowledge / tft-vision / tft-state / tft-meta / tft-decision / tft-replay / tft-learning / tft-orchestrator。
+ 377| 定义 Canonical Entity：Champion/Trait/Item/Augment/Mechanic/Rule/Patch。
+ 378| 定义 Evidence、SourceSnapshot、PatchVersion、Confidence 四个公共 Schema。
+ 379| 实现 Patch Manager。
+ 380| 实现 Riot/Data Dragon Source Adapter。
+ 381| 实现一个社区统计源 Adapter，并创建 Source Adapter SPI。
+ 383| 实现 Knowledge Query Tool 和 Knowledge Agent v1。
+ 384| 建立 100~300 条人工 Ground Truth 的 Knowledge 回归集。
+ 387| 最终系统不是“一个超级 Agent”，而是一个 Domain Platform：Knowledge + Rules + Vision + State + Meta + Simulation + Decision + Replay + Learning，由 Orchestrator 在最上层组合。每个能力均可独立测试、独立替换和独立评估。
+ 394| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 396| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 397| Cloud LLM 与 RAG 总体架构
+ 398| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 400| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 401| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 402| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 403| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 404| RAG 数据分层
+ 409| Structured Knowledge
+ 410| MySQL / JSON Schema
+ 411| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 415| Patch Notes、Wiki、攻略、社区文章
+ 416| 需 Evidence
+ 417| Vector Knowledge
+ 418| pgvector（优先）/ Milvus
+ 420| 需 Evidence
+ 422| MySQL + ClickHouse
+ 424| 需 Patch + 样本量
+ 426| pgvector + MySQL
+ 429| Cloud LLM 引入时机
+ 431| LLM
+ 432| RAG
+ 438| P1
+ 441| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 448| Decision RAG
+ 452| Personal RAG
+ 456| RAG Router
+ 457| 按任务选择不调用 LLM/本地模型/云模型
+ 466| Model Router / RAG Router
+ 467| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 468| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 470| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 471| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 472| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 473| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 474| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 484| P1
+ 486| Knowledge + Data + RAG + Cloud LLM Foundation
+ 487| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 494| Meta + Decision + Decision RAG
+ 495| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 498| Replay + Personal RAG + Personal Coach
+ 502| Orchestrator + Model/RAG Router
+ 513| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 514| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 515| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 517| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 521| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+====================================================================================================
+[v11spec] TFT_Vision_AI_Coach_V1.1_可开发规格_总纲与细则.docx (442 lines)
+====================================================================================================
+   1| TFT Vision AI Coach - V1.1 可开发规格
+   2| 研发总纲、模块边界、接口、数据模型、数据库、事件流、测试与实施细则
+   3| 版本：V2.0  |  文档日期：2026-08-22  |  状态：研发基线
+   4| V1.0 开发原则
+   5| 本规格以 Java 21 + Spring Boot 3 为后端基线，默认先实现 OFFLINE LAB / POST-GAME / PRE-GAME。Live Experiment 是隔离模块。所有工程模块必须保持“只读、无内存访问、无自动操作、无游戏通信拦截”的硬边界。
+   6| 1. 版本目标
+   7| V1.0 的目标不是把所有 TFT Agent 能力一次做完，而是建立一条可运行、可观测、可回放、可学习的闭环：Frame → Vision → Observation → GameState → Knowledge → Recommendation → Player Feedback → Outcome → Replay → Profile。
+   8| 2. 系统总纲
+   9| tft-agent/├─ tft-client│  ├─ screenshot│  ├─ capture│  ├─ camera│  └─ local-session├─ tft-domain│  ├─ match│  ├─ player│  ├─ board│  ├─ shop│  ├─ item│  ├─ trait│  ├─ augment│  └─ encounter├─ tft-vision│  ├─ frame│  ├─ roi│  ├─ ocr│  ├─ icon│  ├─ classifier│  └─ observation├─ tft-state│  ├─ normalizer│  ├─ validator│  └─ state-builder├─ tft-meta│  ├─ riot│  ├─ opgg│  ├─ tactics│  ├─ lolchess│  ├─ metatft│  └─ web-research├─ tft-agent│  ├─ economy│  ├─ shop│  ├─ composition│  ├─ item│  ├─ transition│  ├─ decision│  └─ explanation├─ tft-learning│  ├─ feedback│  ├─ outcome│  ├─ profile│  └─ ranking├─ tft-replay├─ tft-api└─ tft-ui
+  10| 3. 技术栈基线
+  11| 层
+  12| 推荐技术
+  13| 备注
+  14| Backend
+  15| Java 21 / Spring Boot 3
+  16| 主业务与 Agent Orchestration
+  17| AI Integration
+  18| Spring AI + HTTP Client
+  19| LLM/Vision/Embedding 可替换
+  20| OCR/CV
+  21| PaddleOCR / OpenCV / ONNX Runtime
+  22| 本地优先
+  23| Messaging
+  24| Kafka
+  25| 异步事件流；MVP 可先简化为本地队列
+  26| Cache
+  27| Redis
+  28| Meta、Session、短期状态
+  29| OLTP
+  30| MySQL 8
+  31| 用户、比赛、建议、反馈
+  32| OLAP
+  33| ClickHouse
+  34| 逐回合/商店/事件统计
+  35| Object Storage
+  36| MinIO
+  37| 截图、视频片段、报告
+  38| Search
+  39| OpenSearch / Elasticsearch
+  40| 网页知识与日志检索
+  41| Vector
+  42| pgvector 或 Milvus
+  43| 知识语义检索
+  44| Desktop UI
+  45| Tauri + React + TypeScript
+  46| 可选桌面壳
+  47| 4. 模块详细规格
+  48| 4.1 Frame Source
+  49| public interface VisionFrameSource {    Frame nextFrame();    SourceType type();    void start();    void stop();}enum SourceType { SCREENSHOT, VIDEO_FILE, CAMERA, DESKTOP_CAPTURE }
+  50| 硬约束：FrameSource 不允许调用任何游戏进程 API，不允许读取进程内存，不允许写入游戏进程。
+  51| 4.2 Vision Observation
+  52| record Observation(  String field,  Object value,  double confidence,  SourceType source,  long timestamp,  Roi roi) {}
+  53| 4.3 State Builder
+  54| public interface GameStateBuilder {    GameState build(List<Observation> observations);    ValidationResult validate(GameState state);}
+  55| 4.4 Agent Interface
+  56| public interface TftAgent {    AgentType type();    AgentResult analyze(GameState state, KnowledgeContext context);}
+  57| 4.5 Recommendation
+  58| record Recommendation(  String id,  RecommendationType type,  List<RecommendationOption> options,  List<Evidence> evidence,  double confidence,  String modelVersion,  String ruleVersion,  String metaSnapshotId) {}
+  59| 5. API 设计
+  60| HTTP
+  61| Endpoint
+  62| 用途
+  63| POST
+  64| /api/v1/vision/frames
+  65| 提交截图/视频帧
+  66| POST
+  67| /api/v1/state/build
+  68| 从 Observation 构建 GameState
+  69| GET
+  70| /api/v1/matches/{id}
+  71| 查询对局
+  72| GET
+  73| /api/v1/matches/{id}/timeline
+  74| 查询逐回合时间线
+  75| POST
+  76| /api/v1/recommendations/analyze
+  77| 生成推荐
+  78| POST
+  79| /api/v1/recommendations/{id}/feedback
+  80| 提交玩家反馈
+  81| GET
+  82| /api/v1/profile
+  83| 个人画像
+  84| GET
+  85| /api/v1/replay/{id}
+  86| 赛后复盘
+  87| POST
+  88| /api/v1/meta/search
+  89| 搜索/查询 Meta
+  90| GET
+  91| /api/v1/meta/snapshot/{id}
+  92| 查看 Meta Snapshot
+  93| 6. 数据模型
+  94| 6.1 GameState JSON
+  95| {  "matchId": "m_001",  "patch": "<current>",  "round": "4-2",  "player": {"hp": 62, "gold": 41, "level": 7, "xp": 22, "streak": 3},  "shop": [{"unit": "X", "confidence": 0.99}],  "board": [],  "bench": [],  "items": [],  "traits": [],  "augments": [],  "encounters": [],  "rules": [],  "confidence": {"overall": 0.94}}
+  96| 6.2 Recommendation Feedback JSON
+  97| {  "recommendationId": "rec_123",  "decision": "REJECT",  "reasonCode": "PLAYER_DISAGREE",  "actualAction": {"type": "KEEP_CURRENT_COMP"},  "timestamp": 1755822000000}
+  98| 7. 数据库设计总纲
+  99| 表
+ 100| 用途
+ 101| 关键字段
+ 102| users
+ 103| 用户
+ 104| id, region, created_at
+ 105| player_profiles
+ 106| 个人画像
+ 107| user_id, risk_style, economy_style, comp_preferences
+ 108| matches
+ 109| 对局
+ 110| id, patch, mode, started_at, ended_at, placement
+ 111| round_snapshots
+ 112| 回合状态
+ 113| match_id, round, game_state_json
+ 114| observations
+ 115| 视觉识别
+ 116| frame_id, field, value, confidence, roi
+ 117| recommendations
+ 118| 建议
+ 119| id, match_id, round, type, version
+ 120| recommendation_options
+ 121| 候选方案
+ 122| recommendation_id, option_code, score, risk
+ 123| recommendation_feedback
+ 124| 玩家反馈
+ 125| recommendation_id, decision, reason_code, actual_action
+ 126| decision_outcomes
+ 127| 结果归因
+ 128| feedback_id, immediate, mid_term, final_outcome
+ 129| meta_snapshots
+ 130| Meta快照
+ 131| patch, region, rank, source, captured_at, sample_size
+ 132| knowledge_documents
+ 133| 网页/官方内容
+ 134| source_url, title, content, patch, captured_at
+ 135| agent_runs
+ 136| Agent执行记录
+ 137| agent_type, model_version, rule_version, latency, status
+ 138| 8. 事件模型
+ 139| FRAME_CAPTURED  -> OBSERVATIONS_READY  -> GAME_STATE_BUILT  -> GAME_STATE_VALIDATED  -> RECOMMENDATION_REQUESTED  -> RECOMMENDATION_CREATED  -> PLAYER_FEEDBACK_RECEIVED  -> OUTCOME_OBSERVED  -> MATCH_COMPLETED  -> REPLAY_GENERATED  -> PLAYER_PROFILE_UPDATED
+ 140| 9. Meta Source Adapter 细则
+ 141| public interface TftDataProvider {  SourceType source();  CompStats getComps(MetaQuery query);  UnitStats getUnits(MetaQuery query);  ItemStats getItems(MetaQuery query);  AugmentStats getAugments(MetaQuery query);  TraitStats getTraits(MetaQuery query);}
+ 142| Adapter 必须输出统一 Canonical DTO，并提供 source_url、captured_at、patch、region、rank、sample_size、freshness。数据抓取失败时走缓存，不阻塞主分析链。
+ 143| 10. Meta 评分细则
+ 144| FinalMetaScore = SourceReliability                * SampleSizeWeight                * FreshnessWeight                * PatchWeight                * RankWeightPersonalFit = BoardFit            + ItemFit            + AugmentFit            + EconomyFit            + TransitionCost            + PlayerPreference
+ 145| 第一版不要过早训练复杂模型；先实现可解释的加权评分，所有权重配置化，并为后续学习模型保留接口。
+ 146| 11. OCR 细则
+ 147| 对象
+ 148| 识别字段
+ 149| 优先级
+ 150| Player
+ 151| HP/Gold/Level/XP/Round/Streak
+ 152| P0
+ 153| Shop
+ 154| 5个单位、费用
+ 155| P0
+ 156| Board
+ 157| 单位、星级、装备
+ 158| P0
+ 159| Bench
+ 160| 单位、星级、装备
+ 161| P1
+ 162| Trait
+ 163| 羁绊名称、等级
+ 164| P0
+ 165| Augment
+ 166| 名称、文本、选择状态
+ 167| P0
+ 168| Item
+ 169| 组件/成装/特殊装备
+ 170| P0
+ 171| Encounter
+ 172| 名称、效果文本
+ 173| P1
+ 174| Opponent
+ 175| 完整状态
+ 176| POST-GAME only / P2
+ 177| 建议建立固定 ROI 配置并支持版本化。每个 Patch 的 UI 布局变化必须对应一个 VisionProfile。
+ 178| 12. VisionProfile
+ 179| {  "profileId": "set17_patch_x",  "regions": {    "player": {"x":0,"y":0,"w":0,"h":0},    "shop": [],    "board": [],    "augment": {}  },  "ocrModel": "paddleocr-vX",  "iconModel": "onnx-vY"}
+ 180| 13. Agent Orchestration
+ 181| Orchestrator 先运行 State Validation，再并发调用 Economy/Shop/Composition/Item/Transition Agent，Decision Optimizer 聚合，Explanation Agent 最后生成可读解释。LLM 不直接负责金额、概率和规则计算。
+ 182| validate(state) -> parallel(economy, shop, composition, item, transition) -> optimize(results) -> attachEvidence() -> explain() -> persistRecommendation()
+ 183| 14. Evidence 细则
+ 184| record Evidence(  String type,          // GAME_STATE / META / RULE / HISTORY  String source,        // OCR / Riot / Tactics / OP.GG / PlayerHistory  String referenceId,  String text,  double weight) {}
+ 185| 15. 个人学习细则
+ 186| 第一阶段使用统计聚合，不做在线训练。按用户聚合：经济倾向、D牌倾向、转型倾向、风险偏好、常用阵容、拒绝原因、类似局表现。模型输入必须区分“错误纠正”和“策略性反对”。
+ 187| PlayerProfileUpdate = aggregate(  DecisionHistory,  FeedbackHistory,  OutcomeHistory)ProfileVersion -> 每次更新生成版本号，保证推荐可回放。
+ 188| 16. Replay Engine
+ 189| Replay Engine 将每一局按时间排序，重建 GameState Timeline，并对每个决策点做“当时可知信息”约束：不能在复盘中把后续才出现的信息倒灌到前一个决策点。
+ 190| 复盘产物
+ 191| 说明
+ 192| Timeline
+ 193| 逐回合状态变化
+ 194| Decision Points
+ 195| 高影响决策节点
+ 196| Recommendation Compare
+ 197| Agent vs 玩家
+ 198| Outcome Attribution
+ 199| 即时/中期/最终结果
+ 200| Error Patterns
+ 201| 重复错误
+ 202| Alternative Paths
+ 203| 反事实路径
+ 204| 17. 单机测试策略
+ 205| 17.1 安全优先开发顺序
+ 206| 只开发 OFFLINE LAB，不启动游戏。
+ 207| 使用固定截图集完成 OCR/State 单元测试。
+ 208| 使用录制视频完成 Replay 重建。
+ 209| 接入 Meta 数据源并验证 Patch Isolation。
+ 210| 运行完整 Agent 与反馈闭环。
+ 211| 再考虑 POST-GAME 实机测试。
+ 212| LIVE-EXPERIMENT 默认关闭；如需要，仅在官方政策允许/明确确认的前提下测试。
+ 213| 17.2 测试集
+ 214| gold_level_round_set：金币/等级/经验/回合。
+ 215| shop_set：五卡商店及边界情况。
+ 216| board_set：星级、装备、多个羁绊。
+ 217| augment_set：长文本、相似名称、特殊强化。
+ 218| vision_negative_set：模糊、遮挡、动画、低分辨率。
+ 219| patch_regression_set：Patch 前后同一对象的变化。
+ 220| 18. 验收测试用例
+ 221| ID
+ 222| 场景
+ 223| 验收
+ 224| V-001
+ 225| 单截图识别金币/等级/回合
+ 226| 字段准确且有 confidence
+ 227| V-002
+ 228| 五卡商店识别
+ 229| 顺序与名称正确
+ 230| V-003
+ 231| 低清截图
+ 232| 进入低置信度确认，不静默错误
+ 233| V-004
+ 234| 视频重建
+ 235| 时间线连续且无明显状态倒退
+ 236| V-005
+ 237| Patch 切换
+ 238| 旧 Meta 不污染新 Patch
+ 239| A-001
+ 240| 经济分析
+ 241| 输出≥2方案并含证据
+ 242| A-002
+ 243| 转型分析
+ 244| 输出目标阵容、成本与风险
+ 245| F-001
+ 246| 玩家否定
+ 247| 记录 reason + actual_action
+ 248| R-001
+ 249| 整局复盘
+ 250| 生成关键决策与重复错误
+ 251| S-001
+ 252| 安全扫描
+ 253| 不存在内存/注入/输入自动化代码路径
+ 254| 19. 观测与日志
+ 255| 每次 Vision、State、Agent 都生成 correlation_id。
+ 256| 记录 latency、model_version、rule_version、meta_snapshot_id。
+ 257| 错误日志不保存完整游戏截图，除非用户主动开启调试采集。
+ 258| 生产/分享环境默认关闭原始截图长期保存。
+ 259| 20. 配置与 Feature Flag
+ 260| features:  offline_lab: true  post_game: true  pre_game_meta: true  live_experiment: false  live_dynamic_recommendation: false  live_opponent_analysis: false  memory_access: false  input_automation: false  network_interception: false
+ 261| 21. 研发拆分（建议）
+ 262| Sprint
+ 263| 目标
+ 264| 产出
+ 265| S1
+ 266| Domain + DTO + DB
+ 267| GameState/Match/Recommendation schema
+ 268| S2
+ 269| Screenshot + OCR
+ 270| 固定截图集可识别
+ 271| S3
+ 272| State Builder
+ 273| Canonical GameState + Validation
+ 274| S4
+ 275| Meta Layer
+ 276| Riot + 1个统计源 + Snapshot
+ 277| S5
+ 278| Agent Core
+ 279| Economy/Shop/Composition/Item
+ 280| S6
+ 281| Decision + UI
+ 282| 多方案推荐 + Evidence
+ 283| S7
+ 284| Replay
+ 285| 逐回合复盘
+ 286| S8
+ 287| Feedback + Profile
+ 288| 个人画像与基础学习
+ 289| S9
+ 290| Web Research
+ 291| 来源治理与趋势
+ 292| S10
+ 293| 实机/视频验证
+ 294| POST-GAME 首轮验证；Live 保持关闭
+ 295| 22. Definition of Done
+ 296| 所有模块有单元测试；核心链路有集成测试。
+ 297| 任何 Recommendation 都可追溯到 GameState 和 Evidence。
+ 298| 任何 Patch 数据都必须带 patch/captured_at/source/sample_size。
+ 299| 不存在读取游戏进程内存、注入、自动输入、游戏通信拦截代码。
+ 300| OFFLINE LAB 可以完全独立运行。
+ 301| POST-GAME 可导入视频并输出完整报告。
+ 302| 玩家反馈能够反向影响 PlayerProfile。
+ 303| 23. 后续 V1.1/V2.0
+ 304| V1.1：提升 OCR、加入更多 VisionProfile、增加更多数据源。
+ 305| V1.2：加入更强的相似局检索与反事实分析。
+ 306| V2.0：评估个性化排序模型 / Contextual Bandit。
+ 307| Live 功能：只有在政策、注册和/或官方确认范围允许时再单独立项。
+ 308| 24. 官方参考与政策依据
+ 309| Riot TFT Developer API Policy：https://developer.riotgames.com/docs/tft
+ 310| Riot Vanguard FAQ for Third Party Applications：https://www.riotgames.com/en/DevRel/vanguard-faq
+ 311| Riot Terms of Service：https://www.riotgames.com/en/terms-of-service
+ 312| Riot Privacy Notice：https://www.riotgames.com/en/privacy-notice
+ 313| 工程判断
+ 314| Riot 官方 Vanguard FAQ 表示，外部读取游戏内存的工具将不再工作，并建议使用 PBE 测试受影响的应用；这不是“截图方案获得豁免”的承诺。因此本规格把“纯视觉只读”定义为技术架构边界，而非“规避封禁”的保证。
+ 315| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 316| 本次版本更新说明
+ 317| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 318| Cloud LLM 与 RAG 总体架构
+ 319| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 320| Level 0 / Deterministic Tools：规则、概率、状态 Diff、结构化查询。
+ 321| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 322| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 323| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 324| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 325| RAG 数据分层
+ 326| 层次
+ 327| 技术/存储
+ 328| 职责
+ 329| 是否允许直接作为事实
+ 330| Structured Knowledge
+ 331| MySQL / JSON Schema
+ 332| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 333| 是
+ 334| Document Search
+ 335| OpenSearch/Elasticsearch
+ 336| Patch Notes、Wiki、攻略、社区文章
+ 337| 需 Evidence
+ 338| Vector Knowledge
+ 339| pgvector（优先）/ Milvus
+ 340| 语义召回、机制说明、案例
+ 341| 需 Evidence
+ 342| Meta Statistics
+ 343| MySQL + ClickHouse
+ 344| 阵容/棋子/装备/强化统计
+ 345| 需 Patch + 样本量
+ 346| Personal Memory
+ 347| pgvector + MySQL
+ 348| 玩家历史决策、Outcome、错误模式
+ 349| 仅作为个人证据
+ 350| Cloud LLM 引入时机
+ 351| 阶段
+ 352| LLM
+ 353| RAG
+ 354| 使用范围
+ 355| P0
+ 356| 不作为业务依赖
+ 357| 不接
+ 358| 工程、契约、安全边界
+ 359| P1
+ 360| 首次接入
+ 361| 首次接入
+ 362| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 363| P2
+ 364| Vision Fallback
+ 365| 继续
+ 366| 仅低置信度 OCR/CV 二次确认
+ 367| P3
+ 368| 正式进入决策链
+ 369| Decision RAG
+ 370| Economy/Shop/Composition/Item/Transition 等多 Agent 决策综合
+ 371| P4
+ 372| Personal Coach
+ 373| Personal RAG
+ 374| 相似局、玩家历史、个人最佳策略
+ 375| P5
+ 376| Model Router
+ 377| RAG Router
+ 378| 按任务选择不调用 LLM/本地模型/云模型
+ 379| P6
+ 380| 独立实验
+ 381| 按需
+ 382| Live 默认关闭，政策允许后再验证
+ 383| P7
+ 384| 产品化治理
+ 385| 质量治理
+ 386| 成本、预算、质量、灰度、回滚
+ 387| Model Router / RAG Router
+ 388| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 389| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 390| 新增数据治理要求
+ 391| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 392| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 393| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 394| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 395| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 396| 更新后的分期计划
+ 397| Phase
+ 398| 计划时间
+ 399| 目标
+ 400| 主要新增能力
+ 401| P0
+ 402| 2026-08-24 ~ 2026-09-04
+ 403| 工程地基与安全边界
+ 404| Schema、Agent Contract、CI、Feature Flag
+ 405| P1
+ 406| 2026-09-07 ~ 2026-10-23
+ 407| Knowledge + Data + RAG + Cloud LLM Foundation
+ 408| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 409| P2
+ 410| 2026-10-26 ~ 2026-11-27
+ 411| Vision + GameState
+ 412| OCR/CV、State Builder、Timeline、Cloud Vision Fallback
+ 413| P3
+ 414| 2026-11-30 ~ 2027-01-15
+ 415| Meta + Decision + Decision RAG
+ 416| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 417| P4
+ 418| 2027-01-18 ~ 2027-02-26
+ 419| Replay + Personal RAG + Personal Coach
+ 420| 反馈、复盘、相似局、个人画像
+ 421| P5
+ 422| 2027-03-01 ~ 2027-03-26
+ 423| Orchestrator + Model/RAG Router
+ 424| 多 Agent 编排、路由、Trace、Evaluation
+ 425| P6
+ 426| 2027-03-29 ~ 2027-04-23
+ 427| Live Experimental
+ 428| 默认关闭；仅政策允许后进行实验
+ 429| P7
+ 430| 2027-04-26 ~ 2027-06-04
+ 431| Productization
+ 432| 成本、隐私、注册、部署、灰度、回滚
+ 433| 新增验收指标
+ 434| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 435| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 436| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 437| Model Router：简单事实问题应能在不调用高级云模型的情况下完成。
+ 438| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 439| 成本：所有云模型调用都有 token/cost 记录，支持按用户、Agent、Provider 聚合。
+ 440| 可回放：同一 GameState + 相同知识快照 + 相同模型版本应可复现，差异必须有版本证据。
+ 441| 当前版本基线结论
+ 442| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
+--- P1/KEYWORD HITS ---
+   7| V1.0 的目标不是把所有 TFT Agent 能力一次做完，而是建立一条可运行、可观测、可回放、可学习的闭环：Frame → Vision → Observation → GameState → Knowledge → Recommendation → Player Feedback → Outcome → Replay → Profile。
+  19| LLM/Vision/Embedding 可替换
+  27| Redis
+  30| MySQL 8
+  35| Object Storage
+  41| Vector
+  42| pgvector 或 Milvus
+  45| Tauri + React + TypeScript
+  46| 可选桌面壳
+  56| public interface TftAgent {    AgentType type();    AgentResult analyze(GameState state, KnowledgeContext context);}
+  58| record Recommendation(  String id,  RecommendationType type,  List<RecommendationOption> options,  List<Evidence> evidence,  double confidence,  String modelVersion,  String ruleVersion,  String metaSnapshotId) {}
+  95| {  "matchId": "m_001",  "patch": "<current>",  "round": "4-2",  "player": {"hp": 62, "gold": 41, "level": 7, "xp": 22, "streak": 3},  "shop": [{"unit": "X", "confidence": 0.99}],  "board": [],  "bench": [],  "items": [],  "traits": [],  "augments": [],  "encounters": [],  "rules": [],  "confidence": {"overall": 0.94}}
+ 110| id, patch, mode, started_at, ended_at, placement
+ 131| patch, region, rank, source, captured_at, sample_size
+ 132| knowledge_documents
+ 134| source_url, title, content, patch, captured_at
+ 140| 9. Meta Source Adapter 细则
+ 142| Adapter 必须输出统一 Canonical DTO，并提供 source_url、captured_at、patch、region、rank、sample_size、freshness。数据抓取失败时走缓存，不阻塞主分析链。
+ 144| FinalMetaScore = SourceReliability                * SampleSizeWeight                * FreshnessWeight                * PatchWeight                * RankWeightPersonalFit = BoardFit            + ItemFit            + AugmentFit            + EconomyFit            + TransitionCost            + PlayerPreference
+ 161| P1
+ 173| P1
+ 177| 建议建立固定 ROI 配置并支持版本化。每个 Patch 的 UI 布局变化必须对应一个 VisionProfile。
+ 179| {  "profileId": "set17_patch_x",  "regions": {    "player": {"x":0,"y":0,"w":0,"h":0},    "shop": [],    "board": [],    "augment": {}  },  "ocrModel": "paddleocr-vX",  "iconModel": "onnx-vY"}
+ 181| Orchestrator 先运行 State Validation，再并发调用 Economy/Shop/Composition/Item/Transition Agent，Decision Optimizer 聚合，Explanation Agent 最后生成可读解释。LLM 不直接负责金额、概率和规则计算。
+ 182| validate(state) -> parallel(economy, shop, composition, item, transition) -> optimize(results) -> attachEvidence() -> explain() -> persistRecommendation()
+ 183| 14. Evidence 细则
+ 184| record Evidence(  String type,          // GAME_STATE / META / RULE / HISTORY  String source,        // OCR / Riot / Tactics / OP.GG / PlayerHistory  String referenceId,  String text,  double weight) {}
+ 209| 接入 Meta 数据源并验证 Patch Isolation。
+ 219| patch_regression_set：Patch 前后同一对象的变化。
+ 237| Patch 切换
+ 238| 旧 Meta 不污染新 Patch
+ 282| 多方案推荐 + Evidence
+ 297| 任何 Recommendation 都可追溯到 GameState 和 Evidence。
+ 298| 任何 Patch 数据都必须带 patch/captured_at/source/sample_size。
+ 315| 文档更新：AI Platform V2 / RAG + Cloud LLM
+ 317| 本版本基于前一版需求基线，补充“多 Tool + 多 Domain Agent + RAG + Cloud LLM + Personal RAG + Model Router”的完整 AI 平台架构。核心原则保持不变：游戏客户端保持黑盒，系统不读取游戏进程内存、不注入、不 Hook、不拦截游戏网络、不修改客户端、不模拟键鼠、不自动执行游戏操作。Cloud LLM 是增强推理层，不是事实数据库；精确规则、数值、概率必须来自结构化 Tool/Data，RAG 负责召回机制、版本、案例与知识，LLM 负责综合、解释和自然语言交互。
+ 318| Cloud LLM 与 RAG 总体架构
+ 319| GameState -> Context Builder -> Structured Tools + Meta + RAG -> Domain Agents -> Decision Optimizer -> Cloud LLM -> Response
+ 321| Level 1 / Retrieval：Structured Query、BM25、Vector Search、Reranker。
+ 322| Level 2 / Domain Agents：Knowledge、Meta、Economy、Shop、Composition、Item、Transition、Risk、Replay、Personal Coach。
+ 323| Level 3 / Cloud LLM：综合推理、候选方案比较、反事实解释、自然语言输出。
+ 324| Cloud LLM 不直接生成 TFT 数值事实，不负责独立计算概率和经济规则。
+ 325| RAG 数据分层
+ 330| Structured Knowledge
+ 331| MySQL / JSON Schema
+ 332| 棋子、羁绊、装备、强化、奇遇、规则、Patch
+ 336| Patch Notes、Wiki、攻略、社区文章
+ 337| 需 Evidence
+ 338| Vector Knowledge
+ 339| pgvector（优先）/ Milvus
+ 341| 需 Evidence
+ 343| MySQL + ClickHouse
+ 345| 需 Patch + 样本量
+ 347| pgvector + MySQL
+ 350| Cloud LLM 引入时机
+ 352| LLM
+ 353| RAG
+ 359| P1
+ 362| Knowledge Agent、Web Research、机制解释；不参与游戏决策
+ 369| Decision RAG
+ 373| Personal RAG
+ 377| RAG Router
+ 378| 按任务选择不调用 LLM/本地模型/云模型
+ 387| Model Router / RAG Router
+ 388| 新增两个平台能力：Model Router 和 RAG Router。Model Router 根据任务复杂度、延迟、隐私、成本选择“无需 LLM / 本地模型 / 低成本云模型 / 高级云模型”；RAG Router 根据任务选择 Knowledge RAG、Decision RAG 或 Personal RAG，并强制 Patch/Set/Region/Rank 等元数据过滤。
+ 389| 简单查询 -> Structured Tool -> 0 LLM规则/概率 -> Rule/Probability Tool -> 0 LLM机制解释 -> Knowledge RAG -> 小模型/Cloud LLM复杂局势 -> Domain Agents + Decision RAG -> Cloud LLM个人复盘 -> Replay + Personal RAG -> Personal Coach
+ 391| 每个 RAG Chunk 强制保存 patch、set、source_type、source_url、captured_at、sample_size、status。
+ 392| Patch Filter 必须在 Retrieval 层强制执行，不能交给 Prompt 自觉过滤。
+ 393| 所有 Cloud LLM 调用记录 provider、model、prompt_version、tokens、latency、cost_estimate。
+ 394| 所有 Agent 最终结论记录 Evidence Coverage；缺证据时必须输出不确定性。
+ 395| Cloud LLM/Embedding/Reranker 任一云服务不可用时，必须提供本地或确定性降级路径。
+ 405| P1
+ 407| Knowledge + Data + RAG + Cloud LLM Foundation
+ 408| Knowledge Platform、RAG、Cloud LLM Gateway、Knowledge Agent
+ 415| Meta + Decision + Decision RAG
+ 416| 核心 Domain Agents、Decision RAG、LLM Grounding
+ 419| Replay + Personal RAG + Personal Coach
+ 423| Orchestrator + Model/RAG Router
+ 434| RAG：至少 100 条检索评测集，输出 Recall@K、MRR、Citation Coverage。
+ 435| Knowledge Agent：至少 100 条知识问答回归，要求版本和 Evidence 正确。
+ 436| LLM Grounding：构造 Prompt Injection / 无证据问题测试，禁止模型编造事实。
+ 438| Personal RAG：对比无历史/结构化 Profile/Personal RAG 三种推荐质量。
+ 442| 本项目不再定义为“单 Agent TFT 辅助”，而定义为“TFT Domain AI Platform”。平台底座由 Knowledge/Data、Deterministic Tools、RAG、Vision、GameState 组成；智能层由 Meta/Decision/Replay/Personal Coach 等 Domain Agent 组成；最上层由 Orchestrator + Model Router + RAG Router 负责编排。Roadmap V2 已将上述能力纳入 P0~P7 计划，当前路线图总任务数为 119 条。
+
+
