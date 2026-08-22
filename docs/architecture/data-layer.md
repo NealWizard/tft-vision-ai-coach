@@ -38,10 +38,39 @@ com.tft.coach.data.snapshot.FileSystemRawSnapshotStore
 |----|------|------|
 | P1-001 | Source Adapter SPI | DONE |
 | P1-002 | Raw Snapshot 存储 | DONE |
-| P1-003 | Riot/Data Dragon Adapter | TODO |
+| P1-003 | Riot/Data Dragon Adapter | DONE |
 | P1-004 | 第一统计源 Adapter | TODO |
 | … | 见 User Story 看板 | |
 
+## Data Dragon Adapter（P1-003）
+
+```
+com.tft.coach.data.datadragon.DataDragonAdapter
+com.tft.coach.data.datadragon.DataDragonFetchService
+com.tft.coach.data.evidence.FetchEvidence
+```
+
+| 资源 | resourceKey | CDN 文件 |
+|------|-------------|----------|
+| 棋子 | `tft-champion` | `tft-champion.json` |
+| 羁绊 | `tft-trait` | `tft-trait.json` |
+| 装备 | `tft-item` | `tft-item.json` |
+| 强化 | `tft-augments` | `tft-augments.json` |
+
+- 基址：`https://ddragon.leagueoflegends.com`
+- Patch：支持完整版本（`16.16.1`）或前缀（`14.23` → `14.23.1`）；空则取最新
+- 失败降级：经 `SourceFetchService` 回退至最近 Snapshot
+- Evidence：`FetchEvidence.fromFetchResult()` 对齐 `evidence.schema.json`
+
+示例：
+
+```java
+DataDragonFetchService ddragon = DataDragonFetchService.createDefault(
+        Path.of("data/snapshots"), new JdkDataDragonHttpClient());
+var outcome = ddragon.fetch(DataDragonResource.CHAMPION, "16.16.1", "en_US");
+FetchEvidence evidence = outcome.evidence();
+```
+
 ## 下一步
 
-**P1-003**：实现 `riot-datadragon` Adapter，对接 Data Dragon 静态 JSON。
+**P1-004**：实现第一统计源 Adapter（MetaSnapshot 统一 DTO）。

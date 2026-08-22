@@ -24,7 +24,8 @@
 |----|------|------|
 | P1-001 | Source Adapter SPI | DONE |
 | P1-002 | Raw Snapshot 存储 | DONE |
-| P1-003 | Riot/Data Dragon Adapter | **下一步** |
+| P1-003 | Riot/Data Dragon Adapter | DONE |
+| P1-004 | 第一统计源 Adapter | **下一步** |
 | P1-004 ~ P1-019 | 统计源 / 归一化 / Tools / Agent | TODO |
 | M1 | V0.2 Knowledge 可复现 | TODO |
 
