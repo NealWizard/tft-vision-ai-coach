@@ -29,7 +29,7 @@
 
 - 站点：<https://nealwizard.github.io/tft-vision-ai-coach/>
 - 源文件：仓库 `docs/` 目录 + 根目录 `mkdocs.yml`
-- 触发：`main` 分支 push 后 GitHub Actions 自动构建部署
+- 触发：`develop` / `main` push 后 GitHub Actions 自动构建部署
 
 本地预览：
 

@@ -125,13 +125,13 @@ User Story 任务 ID（如 `P1-003`）可映射为 **GitHub Issues**：
 | 源文件 | `docs/` + 根目录 `mkdocs.yml` |
 | 构建工具 | MkDocs + Material |
 | 部署 Workflow | `.github/workflows/docs.yml` |
-| 触发分支 | `main`（push 到 `docs/**` 或 `mkdocs.yml` 变更） |
+| 触发分支 | `main`、`develop`（`docs/**` 或 `mkdocs.yml` 变更） |
 
 首次启用 GitHub Pages：
 
 1. 仓库 **Settings → Pages**
 2. **Build and deployment → Source** 选 **GitHub Actions**
-3. 将本分支 merge 到 `main` 并 push，等待 **Docs** workflow 跑绿
+3. push 到 `develop`（或 merge 到 `main`）并 push，等待 **Docs** workflow 跑绿
 
 本地预览：
 

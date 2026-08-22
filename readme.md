@@ -41,7 +41,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\docs-serve.ps1
 ## 开发分支
 
 - 日常开发：`develop`
-- Wiki 发布：合并到 `main` 后自动部署（`.github/workflows/docs.yml`）
+- Wiki 发布：`develop` push 自动部署；发版时 merge 到 `main` 同步（`.github/workflows/docs.yml`）
 - CI：`.github/workflows/ci.yml` — push/PR 到 `main`、`develop`、`feature/**`
 
 ## 任务完成收尾

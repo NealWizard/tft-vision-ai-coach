@@ -59,4 +59,4 @@ Cursor 规则：`.cursor/rules/task-completion.mdc`
 
 ## Wiki 发布
 
-文档变更合并到 `main` 后，GitHub Actions **Docs** workflow 会自动部署 Wiki 站点。
+文档变更 push 到 `develop` 或 `main` 后，GitHub Actions **Docs** workflow 会自动部署 Wiki 站点。
