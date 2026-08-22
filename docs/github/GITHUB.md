@@ -27,16 +27,16 @@ git remote -v
 git remote set-url origin https://github.com/NealWizard/tft-vision-ai-coach.git
 ```
 
-## Git 提交身份（必配）
+## Git 提交身份
 
-GitHub 按 **commit 邮箱** 关联账号，与登录名无关。本仓库已配置：
+GitHub 按 **commit 邮箱** 关联账号。请在**本机**自行配置，**勿将私人邮箱写入仓库文档**：
 
 ```powershell
-git config --local user.name ""
-git config --local user.email ""
+git config --local user.name "<你的 GitHub 用户名>"
+git config --local user.email "<你的 GitHub 已验证邮箱或 noreply 地址>"
 ```
 
-请确保 `` 已在 GitHub **Settings → Emails** 中验证，否则提交显示为未关联用户。
+在 GitHub **Settings → Emails** 可查看 `...@users.noreply.github.com`；勾选 **Keep my email addresses private** 时推荐使用 noreply 地址。
 
 ## 认证方式
 
@@ -78,7 +78,7 @@ https://github.com/NealWizard/tft-vision-ai-coach/actions
 ### 本地对齐 CI
 
 ```powershell
-$env:JAVA_HOME = "C:\Users\ASUS\Desktop\TFT\.tools\jdk-21"
+$env:JAVA_HOME = "C:\path\to\jdk-21"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 ```

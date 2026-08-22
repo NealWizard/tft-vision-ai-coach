@@ -32,12 +32,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 
 ## 4. Git 提交身份
 
+在**本机**配置（勿将私人邮箱提交到仓库文档）：
+
 ```powershell
-git config --local user.name ""
-git config --local user.email ""
+git config --local user.name "<你的 GitHub 用户名>"
+git config --local user.email "<你的 GitHub 已验证邮箱或 noreply 地址>"
 ```
 
-邮箱须在 GitHub **Settings → Emails** 中验证。
+邮箱须在 GitHub **Settings → Emails** 中验证，或使用 `...@users.noreply.github.com`。
 
 ## 5. 启动应用（P0）
 
