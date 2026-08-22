@@ -1,27 +1,43 @@
 # Branching Strategy (P0-001)
 
+> 平台：**GitHub** · 仓库：https://github.com/NealWizard/tft-vision-ai-coach
+
 ## Branches
 
-| Branch | Purpose | Protection |
-|--------|---------|------------|
-| `main` | Production-ready releases only | PR required; CI must be green |
-| `develop` | Integration branch for V0.x | PR required; CI must be green |
-| `feature/<id>-<slug>` | Single task/story work | Short-lived; rebase onto develop |
-| `hotfix/<slug>` | Urgent main fixes | Merge to main and back-port to develop |
+| Branch | Purpose | 当前策略（单人开发） |
+|--------|---------|---------------------|
+| `main` | 稳定 / 可发布版本 | 可直接 push；发版前再从 develop 合并 |
+| `develop` | V0.x 日常集成 | **默认开发分支**，AI / 开发者直接 push |
+| `feature/<id>-<slug>` | 单任务 / Story | 可选；合并回 develop |
+| `hotfix/<slug>` | 紧急修复 | 修 main 并回灌 develop |
 
 ## Naming examples
 
 - `feature/P0-005-canonical-schemas`
 - `feature/P1-003-datadragon-adapter`
-- `hotfix/ci-safety-scan-false-positive`
+- `hotfix/ci-snapshot-false-positive`
 
-## Merge rules
+## 单人开发（当前）
 
-1. No direct push to `main` / `develop` (configure in GitHub **Branch protection rules**).
-2. PR must pass CI: `safety-scan`, `build-test` (see `.github/workflows/ci.yml`).
-3. Prefer squash merge for feature branches; keep linear history on `develop`.
-4. Remote: `https://github.com/NealWizard/tft-vision-ai-coach`
-5. Cross-module changes stay in one PR when they share a single acceptance criterion.
+1. 在 `develop` 上开发，`git push origin develop`
+2. **不启用** Branch protection
+3. Push 后查看 [GitHub Actions](https://github.com/NealWizard/tft-vision-ai-coach/actions) 是否全绿
+4. 提交前建议本地跑 `scripts/local-ci.ps1`
+
+## 协作 / 发版期（后续）
+
+1. 启用 Branch protection（`main` / `develop`）
+2. 禁止直接 push，必须通过 **Pull Request**
+3. PR 必须通过 CI：
+   - `Safety boundary scan`
+   - `Build & test`
+4. 配置见 `docs/github/GITHUB.md`
+
+## Merge 规则
+
+1. Feature 分支优先 **Squash merge** 到 `develop`
+2. 跨模块改动若属同一验收标准，放在同一个 PR
+3. `main` 仅接收从 `develop` 的发布合并（或 hotfix）
 
 ## Mono-repo domains
 

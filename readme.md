@@ -1,29 +1,34 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 14:20 +08:00  
-> 当前阶段：**P0 · 工程地基（V0.1）— 已完成并通过本地门禁**
+> 更新时间：2026-08-22 15:10 +08:00  
+> 当前阶段：**P0 · 工程地基（V0.1）— 已完成**  
+> 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 
 ## 项目定位
 
 纯视觉/截图输入的云顶之弈辅助决策系统（副驾驶）。**不读内存、不注入、不模拟键鼠、不拦截游戏通信**。Live 动态推荐默认关闭。
 
-规划基线见：`TFT_Vision_AI_Coach_userstory (1).html`  
-产品需求见：`云顶辅助决策agent需求文档.txt`
+| 文档 | 路径 |
+|------|------|
+| 产品需求 | `云顶辅助决策agent需求文档.txt` |
+| 任务路线图 | `TFT_Vision_AI_Coach_userstory (1).html` |
+| GitHub 协作 / CI | `docs/github/GITHUB.md` |
+| 分支策略 | `docs/branching/BRANCHING.md` |
 
 ## P0 交付内容（全部 DONE）
 
-| ID | 任务 | 落地位置 | 自审结论 |
-|----|------|----------|----------|
-| P0-001 | Mono-repo + 分支策略 | 根 `pom.xml` 十一模块 + `docs/branching/BRANCHING.md` + `main`/`develop` | 九大业务域齐；另加 `tft-contracts`/`tft-common` 共享地基 |
-| P0-002 | Java 21 + Spring Boot 3 基线 | Java 21 / Boot 3.3.5 / Enforcer | `mvn clean verify` 全绿；dependency-tree 已导出 |
-| P0-003 | CI/CD 基线 | `.github/workflows/ci.yml` + `scripts/local-ci.ps1` | GitHub Actions：safety + build/test/package |
-| P0-004 | 安全边界扫描 | `scripts/safety-scan.ps1` | 正常代码通过；违规样例在 `tools/safety-fixtures` |
-| P0-005 | Canonical Schema | `schemas/canonical/*` | 10 类实体 schema + 单测 |
-| P0-006 | Agent Contract | `schemas/agent/*` + 5 个可运行样例 | Knowledge/Meta/Economy/Shop/Composition |
-| P0-007 | Trace 可观测 | `TraceService` + `/api/v1/trace/*` | correlation_id 可查询；日志含 latency/version/status |
-| P0-008 | Feature Flag | `tft.flags.*` | Live 三项默认 false，配置可切换 |
-| P0-009 | Fixture 目录 | `fixtures/*` 五类 + manifest | 空壳就绪，版本规则见 `fixtures/README.md` |
-| M0 | V0.1 门禁 | 本地 `mvn verify` + safety scan | **通过** |
+| ID | 任务 | 落地位置 |
+|----|------|----------|
+| P0-001 | Mono-repo + 分支策略 | 根 `pom.xml` + `docs/branching/BRANCHING.md` |
+| P0-002 | Java 21 + Spring Boot 3 | Java 21 / Boot 3.3.5 / Enforcer |
+| P0-003 | CI/CD 基线 | `.github/workflows/ci.yml` + `scripts/local-ci.ps1` |
+| P0-004 | 安全边界扫描 | `scripts/safety-scan.ps1` |
+| P0-005 | Canonical Schema | `schemas/canonical/*` |
+| P0-006 | Agent Contract | `schemas/agent/*` + 5 个样例 |
+| P0-007 | Trace 可观测 | `TraceService` + `/api/v1/trace/*` |
+| P0-008 | Feature Flag | `tft.flags.*`，Live 默认 false |
+| P0-009 | Fixture 目录 | `fixtures/*` 五类 manifest |
+| M0 | V0.1 门禁 | `mvn verify` + safety scan 通过 |
 
 ## 模块一览
 
@@ -42,62 +47,63 @@ tft-vision-ai-coach (parent)
 └── tft-orchestrator   # Spring Boot 入口
 ```
 
-## 本地环境
+## 快速开始
 
-1. JDK 21（可用仓库旁路 `.tools/jdk-21`，已 gitignore）
-2. Maven 3.6.3+（推荐 3.9+）
-3. 一键门禁：
+### 1. 克隆
 
 ```powershell
+git clone https://github.com/NealWizard/tft-vision-ai-coach.git
+cd tft-vision-ai-coach
+```
+
+### 2. JDK 21
+
+```powershell
+# 可选：使用仓库旁路 JDK（见 .gitignore 的 .tools/jdk-21）
 $env:JAVA_HOME = "C:\Users\ASUS\Desktop\TFT\.tools\jdk-21"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
+```
+
+### 3. 构建 & 测试
+
+```powershell
+mvn -B clean verify
+# 或一键对齐 CI
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 ```
 
-## 关键接口（P0）
-
-- `GET /api/v1/health/foundation` — 健康检查 + Feature Flag 默认值
-- `GET /api/v1/trace/demo` — 演示写入 AgentRun（可带 `X-Correlation-Id`）
-- `GET /api/v1/trace/{correlationId}` — 按 correlation_id 查询调用链
-
-## GitHub 仓库
-
-- 远端：`https://github.com/NealWizard/tft-vision-ai-coach`
-- CI：Push/PR 触发 `.github/workflows/ci.yml`
-- 分支保护：GitHub → **Settings → Branches → Branch protection rules**（保护 `main` / `develop`）
-
-### 首次推送（本地）
+### 4. Git 提交身份（本仓库）
 
 ```powershell
-cd C:\Users\ASUS\Desktop\TFT
-git remote set-url origin https://github.com/NealWizard/tft-vision-ai-coach.git
-git push -u origin develop
-git checkout -b main   # 若尚无 main
-git push -u origin main
-git checkout develop
+git config --local user.name "NealWizard"
+git config --local user.email "1054318578@qq.com"
 ```
 
-HTTPS 推送需 GitHub **Personal Access Token**（Settings → Developer settings → Personal access tokens），或改用 SSH 并配置公钥。
+邮箱须在 GitHub 已验证，提交才会显示为你的账号。
 
-## 自主决策与搁置项
+## GitHub CI
 
-**已决策**
+- 配置文件：`.github/workflows/ci.yml`
+- 触发：push / PR 到 `main`、`develop`、`feature/**`
+- Jobs：`Safety boundary scan` · `Build & test`
+- 状态：https://github.com/NealWizard/tft-vision-ai-coach/actions
 
-- Maven 多模块 + Spring Boot 3.3.5（对齐 User Story Java 基线，非桌面 UI）
-- CI 以 **GitHub Actions** 为准；本机用 `scripts/local-ci.ps1` 对齐
-- Schema `1.0.0`；Agent 强制 `candidates[]`
-- 本机无 JDK 21 时下载 Temurin 到 `.tools/jdk-21`
+单人开发期 **不启用 Branch protection**，可直接 push 到 `develop`。
 
-**搁置（请你检查时确认）**
+## 关键接口（P0）
 
-- GitHub Branch protection 是否已开启（需先在 Actions 跑通一次再勾选 status check）
-- Schema 字段是否需与 Word 规格文档逐字段对齐
-- 是否升级本机 Maven 到 3.9
-- `LoadLibrary` 扫描规则是否过严（当前默认拦截）
+- `GET /api/v1/health/foundation` — 健康 + Feature Flag
+- `GET /api/v1/trace/demo` — 演示 Trace（可带 `X-Correlation-Id`）
+- `GET /api/v1/trace/{correlationId}` — 查询调用链
+
+## 开发流程
+
+1. 在 `develop` 分支开发
+2. 提交前运行 `scripts/local-ci.ps1`
+3. `git push origin develop`
+4. 到 GitHub Actions 确认 CI 全绿
+5. 新增 Schema / Agent 时先改 `schemas/`，再写代码
 
 ## 使用方法
 
-1. 打开 User Story HTML 跟踪进度  
-2. 开发前阅读 `docs/branching/BRANCHING.md`  
-3. 提交前运行 `scripts/local-ci.ps1`  
-4. 新增实体/Agent 时先改 `schemas/`，再写代码
+详见 `docs/github/GITHUB.md`（认证、PR、Issue 映射、何时开 Branch protection）。
