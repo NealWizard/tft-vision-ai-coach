@@ -60,6 +60,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.tft.coach</groupId>
+        <artifactId>tft-data</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tft.coach</groupId>
+        <artifactId>tft-knowledge</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.networknt</groupId>
         <artifactId>json-schema-validator</artifactId>
         <version>${json-schema-validator.version}</version>

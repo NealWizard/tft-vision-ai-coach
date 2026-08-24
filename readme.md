@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-24 09:05 +08:00
-> 当前阶段：**P1 · Knowledge & Data Platform 重建**
+> 更新时间：2026-08-24 10:05 +08:00
+> 当前阶段：**P1 完成（除 Stats-002 BLOCKED）→ 准备 P2**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -9,26 +9,28 @@
 
 ## 文档
 
-| 类型 | 位置 |
-|------|------|
-| **Wiki（推荐）** | https://nealwizard.github.io/tft-vision-ai-coach/ |
-| Wiki 源文件 | `docs/` + `mkdocs.yml` |
-| 唯一需求与任务基线 | `TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html` |
+
+| 类型               | 位置                                                          |
+| ------------------ | ------------------------------------------------------------- |
+| **Wiki（推荐）**   | https://nealwizard.github.io/tft-vision-ai-coach/             |
+| Wiki 源文件        | `docs/` + `mkdocs.yml`                                        |
+| 唯一需求与任务基线 | `TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html`              |
 | 整合需求与开发规格 | `docs/product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md` |
-| P1 数据层 | `docs/architecture/data-layer.md` |
-| 历史需求文档 | `历史需求文档/`（仅归档，不再更新） |
-| 代码示例 | `goodcode.md` |
+| P1 数据层          | `docs/architecture/data-layer.md`                             |
+| 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
+| 代码示例           | `goodcode.md`                                                 |
 
 ## V3.1 重建进度
 
-| ID | 任务 | 状态 |
-|----|------|------|
-| P0-FOUND-* | 工程、契约、安全、可观测、降级门禁 | DONE |
-| P1-DATA-* | Source、Snapshot、Stats、Entity、Patch、Evidence | **重建中**（Riot/Stats-001/EntityResolve DONE，Stats-002 BLOCKED） |
-| P1-KNOW-* | 确定性 Knowledge Tools | TODO |
-| P1-RAG-* | Hybrid RAG Platform | TODO |
-| P1-LLM-* | Cloud LLM Gateway / Guard / Meter | TODO |
-| P1-AGENT-* | Knowledge / Research Agent | TODO |
+
+| ID         | 任务                                             | 状态                                      |
+| ---------- | ------------------------------------------------ | ----------------------------------------- |
+| P0-FOUND-* | 工程、契约、安全、可观测、降级门禁               | DONE                                      |
+| P1-DATA-*  | Source～Quality 全链路                           | **DONE**（Stats-002 BLOCKED）             |
+| P1-KNOW-*  | 确定性 Knowledge Tools                           | DONE                                      |
+| P1-RAG-*   | Hybrid RAG Platform                              | DONE                                      |
+| P1-LLM-*   | Cloud LLM Gateway / Guard / Meter                | DONE                                      |
+| P1-AGENT-* | Knowledge / Research Agent                       | DONE                                      |
 
 ## 快速开始
 
