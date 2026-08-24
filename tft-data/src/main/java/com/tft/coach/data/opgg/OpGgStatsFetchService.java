@@ -31,12 +31,11 @@ public class OpGgStatsFetchService {
 
     public OpGgStatsOutcome fetchMetaBundle(String patch, String region, String timeWindow)
             throws IOException, AdapterFetchException {
-        String url = OpGgStatsUrls.metaBundle(OpGgStatsUrls.DEFAULT_BASE, region, patch, timeWindow);
         FetchRequest request = new FetchRequest(
                 SourceType.STATS,
-                OpGgStatsAdapter.ADAPTER_ID,
+                OpGgMcpStatsAdapter.ADAPTER_ID,
                 OpGgStatsResource.META_BUNDLE.resourceKey(),
-                url,
+                OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
                 patch,
                 Map.of(
                         OpGgStatsAdapter.PARAM_REGION, region,
@@ -51,10 +50,10 @@ public class OpGgStatsFetchService {
 
     public record OpGgStatsOutcome(FetchResult result, MetaSnapshot snapshot, FetchEvidence evidence) {}
 
-    public static OpGgStatsFetchService createDefault(Path snapshotRoot, OpGgStatsHttpClient httpClient) {
+    public static OpGgStatsFetchService createDefault(Path snapshotRoot, OpGgMcpClient mcpClient) {
         RawSnapshotStore store = new FileSystemRawSnapshotStore(snapshotRoot);
         SourceAdapterRegistry registry = new SourceAdapterRegistry(
-                java.util.List.of(new OpGgStatsAdapter(httpClient)));
+                java.util.List.of(new OpGgMcpStatsAdapter(mcpClient)));
         return new OpGgStatsFetchService(
                 new SourceFetchService(registry, store),
                 new OpGgMetaSnapshotParser());

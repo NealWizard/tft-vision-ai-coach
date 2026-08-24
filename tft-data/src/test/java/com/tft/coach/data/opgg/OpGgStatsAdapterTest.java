@@ -26,14 +26,14 @@ class OpGgStatsAdapterTest {
     Path tempDir;
 
     private byte[] bundleJson;
-    private StubHttpClient httpClient;
+    private byte[] mcpRawJson;
+    private StubMcpClient mcpClient;
 
     @BeforeEach
     void setUp() throws Exception {
-        try (var in = OpGgStatsAdapterTest.class.getClassLoader().getResourceAsStream("opgg/meta-bundle-sample.json")) {
-            bundleJson = in.readAllBytes();
-        }
-        httpClient = new StubHttpClient();
+        bundleJson = readResource("opgg/meta-bundle-sample.json");
+        mcpRawJson = readResource("opgg/mcp-meta-decks-raw-sample.json");
+        mcpClient = new StubMcpClient();
     }
 
     @Test
@@ -50,34 +50,62 @@ class OpGgStatsAdapterTest {
     }
 
     @Test
+    void normalizerMapsMcpDeckPayloadToMetaBundle() throws Exception {
+        FetchRequest request = new FetchRequest(
+                SourceType.STATS,
+                OpGgMcpStatsAdapter.ADAPTER_ID,
+                OpGgStatsResource.META_BUNDLE.resourceKey(),
+                OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
+                "set17-16.16",
+                Map.of(
+                        OpGgStatsAdapter.PARAM_REGION, "global",
+                        OpGgStatsAdapter.PARAM_TIME_WINDOW, "24h"
+                )
+        );
+
+        byte[] normalized = new OpGgMcpMetaBundleNormalizer().normalize(mcpRawJson, request);
+        MetaSnapshot snapshot = new OpGgMetaSnapshotParser().parse(normalized);
+
+        assertEquals("opgg", snapshot.sourceId());
+        assertEquals("global", snapshot.region());
+        assertEquals("24h", snapshot.timeWindow());
+        assertEquals(1, snapshot.comps().size());
+        assertEquals("Stargazer Xayah", snapshot.comps().getFirst().name());
+        assertEquals(8679, snapshot.sampleSize());
+    }
+
+    @Test
     void fetchServiceReturnsMetaSnapshotWithEvidence() throws Exception {
-        OpGgStatsFetchService service = OpGgStatsFetchService.createDefault(tempDir, httpClient);
+        OpGgStatsFetchService service = OpGgStatsFetchService.createDefault(tempDir, mcpClient);
         var outcome = service.fetchMetaBundle("set17-16.16", "global", "24h");
 
         assertTrue(outcome.result().live());
         assertEquals(SourceType.STATS, outcome.evidence().sourceType());
-        assertEquals(OpGgStatsAdapter.ADAPTER_ID, outcome.evidence().sourceId());
+        assertEquals(OpGgMcpStatsAdapter.ADAPTER_ID, outcome.evidence().sourceId());
         assertEquals("24h", outcome.snapshot().timeWindow());
+        assertEquals(
+                OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
+                outcome.evidence().sourceUrl());
     }
 
     @Test
     void degradesToCachedSnapshotWhenLiveFails() throws Exception {
         FileSystemRawSnapshotStore store = new FileSystemRawSnapshotStore(tempDir);
-        OpGgStatsAdapter adapter = new OpGgStatsAdapter(httpClient);
+        OpGgMcpStatsAdapter adapter = new OpGgMcpStatsAdapter(mcpClient);
         SourceFetchService fetchService = new SourceFetchService(
                 new SourceAdapterRegistry(List.of(adapter)), store);
 
         FetchRequest request = new FetchRequest(
                 SourceType.STATS,
-                OpGgStatsAdapter.ADAPTER_ID,
+                OpGgMcpStatsAdapter.ADAPTER_ID,
                 OpGgStatsResource.META_BUNDLE.resourceKey(),
-                "https://tft.op.gg/api/meta/bundle",
+                OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
                 "set17-16.16",
                 Map.of()
         );
         fetchService.fetch(request);
 
-        httpClient.failNext = true;
+        mcpClient.failNext = true;
         var result = fetchService.fetch(request);
 
         assertFalse(result.live());
@@ -86,16 +114,28 @@ class OpGgStatsAdapterTest {
         assertEquals(578607, snapshot.sampleSize());
     }
 
-    private final class StubHttpClient implements OpGgStatsHttpClient {
+    private static byte[] readResource(String path) throws Exception {
+        try (var in = OpGgStatsAdapterTest.class.getClassLoader().getResourceAsStream(path)) {
+            if (in == null) {
+                throw new IllegalStateException("Missing test resource: " + path);
+            }
+            return in.readAllBytes();
+        }
+    }
+
+    private final class StubMcpClient implements OpGgMcpClient {
         private boolean failNext;
 
         @Override
-        public byte[] getBytes(String url) throws AdapterFetchException {
+        public byte[] callTool(String toolName, Map<String, Object> arguments) throws AdapterFetchException {
             if (failNext) {
                 failNext = false;
-                throw new AdapterFetchException("simulated opgg outage");
+                throw new AdapterFetchException("simulated opgg mcp outage");
             }
-            return bundleJson;
+            if (OpGgMcpStatsAdapter.TOOL_NAME.equals(toolName)) {
+                return bundleJson;
+            }
+            throw new AdapterFetchException("Unexpected MCP tool: " + toolName);
         }
     }
 }

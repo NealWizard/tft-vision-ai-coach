@@ -78,21 +78,25 @@ FetchEvidence evidence = outcome.evidence();
 
 ```
 com.tft.coach.data.meta.MetaSnapshot
-com.tft.coach.data.opgg.OpGgStatsAdapter
+com.tft.coach.data.opgg.OpGgMcpStatsAdapter
 com.tft.coach.data.opgg.OpGgStatsFetchService
+com.tft.coach.data.opgg.OfficialOpGgMcpClient
 ```
 
 **MetaSnapshot** 统一 DTO，覆盖 Comp / Unit / Item / Augment，含 `sample_size` 与 `captured_at`。
 
+- 第一统计源采用 **OP.GG 官方 MCP**（`https://mcp-api.op.gg/mcp`，工具 `tft_list_meta_decks`）
 - `source_id=opgg`，参数：`region`、`time_window`、`patch`
-- 原始 JSON append-only 存入 Snapshot；live 失败降级缓存
+- MCP 原始响应经 `OpGgMcpMetaBundleNormalizer` 归一化后 append-only 存入 Snapshot；live 失败降级缓存
 - 解析：`OpGgMetaSnapshotParser`
 
 ```java
-OpGgStatsFetchService opgg = OpGgStatsFetchService.createDefault(
-        Path.of("data/snapshots"), new JdkOpGgStatsHttpClient());
-var outcome = opgg.fetchMetaBundle("set17-16.16", "global", "24h");
-MetaSnapshot meta = outcome.snapshot();
+try (OpGgMcpClient mcp = new OfficialOpGgMcpClient()) {
+    OpGgStatsFetchService opgg = OpGgStatsFetchService.createDefault(
+            Path.of("data/snapshots"), mcp);
+    var outcome = opgg.fetchMetaBundle("set17-16.16", "global", "24h");
+    MetaSnapshot meta = outcome.snapshot();
+}
 ```
 
 ## LoLChess Stats Adapter + 多源聚合（P1-DATA-Stats-002）
@@ -109,11 +113,13 @@ com.tft.coach.data.meta.MetaSnapshotQuery
 - 单源失败不阻塞另一源；经 `SourceFetchService` 可独立降级至缓存
 
 ```java
-MultiSourceMetaFetchService meta = MultiSourceMetaFetchService.createDefault(
-        Path.of("data/snapshots"),
-        new JdkOpGgStatsHttpClient(),
-        new JdkLoLChessStatsHttpClient());
-MultiSourceMetaResult result = meta.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+try (OpGgMcpClient mcp = new OfficialOpGgMcpClient()) {
+    MultiSourceMetaFetchService meta = MultiSourceMetaFetchService.createDefault(
+            Path.of("data/snapshots"),
+            mcp,
+            new JdkLoLChessStatsHttpClient());
+    MultiSourceMetaResult result = meta.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+}
 ```
 
 ## 下一步

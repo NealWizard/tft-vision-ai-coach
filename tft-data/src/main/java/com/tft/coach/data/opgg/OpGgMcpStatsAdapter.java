@@ -7,23 +7,32 @@ import com.tft.coach.data.spi.SourceAdapter;
 import com.tft.coach.data.spi.SourceType;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
 /**
  * Captures current TFT meta decks through the official OP.GG MCP endpoint.
- * Normalization into Canonical Meta DTO is handled by the downstream normalizer.
+ * Normalization into Canonical Meta DTO is handled by {@link OpGgMcpMetaBundleNormalizer}.
  */
 public final class OpGgMcpStatsAdapter implements SourceAdapter {
 
     public static final String ADAPTER_ID = "opgg";
-    public static final String RESOURCE_KEY = "meta-decks";
     public static final String TOOL_NAME = "tft_list_meta_decks";
 
-    private final OpGgMcpClient client;
+    private final OpGgMcpMetaBundleAssembler assembler;
 
     public OpGgMcpStatsAdapter(OpGgMcpClient client) {
-        this.client = Objects.requireNonNull(client, "client");
+        this(new OpGgMcpMetaBundleAssembler(client));
+    }
+
+    OpGgMcpStatsAdapter(OpGgMcpMetaBundleAssembler assembler) {
+        this.assembler = Objects.requireNonNull(assembler, "assembler");
+    }
+
+    public static String mcpToolUrl(String toolName) {
+        return OfficialOpGgMcpClient.DEFAULT_BASE_URL
+                + OfficialOpGgMcpClient.DEFAULT_ENDPOINT
+                + "#"
+                + toolName;
     }
 
     @Override
@@ -40,15 +49,29 @@ public final class OpGgMcpStatsAdapter implements SourceAdapter {
     public boolean supports(FetchRequest request) {
         return request.sourceType() == SourceType.STATS
                 && ADAPTER_ID.equals(request.sourceId())
-                && RESOURCE_KEY.equals(request.resourceKey());
+                && isKnownResource(request.resourceKey());
     }
 
     @Override
     public AdapterFetchPayload fetch(FetchRequest request) throws AdapterFetchException {
-        byte[] body = client.callTool(TOOL_NAME, Map.of());
+        OpGgStatsResource resource = OpGgStatsResource.fromResourceKey(request.resourceKey());
+        if (resource != OpGgStatsResource.META_BUNDLE) {
+            throw new AdapterFetchException(
+                    "OP.GG MCP only supports meta-bundle in P1: " + resource.resourceKey());
+        }
+        byte[] body = assembler.fetchMetaBundle(request);
         String patch = request.patch() == null || request.patch().isBlank()
                 ? "current"
                 : request.patch();
         return new AdapterFetchPayload(body, "application/json", Instant.now(), patch);
+    }
+
+    private static boolean isKnownResource(String resourceKey) {
+        try {
+            OpGgStatsResource.fromResourceKey(resourceKey);
+            return true;
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
     }
 }

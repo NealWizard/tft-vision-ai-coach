@@ -1,0 +1,14 @@
+{
+  "decks": [
+    {
+      "name": "Stargazer Xayah",
+      "tier": "S",
+      "avg_place": 3.87,
+      "first_rate": 0.2117,
+      "top4_rate": 0.6047,
+      "pick_rate": 0.015,
+      "sample_size": 8679,
+      "core_units": ["TFT17_Aatrox", "TFT17_Xayah", "TFT17_Jax"]
+    }
+  ]
+}

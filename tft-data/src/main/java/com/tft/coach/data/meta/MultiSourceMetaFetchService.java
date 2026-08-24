@@ -7,13 +7,11 @@ import com.tft.coach.data.lolchess.LoLChessStatsAdapter;
 import com.tft.coach.data.lolchess.LoLChessStatsHttpClient;
 import com.tft.coach.data.lolchess.LoLChessStatsResource;
 import com.tft.coach.data.lolchess.LoLChessStatsUrls;
-import com.tft.coach.data.lolchess.JdkLoLChessStatsHttpClient;
-import com.tft.coach.data.opgg.JdkOpGgStatsHttpClient;
 import com.tft.coach.data.opgg.OpGgMetaSnapshotParser;
+import com.tft.coach.data.opgg.OpGgMcpClient;
+import com.tft.coach.data.opgg.OpGgMcpStatsAdapter;
 import com.tft.coach.data.opgg.OpGgStatsAdapter;
-import com.tft.coach.data.opgg.OpGgStatsHttpClient;
 import com.tft.coach.data.opgg.OpGgStatsResource;
-import com.tft.coach.data.opgg.OpGgStatsUrls;
 import com.tft.coach.data.registry.SourceAdapterRegistry;
 import com.tft.coach.data.snapshot.FileSystemRawSnapshotStore;
 import com.tft.coach.data.snapshot.RawSnapshotStore;
@@ -45,10 +43,9 @@ public class MultiSourceMetaFetchService {
     public MultiSourceMetaResult fetch(MetaSnapshotQuery query) throws IOException, AdapterFetchException {
         List<MetaSnapshotOutcome> outcomes = new ArrayList<>();
         outcomes.add(fetchOne(
-                OpGgStatsAdapter.ADAPTER_ID,
+                OpGgMcpStatsAdapter.ADAPTER_ID,
                 OpGgStatsResource.META_BUNDLE.resourceKey(),
-                OpGgStatsUrls.metaBundle(
-                        OpGgStatsUrls.DEFAULT_BASE, query.region(), query.patch(), query.timeWindow()),
+                OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
                 query));
         outcomes.add(fetchOne(
                 LoLChessStatsAdapter.ADAPTER_ID,
@@ -80,12 +77,12 @@ public class MultiSourceMetaFetchService {
 
     public static MultiSourceMetaFetchService createDefault(
             Path snapshotRoot,
-            OpGgStatsHttpClient opggClient,
+            OpGgMcpClient opggMcpClient,
             LoLChessStatsHttpClient lolchessClient
     ) {
         RawSnapshotStore store = new FileSystemRawSnapshotStore(snapshotRoot);
         SourceAdapterRegistry registry = new SourceAdapterRegistry(List.of(
-                new OpGgStatsAdapter(opggClient),
+                new OpGgMcpStatsAdapter(opggMcpClient),
                 new LoLChessStatsAdapter(lolchessClient)
         ));
         return new MultiSourceMetaFetchService(

@@ -1,17 +1,17 @@
 package com.tft.coach.data.meta;
 
-import com.tft.coach.data.lolchess.JdkLoLChessStatsHttpClient;
 import com.tft.coach.data.lolchess.LoLChessStatsAdapter;
 import com.tft.coach.data.lolchess.LoLChessStatsHttpClient;
-import com.tft.coach.data.opgg.JdkOpGgStatsHttpClient;
+import com.tft.coach.data.opgg.OpGgMcpClient;
+import com.tft.coach.data.opgg.OpGgMcpStatsAdapter;
 import com.tft.coach.data.opgg.OpGgStatsAdapter;
-import com.tft.coach.data.opgg.OpGgStatsHttpClient;
 import com.tft.coach.data.spi.AdapterFetchException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,13 +23,13 @@ class MultiSourceMetaFetchServiceTest {
 
     private byte[] opggJson;
     private byte[] lolchessJson;
-    private DualStatsHttpClient dualClient;
+    private DualStatsClient dualClient;
 
     @BeforeEach
     void setUp() throws Exception {
         opggJson = readResource("opgg/meta-bundle-sample.json");
         lolchessJson = readResource("lolchess/meta-bundle-sample.json");
-        dualClient = new DualStatsHttpClient();
+        dualClient = new DualStatsClient();
     }
 
     @Test
@@ -40,11 +40,11 @@ class MultiSourceMetaFetchServiceTest {
         MultiSourceMetaResult result = service.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
 
         assertEquals(2, result.outcomes().size());
-        assertEquals(OpGgStatsAdapter.ADAPTER_ID, result.outcomes().get(0).sourceId());
+        assertEquals(OpGgMcpStatsAdapter.ADAPTER_ID, result.outcomes().get(0).sourceId());
         assertEquals(LoLChessStatsAdapter.ADAPTER_ID, result.outcomes().get(1).sourceId());
         assertEquals("opgg", result.outcomes().get(0).snapshot().sourceId());
         assertEquals("lolchess", result.outcomes().get(1).snapshot().sourceId());
-        assertEquals(OpGgStatsAdapter.ADAPTER_ID, result.outcomes().get(0).evidence().sourceId());
+        assertEquals(OpGgMcpStatsAdapter.ADAPTER_ID, result.outcomes().get(0).evidence().sourceId());
         assertEquals(LoLChessStatsAdapter.ADAPTER_ID, result.outcomes().get(1).evidence().sourceId());
     }
 
@@ -71,19 +71,24 @@ class MultiSourceMetaFetchServiceTest {
         }
     }
 
-    /** Routes OP.GG and LoLChess URLs to separate fixture payloads. */
-    private final class DualStatsHttpClient implements OpGgStatsHttpClient, LoLChessStatsHttpClient {
+    /** Routes OP.GG MCP and LoLChess HTTP calls to separate fixture payloads. */
+    private final class DualStatsClient implements OpGgMcpClient, LoLChessStatsHttpClient {
         private boolean failOpggNext;
 
         @Override
-        public byte[] getBytes(String url) throws AdapterFetchException {
-            if (url.contains("tft.op.gg")) {
+        public byte[] callTool(String toolName, Map<String, Object> arguments) throws AdapterFetchException {
+            if (OpGgMcpStatsAdapter.TOOL_NAME.equals(toolName)) {
                 if (failOpggNext) {
                     failOpggNext = false;
-                    throw new AdapterFetchException("simulated opgg outage");
+                    throw new AdapterFetchException("simulated opgg mcp outage");
                 }
                 return opggJson;
             }
+            throw new AdapterFetchException("Unexpected MCP tool: " + toolName);
+        }
+
+        @Override
+        public byte[] getBytes(String url) throws AdapterFetchException {
             if (url.contains("lolchess.gg")) {
                 return lolchessJson;
             }
