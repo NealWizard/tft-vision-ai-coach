@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,5 +56,25 @@ class FoundationControllerTest {
         var decision = degradeRouter.route(ProviderKind.LLM, false, false, false);
 
         assertEquals(ExecutionPath.DETERMINISTIC, decision.path());
+    }
+
+    @Test
+    void knowledgeAskReturnsInterestRule() throws Exception {
+        mockMvc.perform(get("/api/v1/knowledge/ask")
+                        .param("question", "What does interest gold look like at 50 gold?")
+                        .param("patch", "set17-16.16"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.patch", is("set17-16.16")))
+                .andExpect(jsonPath("$.notes", is("Tool-backed answer only; no free-form invention.")))
+                .andExpect(jsonPath("$.candidates[0].summary").exists())
+                .andExpect(jsonPath("$.degraded", is(true)));
+    }
+
+    @Test
+    void knowledgeAskPostRejectsBlankQuestion() throws Exception {
+        mockMvc.perform(post("/api/v1/knowledge/ask")
+                        .contentType("application/json")
+                        .content("{\"question\":\"\"}"))
+                .andExpect(status().isBadRequest());
     }
 }

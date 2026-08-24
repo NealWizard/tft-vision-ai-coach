@@ -41,9 +41,11 @@ git config --local user.email "<你的 GitHub 已验证邮箱或 noreply 地址>
 
 邮箱须在 GitHub **Settings → Emails** 中验证，或使用 `...@users.noreply.github.com`。
 
-## 5. 启动应用（P0）
+## 5. 启动应用
 
 ```powershell
+$env:JAVA_HOME = "C:\Users\ASUS\Desktop\TFT\.tools\jdk-21"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
 mvn -pl tft-orchestrator -am spring-boot:run
 ```
 
@@ -54,6 +56,10 @@ mvn -pl tft-orchestrator -am spring-boot:run
 | GET | `/api/v1/health/foundation` | 健康检查 + Feature Flag |
 | GET | `/api/v1/trace/demo` | Trace 演示（可带 `X-Correlation-Id`） |
 | GET | `/api/v1/trace/{correlationId}` | 查询调用链 |
+| GET | `/api/v1/knowledge/ask?question=...` | Knowledge Agent 问答（默认 patch=`set17-16.16`，云 LLM 关闭） |
+| POST | `/api/v1/knowledge/ask` | 同上，JSON：`question` / `patch` / `cloud` |
+
+浏览器直接打开 GET 即可看 JSON。含 `gold`/`interest` 的问题走规则工具；其它问题走本地 RAG。
 
 ## 6. 本地预览 Wiki
 

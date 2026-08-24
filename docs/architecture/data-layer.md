@@ -1,6 +1,6 @@
 # P1 数据层与知识平台
 
-> 更新时间：2026-08-24
+> 更新时间：2026-08-24 10:40 +08:00
 
 ## 模块
 
@@ -29,7 +29,23 @@
 | P1-LLM-* | Gateway / Guard / Meter / Prompt | DONE |
 | P1-AGENT-* | Knowledge + Research Agent v1 | DONE |
 
-## 快速启动
+## 快速启动（HTTP）
+
+```powershell
+$env:JAVA_HOME = "C:\Users\ASUS\Desktop\TFT\.tools\jdk-21"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+mvn -pl tft-orchestrator -am spring-boot:run
+```
+
+浏览器或 curl：
+
+```
+GET http://localhost:8080/api/v1/knowledge/ask?question=What%20does%20interest%20gold%20look%20like%20at%2050%20gold%3F
+```
+
+默认 `patch=set17-16.16`，云 LLM 默认关闭。
+
+## 快速启动（Java）
 
 ```java
 KnowledgePlatform platform = KnowledgePlatform.createDefault();

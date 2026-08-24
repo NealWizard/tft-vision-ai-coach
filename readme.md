@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-24 10:05 +08:00
+> 更新时间：2026-08-24 10:40 +08:00
 > 当前阶段：**P1 完成（除 Stats-002 BLOCKED）→ 准备 P2**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
@@ -43,6 +43,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local-ci.ps1
 ```
 
 JDK 21、Git 身份、接口说明、开发流程详见 [Wiki 快速开始](docs/getting-started/quickstart.md)。
+
+本地可调用 Knowledge Agent：
+
+```powershell
+$env:JAVA_HOME = "C:\Users\ASUS\Desktop\TFT\.tools\jdk-21"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+mvn -pl tft-orchestrator -am spring-boot:run
+# 浏览器打开：
+# http://localhost:8080/api/v1/knowledge/ask?question=What%20does%20interest%20gold%20look%20like%20at%2050%20gold%3F
+```
 
 ## Wiki 本地预览
 
