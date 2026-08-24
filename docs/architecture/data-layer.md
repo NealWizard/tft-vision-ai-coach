@@ -1,6 +1,6 @@
 # P1 数据层
 
-> 更新时间：2026-08-22
+> 更新时间：2026-08-24
 
 ## 模块
 
@@ -39,10 +39,10 @@ com.tft.coach.data.snapshot.FileSystemRawSnapshotStore
 |----|------|------|
 | P1-DATA-SourceAdapter-001 | Source Adapter SPI | V3.1 重验收 |
 | P1-DATA-Snapshot-001 | Raw Snapshot Store | V3.1 重验收 |
-| P1-DATA-Riot-001 | Riot/Data Dragon Adapter | V3.1 重验收 |
-| P1-DATA-Stats-001 | 第一统计源 Adapter | V3.1 重验收 |
-| P1-DATA-Stats-002 | 第二统计源 Adapter | V3.1 重验收 |
-| P1-DATA-EntityResolve-001 | Canonical Entity Resolver | TODO |
+| P1-DATA-Riot-001 | Riot/Data Dragon Adapter | DONE |
+| P1-DATA-Stats-001 | 第一统计源 Adapter | DONE |
+| P1-DATA-Stats-002 | 第二统计源 Adapter | BLOCKED |
+| P1-DATA-EntityResolve-001 | Canonical Entity Resolver | DONE |
 | … | 见 Roadmap V3.1 | |
 
 ## Data Dragon Adapter（P1-DATA-Riot-001）
@@ -124,4 +124,28 @@ try (OpGgMcpClient mcp = new OfficialOpGgMcpClient()) {
 
 ## 下一步
 
-**P1-DATA-EntityResolve-001**：Canonical Entity Resolver（Data Dragon + 统计源 ID 对齐）。
+**P1-DATA-Normalize-001**：Knowledge Normalizer（多源归一为 Canonical DTO，保留 raw payload）。
+
+## Canonical Entity Resolver（P1-DATA-EntityResolve-001）
+
+```
+com.tft.coach.data.entity.CanonicalEntityResolver
+com.tft.coach.data.entity.CanonicalIdSlugs
+com.tft.coach.data.entity.DataDragonAliasRegistry
+com.tft.coach.data.entity.MetaSnapshotAliasRegistry
+com.tft.coach.data.entity.PendingEntityQueue
+```
+
+- Canonical ID 格式：`{type}.{slug}`（如 `champ.ahri`、`item.infinityedge`）
+- Data Dragon 原生 ID（如 `TFT17_Ahri`）作为 Source Alias 注册，不直接当 Canonical ID
+- 统计源 MetaSnapshot 中的 unit/item/augment/comp ID 同样映射到 Canonical ID
+- 无法解析的实体进入 `PendingEntityQueue`，不临时生成会漂移的业务 ID
+
+```java
+CanonicalEntityResolver resolver = new CanonicalEntityResolver();
+new DataDragonAliasRegistry().registerChampions(resolver, championPayload);
+new MetaSnapshotAliasRegistry().register(resolver, metaSnapshot);
+
+EntityResolveOutcome outcome = resolver.resolve("riot-datadragon", EntityKind.CHAMP, "TFT17_Ahri");
+// outcome.canonicalId() => Optional["champ.ahri"]
+```

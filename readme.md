@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 19:05 +08:00
+> 更新时间：2026-08-24 09:05 +08:00
 > 当前阶段：**P1 · Knowledge & Data Platform 重建**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
@@ -24,7 +24,7 @@
 | ID | 任务 | 状态 |
 |----|------|------|
 | P0-FOUND-* | 工程、契约、安全、可观测、降级门禁 | DONE |
-| P1-DATA-* | Source、Snapshot、Stats、Entity、Patch、Evidence | **重建中**（Stats-001 DONE，Stats-002 BLOCKED） |
+| P1-DATA-* | Source、Snapshot、Stats、Entity、Patch、Evidence | **重建中**（Riot/Stats-001/EntityResolve DONE，Stats-002 BLOCKED） |
 | P1-KNOW-* | 确定性 Knowledge Tools | TODO |
 | P1-RAG-* | Hybrid RAG Platform | TODO |
 | P1-LLM-* | Cloud LLM Gateway / Guard / Meter | TODO |

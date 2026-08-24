@@ -88,6 +88,22 @@ class DataDragonAdapterTest {
     }
 
     @Test
+    void adapterSupportsAllDataDragonResources() {
+        DataDragonAdapter adapter = new DataDragonAdapter(httpClient);
+        for (DataDragonResource resource : DataDragonResource.values()) {
+            FetchRequest request = new FetchRequest(
+                    SourceType.RIOT,
+                    DataDragonAdapter.ADAPTER_ID,
+                    resource.resourceKey(),
+                    DataDragonUrls.dataJson("16.16.1", "en_US", resource),
+                    "16.16.1",
+                    Map.of()
+            );
+            assertTrue(adapter.supports(request), resource.name());
+        }
+    }
+
+    @Test
     void fetchServiceProducesEvidenceMetadata() throws Exception {
         DataDragonFetchService ddragon = DataDragonFetchService.createDefault(tempDir, httpClient);
         var outcome = ddragon.fetch(DataDragonResource.CHAMPION, "16.16.1", "en_US");
