@@ -10,6 +10,7 @@ target/
 *.log
 dependency-tree.txt
 site/
+data/snapshots/
 .DS_Store
 Thumbs.db
 *.tmp

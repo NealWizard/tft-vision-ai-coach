@@ -1,21 +1,36 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-22 15:40 +08:00  
-> 当前阶段：**P0 · 工程地基（V0.1）— 已完成**  
-> 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach  
+> 更新时间：2026-08-24 10:05 +08:00
+> 当前阶段：**P1 完成（除 Stats-002 BLOCKED）→ 准备 P2**
+> 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
 纯视觉/截图输入的云顶之弈辅助决策系统（副驾驶）。**不读内存、不注入、不模拟键鼠**。Live 动态推荐默认关闭。
 
 ## 文档
 
-| 类型 | 位置 |
-|------|------|
-| **Wiki（推荐）** | https://nealwizard.github.io/tft-vision-ai-coach/ |
-| Wiki 源文件 | `docs/` + `mkdocs.yml` |
-| 产品 PRD | `云顶辅助决策agent需求文档.txt` |
-| 任务看板 | `TFT_Vision_AI_Coach_userstory (1).html` |
-| 代码示例 | `goodcode.md` |
+
+| 类型               | 位置                                                          |
+| ------------------ | ------------------------------------------------------------- |
+| **Wiki（推荐）**   | https://nealwizard.github.io/tft-vision-ai-coach/             |
+| Wiki 源文件        | `docs/` + `mkdocs.yml`                                        |
+| 唯一需求与任务基线 | `TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html`              |
+| 整合需求与开发规格 | `docs/product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md` |
+| P1 数据层          | `docs/architecture/data-layer.md`                             |
+| 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
+| 代码示例           | `goodcode.md`                                                 |
+
+## V3.1 重建进度
+
+
+| ID         | 任务                                             | 状态                                      |
+| ---------- | ------------------------------------------------ | ----------------------------------------- |
+| P0-FOUND-* | 工程、契约、安全、可观测、降级门禁               | DONE                                      |
+| P1-DATA-*  | Source～Quality 全链路                           | **DONE**（Stats-002 BLOCKED）             |
+| P1-KNOW-*  | 确定性 Knowledge Tools                           | DONE                                      |
+| P1-RAG-*   | Hybrid RAG Platform                              | DONE                                      |
+| P1-LLM-*   | Cloud LLM Gateway / Guard / Meter                | DONE                                      |
+| P1-AGENT-* | Knowledge / Research Agent                       | DONE                                      |
 
 ## 快速开始
 
@@ -46,4 +61,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\docs-serve.ps1
 
 ## 任务完成收尾
 
-更新 US → 生成 commit msg → **你手动提交**。详见 [Wiki · 任务完成收尾](docs/dev/task-completion.md)。
+更新 Roadmap V3.1 → 生成 commit msg → **你手动提交**。详见 [Wiki · 任务完成收尾](docs/dev/task-completion.md)。

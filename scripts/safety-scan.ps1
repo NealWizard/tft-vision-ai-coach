@@ -1,11 +1,19 @@
-# TFT Vision AI Coach — Safety Boundary Scanner (P0-004)
+# TFT Vision AI Coach — Safety Boundary Scanner (P0-FOUND-Safety-001)
 # Blocks process-memory, injection, input simulation, and game-traffic interception patterns.
 # Exit 1 on violation; exit 0 when clean.
 
+param(
+  [string]$ScanRoot
+)
+
 $ErrorActionPreference = "Stop"
-$Root = Split-Path -Parent $PSScriptRoot
-if (-not (Test-Path (Join-Path $Root "pom.xml"))) {
-  $Root = Get-Location
+if ($ScanRoot) {
+  $Root = (Resolve-Path -LiteralPath $ScanRoot).Path
+} else {
+  $Root = Split-Path -Parent $PSScriptRoot
+  if (-not (Test-Path (Join-Path $Root "pom.xml"))) {
+    $Root = Get-Location
+  }
 }
 
 $Include = @("*.java", "*.kt", "*.cs", "*.py", "*.js", "*.ts", "*.go", "*.rs", "*.xml", "*.gradle", "*.kts", "*.ps1", "*.bat", "*.cmd", "*.sh")

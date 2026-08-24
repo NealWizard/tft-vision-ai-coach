@@ -18,4 +18,13 @@ class FeatureFlagsTest {
         assertFalse(flags.isLiveOpponentAnalysis());
         assertFalse(flags.anyLiveEnabled());
     }
+
+    @Test
+    void liveTrackRequiresExplicitFlag() {
+        FeatureFlags flags = new FeatureFlags();
+
+        flags.setLiveExperiment(true);
+
+        assertTrue(flags.anyLiveEnabled());
+    }
 }

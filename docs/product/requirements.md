@@ -1,6 +1,8 @@
 # 需求概述
 
-> 完整 PRD 见仓库根目录 [`云顶辅助决策agent需求文档.txt`](https://github.com/NealWizard/tft-vision-ai-coach/blob/develop/云顶辅助决策agent需求文档.txt)
+> 唯一需求与任务基线：
+> [`TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html`](https://github.com/NealWizard/tft-vision-ai-coach/blob/develop/TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html)。
+> 旧 PRD 已移入 `历史需求文档/`，仅供追溯。
 
 ## 项目背景
 
@@ -54,10 +56,13 @@ flowchart TB
 
 | Phase | 工程重点 |
 |-------|----------|
-| P0 | 地基：Schema、Contract、CI、Feature Flag |
-| P1 | 数据：Riot / Data Dragon Adapter |
+| P0 | 工程地基、安全边界、Contract、可观测与云端降级 |
+| P1 | Knowledge & Data Platform：Data、Tools、RAG、Cloud LLM |
 | P2 | 视觉 + GameState |
 | P3 | Meta + Decision Agent |
 | P4 | 复盘 + 个人教练 |
+| P5 | Orchestrator + AI Routing |
+| P6 | Live 实验（默认关闭） |
+| P7 | 产品化 |
 
 详细任务见 [任务路线图](../roadmap/user-story.md)。

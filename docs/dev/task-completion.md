@@ -1,16 +1,16 @@
 # 任务完成收尾
 
-每完成一个或多个 User Story 任务（如 `P1-003`）后执行以下流程。
+每完成一个或多个 Roadmap V3.1 任务后执行以下流程。
 
-## 1. 更新 User Story 文档
+## 1. 更新 Roadmap 文档
 
-文件：仓库根目录 `TFT_Vision_AI_Coach_userstory (1).html`
+文件：仓库根目录 `TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html`
 
 使用脚本写入源文件（**不要**只改浏览器 localStorage）：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\update-us-status.ps1 `
-  -TaskIds P1-001,P1-002 `
+  -TaskIds P1-DATA-SourceAdapter-001,P1-DATA-Snapshot-001 `
   -Status DONE -Owner NealWizard -CompletionDate 2026-08-22
 ```
 
@@ -27,7 +27,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\update-us-status.ps1
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\gen-commit-msg.ps1 `
-  -Tasks P1-001,P1-002 -Type docs -Scope us
+  -Tasks P1-DATA-SourceAdapter-001,P1-DATA-Snapshot-001 -Type docs -Scope roadmap
 ```
 
 脚本仅**输出**建议 message，不自动提交。
@@ -45,9 +45,9 @@ git push origin develop
 ```
 <type>(<scope>): <subject>
 
-Tasks: P1-001, P1-002
+Tasks: P1-DATA-SourceAdapter-001, P1-DATA-Snapshot-001
 Changed files:
-- TFT_Vision_AI_Coach_userstory (1).html
+- TFT_Vision_AI_Coach_Complete_Roadmap_V3_1.html
 - docs/...
 ```
 

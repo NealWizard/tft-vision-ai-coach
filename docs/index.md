@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
 > 更新时间：2026-08-22  
-> 当前阶段：**P0 · 工程地基（V0.1）— 已完成**
+> 当前阶段：**按 Roadmap V3.1 重建 P0 工程地基**
 
 纯视觉/截图输入的云顶之弈辅助决策系统（**副驾驶**）。
 
@@ -13,8 +13,9 @@
 | 章节 | 说明 |
 |------|------|
 | [快速开始](getting-started/quickstart.md) | 克隆、JDK 21、构建与本地 CI |
+| [整合需求与开发规格 V3.1](product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md) | P0–P7 产品、架构、技术与门禁基线 |
 | [需求概述](product/requirements.md) | 产品定位、目标与架构摘要 |
-| [任务路线图](roadmap/user-story.md) | User Story 看板（P0–P4） |
+| [任务路线图](roadmap/user-story.md) | Roadmap V3.1（P0–P7） |
 | [模块一览](architecture/modules.md) | Maven 多模块与 Phase 规划 |
 | [Schema 契约](architecture/schemas.md) | Canonical / Agent JSON Schema |
 | [GitHub 协作](github/GITHUB.md) | 认证、CI、PR、Issue 映射 |

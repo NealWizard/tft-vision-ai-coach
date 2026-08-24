@@ -5,7 +5,7 @@
 ```
 tft-vision-ai-coach (parent)
 ├── tft-contracts      # JSON Schema + 校验
-├── tft-common         # FeatureFlag / Trace
+├── tft-common         # FeatureFlag / Trace / 云端降级契约
 ├── tft-data           # 数据源适配（P1+）
 ├── tft-knowledge      # 知识库（P1+）
 ├── tft-vision         # 视觉识别（P2+）
@@ -22,7 +22,7 @@ tft-vision-ai-coach (parent)
 | 模块 | 域 | 最早 Phase | 职责 |
 |------|-----|------------|------|
 | tft-contracts | 契约 | P0 | Canonical / Agent JSON Schema |
-| tft-common | 公共 | P0 | Feature Flag、Trace、工具类 |
+| tft-common | 公共 | P0 | Feature Flag、Trace、Provider 降级契约 |
 | tft-data | DATA | P1 | Riot API、Data Dragon 适配 |
 | tft-knowledge | KNOWLEDGE | P1 | 静态知识、规则引擎输入 |
 | tft-vision | VISION | P2 | 截图/OCR、UI 元素识别 |
@@ -75,12 +75,13 @@ flowchart BT
 
 | ID | 落地位置 |
 |----|----------|
-| P0-001 | 根 `pom.xml`、`docs/branching/BRANCHING.md` |
-| P0-002 | Java 21 / Boot 3.3.5 / Enforcer |
-| P0-003 | `.github/workflows/ci.yml`、`scripts/local-ci.ps1` |
-| P0-004 | `scripts/safety-scan.ps1` |
-| P0-005 | `schemas/canonical/*` |
-| P0-006 | `schemas/agent/*` + 5 样例 |
-| P0-007 | `TraceService`、`/api/v1/trace/*` |
-| P0-008 | `tft.flags.*`，Live 默认 false |
-| P0-009 | `fixtures/*` 五类 manifest |
+| P0-FOUND-Repo-001 | 根 `pom.xml`、`docs/branching/BRANCHING.md` |
+| P0-FOUND-Build-001 | Java 21 / Boot 3.3.5 / Enforcer |
+| P0-FOUND-CI-001 | `.github/workflows/ci.yml`、`scripts/local-ci.ps1` |
+| P0-FOUND-Safety-001 | `scripts/safety-scan.ps1` + 违规负例 |
+| P0-FOUND-Contract-001 | `schemas/canonical/*` + 版本治理 |
+| P0-FOUND-AgentContract-001 | `schemas/agent/*` + 5 样例 |
+| P0-FOUND-Observability-001 | `TraceService`、`/api/v1/trace/*` |
+| P0-FOUND-FeatureFlag-001 | `tft.flags.*`，Live 默认 false |
+| P0-FOUND-TestData-001 | `fixtures/*` 七类 manifest |
+| P0-FOUND-Degrade-001 | `DegradeRouter`、`docs/architecture/degrade-matrix.md` |

@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * P0 observability baseline: bind MDC, record AgentRun/ToolCall, query by correlation_id.
+ * P0 observability baseline (`P0-FOUND-Observability-001`): bind MDC,
+ * record AgentRun/ToolCall, and query by correlation_id.
  */
 @Component
 public class TraceService {
