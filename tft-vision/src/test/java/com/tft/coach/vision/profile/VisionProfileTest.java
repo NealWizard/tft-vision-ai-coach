@@ -41,7 +41,7 @@ class VisionProfileTest {
                 null,
                 null,
                 Map.of("x", new RoiRegion("x", RoiType.TEXT, CoordinateSystem.SCREEN,
-                        1900, 0, 100, 10, "x"))
+                        1900, 0, 100, 10, "x", null))
         );
         UnsupportedProfileException ex = assertThrows(
                 UnsupportedProfileException.class,
@@ -56,8 +56,9 @@ class VisionProfileTest {
         VisionProfile profile = loader.loadDefault();
         Path out = dir.resolve("profile.json");
         loader.write(profile, out);
-        VisionProfile reloaded = loader.loadClasspath("/vision/profiles/1920x1080-default.json");
+        VisionProfile reloaded = loader.loadFile(out);
         assertEquals(profile.profileId(), reloaded.profileId());
-        assertTrue(out.toFile().exists());
+        assertEquals(profile.regions().size(), reloaded.regions().size());
+        assertEquals(profile.layoutVersion(), reloaded.layoutVersion());
     }
 }

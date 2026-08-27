@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
@@ -51,21 +53,46 @@ public final class SidecarClient {
                 return SidecarHealthResult.degraded("INTERNAL_ERROR",
                         "sidecar HTTP " + response.statusCode());
             }
+            if (response.statusCode() >= 400) {
+                return SidecarHealthResult.degraded("INTERNAL_ERROR",
+                        "sidecar HTTP " + response.statusCode());
+            }
             SidecarEnvelope envelope = mapper.readValue(response.body(), SidecarEnvelope.class);
             @SuppressWarnings("unchecked")
             Map<String, Object> data = envelope.data() instanceof Map<?, ?> m
                     ? (Map<String, Object>) m
                     : Map.of();
-            return SidecarHealthResult.ok(envelope, data, latencyMs);
+            return SidecarHealthResult.fromEnvelope(envelope, data, latencyMs);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return SidecarHealthResult.degraded("TIMEOUT", "interrupted");
+        } catch (HttpTimeoutException e) {
+            return SidecarHealthResult.degraded("TIMEOUT", e.getMessage());
+        } catch (ConnectException e) {
+            return SidecarHealthResult.degraded("INTERNAL_ERROR", e.getMessage());
         } catch (IOException e) {
-            String code = e.getClass().getSimpleName().contains("Timeout") ? "TIMEOUT" : "TIMEOUT";
-            return SidecarHealthResult.degraded(code, e.getMessage());
+            return SidecarHealthResult.degraded(mapIoErrorCode(e), e.getMessage());
         } catch (Exception e) {
             return SidecarHealthResult.degraded("INTERNAL_ERROR", e.getMessage());
         }
+    }
+
+    static String mapIoErrorCode(IOException e) {
+        Throwable cur = e;
+        while (cur != null) {
+            if (cur instanceof HttpTimeoutException) {
+                return "TIMEOUT";
+            }
+            if (cur instanceof ConnectException) {
+                return "INTERNAL_ERROR";
+            }
+            String name = cur.getClass().getSimpleName();
+            if (name.contains("Timeout")) {
+                return "TIMEOUT";
+            }
+            cur = cur.getCause();
+        }
+        return "INTERNAL_ERROR";
     }
 
     private static String trimSlash(String baseUrl) {

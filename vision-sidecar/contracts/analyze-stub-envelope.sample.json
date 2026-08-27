@@ -1,0 +1,17 @@
+{
+  "request_id": "req-sample-analyze-stub",
+  "status": "DEGRADED",
+  "error_code": "MODEL_NOT_READY",
+  "data": {
+    "provider": "stub",
+    "field": "player.gold",
+    "raw_value": null,
+    "value": null,
+    "confidence": 0.0,
+    "message": "Batch A stub; real OCR in Batch B"
+  },
+  "meta": {
+    "service_version": "0.1.0",
+    "latency_ms": 1
+  }
+}

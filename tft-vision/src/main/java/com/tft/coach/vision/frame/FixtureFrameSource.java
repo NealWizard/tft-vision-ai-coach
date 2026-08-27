@@ -52,7 +52,7 @@ public final class FixtureFrameSource implements FrameSource {
                     dim.width(),
                     dim.height(),
                     FrameSourceType.SCREENSHOT,
-                    "1920x1080-default",
+                    null,
                     new FramePayload.InlineBytes(bytes)
             ));
         } catch (IOException e) {

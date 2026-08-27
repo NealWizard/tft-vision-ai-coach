@@ -71,4 +71,10 @@ public final class VisionProfileLoader {
         }
         MAPPER.writeValue(target.toFile(), profile);
     }
+
+    public VisionProfile loadFile(Path path) throws IOException {
+        VisionProfile profile = MAPPER.readValue(path.toFile(), VisionProfile.class);
+        RoiValidator.validate(profile);
+        return profile;
+    }
 }

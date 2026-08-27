@@ -76,7 +76,7 @@ def analyze(body: AnalyzeRequest) -> dict[str, Any]:
     result = provider.analyze(body.model_dump())
     return envelope(
         request_id=body.request_id,
-        status="OK",
+        status="DEGRADED",
         error_code="MODEL_NOT_READY",
         data=result,
         started=started,

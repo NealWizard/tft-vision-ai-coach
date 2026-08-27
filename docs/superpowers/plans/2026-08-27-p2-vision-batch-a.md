@@ -72,6 +72,6 @@
 
 ## 验证清单
 
-- [ ] `mvn -pl tft-contracts,tft-vision,tft-state,tft-orchestrator -am test` 通过
+- [x] `mvn -pl tft-contracts,tft-vision,tft-state,tft-orchestrator -am test` 通过
 - [ ] 侧车手动：`uvicorn` 后 `/health` OK（可选本地）
-- [ ] Roadmap / readme / commit message 就绪
+- [x] Roadmap / readme / commit message 就绪

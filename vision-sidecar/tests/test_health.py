@@ -27,5 +27,6 @@ def test_analyze_stub():
     r = client.post("/vision/analyze", json={"field": "player.gold"})
     assert r.status_code == 200
     body = r.json()
+    assert body["status"] == "DEGRADED"
     assert body["error_code"] == "MODEL_NOT_READY"
     assert body["data"]["provider"] == "stub"

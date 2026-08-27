@@ -16,20 +16,26 @@ public record SidecarHealthResult(
         Long latencyMs,
         String detail
 ) {
-    public static SidecarHealthResult ok(SidecarEnvelope envelope, Map<String, Object> data, long latencyMs) {
+    /**
+     * Maps Envelope status: only OK (case-insensitive) is non-degraded.
+     */
+    public static SidecarHealthResult fromEnvelope(SidecarEnvelope envelope, Map<String, Object> data, long latencyMs) {
         Objects.requireNonNull(envelope, "envelope");
         Boolean ocrReady = data == null ? null : asBoolean(data.get("ocr_ready"));
         Boolean ready = data == null ? null : asBoolean(data.get("ready"));
         String version = envelope.meta() == null ? null : envelope.meta().serviceVersion();
+        String status = envelope.status() == null ? "OK" : envelope.status();
+        boolean ok = "OK".equalsIgnoreCase(status);
+        boolean degraded = !ok || envelope.errorCode() != null;
         return new SidecarHealthResult(
-                false,
-                envelope.status() == null ? "OK" : envelope.status(),
-                envelope.errorCode(),
+                degraded,
+                degraded && ok ? "DEGRADED" : status,
+                envelope.errorCode() == null && degraded ? "INTERNAL_ERROR" : envelope.errorCode(),
                 version,
                 ocrReady,
                 ready,
                 latencyMs,
-                null
+                degraded ? "envelope status=" + status : null
         );
     }
 

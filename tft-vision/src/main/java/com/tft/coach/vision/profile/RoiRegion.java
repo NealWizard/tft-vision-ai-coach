@@ -3,6 +3,7 @@ package com.tft.coach.vision.profile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -17,7 +18,8 @@ public record RoiRegion(
         double y,
         double width,
         double height,
-        @JsonProperty("expected_field") String expectedField
+        @JsonProperty("expected_field") String expectedField,
+        Map<String, Object> preprocess
 ) {
     public RoiRegion {
         Objects.requireNonNull(id, "id");
