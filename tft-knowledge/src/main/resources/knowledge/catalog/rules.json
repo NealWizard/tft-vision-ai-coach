@@ -1,0 +1,45 @@
+{
+  "patch": "set17-16.16",
+  "rules": [
+    {
+      "key": "economy.interest",
+      "category": "economy",
+      "summary": "Interest gold is +1 per 10 gold held, capped at +5 when holding 50+ gold.",
+      "value": {
+        "cap": 5,
+        "per_tier_gold": 10,
+        "tiers": [10, 20, 30, 40, 50]
+      },
+      "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+    },
+    {
+      "key": "shop.pool",
+      "category": "shop",
+      "summary": "Each player shop offers 5 units per refresh.",
+      "value": {
+        "shop_size": 5
+      },
+      "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+    },
+    {
+      "key": "economy.streak",
+      "category": "economy",
+      "summary": "Win/loss streaks grant bonus gold after consecutive results.",
+      "value": {
+        "min_streak": 2,
+        "max_bonus": 3
+      },
+      "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+    },
+    {
+      "key": "xp.level",
+      "category": "xp",
+      "summary": "Players buy XP with gold to level and unlock higher shop odds.",
+      "value": {
+        "buy_xp_cost": 4,
+        "buy_xp_amount": 4
+      },
+      "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+    }
+  ]
+}

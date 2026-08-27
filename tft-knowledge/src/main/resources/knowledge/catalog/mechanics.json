@@ -1,0 +1,24 @@
+{
+  "patch": "set17-16.16",
+  "mechanics": [
+    {
+      "id": "mechanic.carousel",
+      "kind": "carousel",
+      "name": "Carousel",
+      "description": "Shared carousel rounds let players pick units and items in reverse placement order."
+    },
+    {
+      "id": "mechanic.augment",
+      "kind": "augment",
+      "name": "Augments",
+      "description": "Players choose one of three Augments at designated stages; effects persist for the game."
+    },
+    {
+      "id": "mechanic.portal",
+      "kind": "portal",
+      "name": "Portal",
+      "description": "Set portal / encounter modifiers can alter starting conditions for a lobby."
+    }
+  ],
+  "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+}

@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
 > 更新时间：2026-08-24  
-> 当前阶段：**P1 完成（除 Stats-002 BLOCKED）；可用 Knowledge Agent HTTP 调试**
+> 当前阶段：**P1 做浅项真实化（MySQL/ES/LLM/Research）；Stats-002 搁置**
 
 纯视觉/截图输入的云顶之弈辅助决策系统（**副驾驶**）。
 

@@ -1,0 +1,966 @@
+{
+  "version": "1.0.0",
+  "patch": "set17-16.16",
+  "cases": [
+    {
+      "id": "rule-interest-0",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-1",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-2",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-3",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-4",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-5",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-6",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-7",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-8",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-9",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-10",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-11",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-12",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-13",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-14",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-15",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-16",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-17",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-18",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-interest-19",
+      "query": "What is interest gold at 50 gold?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-0",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-1",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-2",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-3",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-4",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-5",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-6",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-7",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-8",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "rule-shop-9",
+      "query": "How many units appear in the shop pool refresh?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "shop",
+        "5"
+      ],
+      "type": "rule"
+    },
+    {
+      "id": "pool-0",
+      "query": "How many copies are in the 1-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-1",
+      "query": "How many copies are in the 2-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-2",
+      "query": "How many copies are in the 3-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-3",
+      "query": "How many copies are in the 4-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-4",
+      "query": "How many copies are in the 5-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-5",
+      "query": "How many copies are in the 1-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-6",
+      "query": "How many copies are in the 2-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-7",
+      "query": "How many copies are in the 3-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-8",
+      "query": "How many copies are in the 4-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "pool-9",
+      "query": "How many copies are in the 5-cost unit pool?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "pool",
+        "copies"
+      ],
+      "type": "pool"
+    },
+    {
+      "id": "odds-0",
+      "query": "What are shop roll odds at level 7?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-1",
+      "query": "What are shop roll odds at level 8?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-2",
+      "query": "What are shop roll odds at level 9?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-3",
+      "query": "What are shop roll odds at level 10?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-4",
+      "query": "What are shop roll odds at level 7?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-5",
+      "query": "What are shop roll odds at level 8?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-6",
+      "query": "What are shop roll odds at level 9?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-7",
+      "query": "What are shop roll odds at level 10?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-8",
+      "query": "What are shop roll odds at level 7?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "odds-9",
+      "query": "What are shop roll odds at level 8?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "odds",
+        "level"
+      ],
+      "type": "probability"
+    },
+    {
+      "id": "mech-0",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-1",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-2",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-3",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-4",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-5",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-6",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-7",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-8",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "mech-9",
+      "query": "What is the carousel mechanic?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "carousel"
+      ],
+      "type": "mechanic"
+    },
+    {
+      "id": "champ-Ahri-0",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-1",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-2",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-3",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-4",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-5",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-6",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-7",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-8",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Ahri-9",
+      "query": "What is champion Ahri?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "ahri"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-0",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-1",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-2",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-3",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-4",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-5",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-6",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-7",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-8",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Xayah-9",
+      "query": "What is champion Xayah?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "xayah"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-0",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-1",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-2",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-3",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-4",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-5",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-6",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-7",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-8",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "champ-Jax-9",
+      "query": "What is champion Jax?",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "jax"
+      ],
+      "type": "champion"
+    },
+    {
+      "id": "rag-90",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-91",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-92",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-93",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-94",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-95",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-96",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-97",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-98",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    },
+    {
+      "id": "rag-99",
+      "query": "Interest gold is capped at 5 when holding 50 gold",
+      "patch": "set17-16.16",
+      "expected_terms": [
+        "interest",
+        "gold"
+      ],
+      "type": "rag"
+    }
+  ]
+}
