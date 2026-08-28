@@ -12,7 +12,7 @@ class PatchManagerTest {
 
     @Test
     void requiresExplicitPatchOnQuery() {
-        PatchManager manager = new PatchManager();
+        PatchManager manager = new InMemoryPatchManager();
         manager.register(new PatchRecord(
                 "set17-16.16",
                 "set17",

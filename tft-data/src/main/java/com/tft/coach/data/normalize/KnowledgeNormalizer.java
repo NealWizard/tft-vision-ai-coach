@@ -14,7 +14,7 @@ public final class KnowledgeNormalizer {
     private final DataDragonNormalizer dataDragonNormalizer;
 
     public KnowledgeNormalizer() {
-        this(new CanonicalKnowledgeStore(), new DataDragonNormalizer());
+        this(new InMemoryCanonicalKnowledgeStore(), new DataDragonNormalizer());
     }
 
     public KnowledgeNormalizer(CanonicalKnowledgeStore store, DataDragonNormalizer dataDragonNormalizer) {
@@ -33,6 +33,39 @@ public final class KnowledgeNormalizer {
     ) throws AdapterFetchException {
         new DataDragonAliasRegistry().registerChampions(resolver, payload);
         List<NormalizedEntity> entities = dataDragonNormalizer.normalizeChampions(payload, patch, resolver);
+        entities.forEach(store::put);
+        return entities;
+    }
+
+    public List<NormalizedEntity> ingestTraits(
+            byte[] payload,
+            String patch,
+            CanonicalEntityResolver resolver
+    ) throws AdapterFetchException {
+        new DataDragonAliasRegistry().registerTraits(resolver, payload);
+        List<NormalizedEntity> entities = dataDragonNormalizer.normalizeTraits(payload, patch, resolver);
+        entities.forEach(store::put);
+        return entities;
+    }
+
+    public List<NormalizedEntity> ingestItems(
+            byte[] payload,
+            String patch,
+            CanonicalEntityResolver resolver
+    ) throws AdapterFetchException {
+        new DataDragonAliasRegistry().registerItems(resolver, payload);
+        List<NormalizedEntity> entities = dataDragonNormalizer.normalizeItems(payload, patch, resolver);
+        entities.forEach(store::put);
+        return entities;
+    }
+
+    public List<NormalizedEntity> ingestAugments(
+            byte[] payload,
+            String patch,
+            CanonicalEntityResolver resolver
+    ) throws AdapterFetchException {
+        new DataDragonAliasRegistry().registerAugments(resolver, payload);
+        List<NormalizedEntity> entities = dataDragonNormalizer.normalizeAugments(payload, patch, resolver);
         entities.forEach(store::put);
         return entities;
     }

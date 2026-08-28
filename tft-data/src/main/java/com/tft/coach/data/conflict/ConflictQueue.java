@@ -1,23 +1,13 @@
 package com.tft.coach.data.conflict;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /** Queue for unresolved multi-source conflicts (`P1-DATA-Conflict-001`). */
-public final class ConflictQueue {
+public interface ConflictQueue {
 
-    private final List<ConflictRecord> records = new ArrayList<>();
+    void enqueue(ConflictRecord record);
 
-    public synchronized void enqueue(ConflictRecord record) {
-        records.add(record);
-    }
+    List<ConflictRecord> snapshot();
 
-    public synchronized List<ConflictRecord> snapshot() {
-        return Collections.unmodifiableList(List.copyOf(records));
-    }
-
-    public synchronized int size() {
-        return records.size();
-    }
+    int size();
 }

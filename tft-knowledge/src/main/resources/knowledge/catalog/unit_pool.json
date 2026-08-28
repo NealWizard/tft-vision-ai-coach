@@ -1,0 +1,11 @@
+{
+  "patch": "set17-16.16",
+  "pools": [
+    { "cost": 1, "pool_copies": 30 },
+    { "cost": 2, "pool_copies": 25 },
+    { "cost": 3, "pool_copies": 18 },
+    { "cost": 4, "pool_copies": 10 },
+    { "cost": 5, "pool_copies": 9 }
+  ],
+  "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"
+}

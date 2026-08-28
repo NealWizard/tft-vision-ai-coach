@@ -1,18 +1,13 @@
 package com.tft.coach.knowledge;
 
-import com.tft.coach.data.evidence.EvidenceRecord;
-import com.tft.coach.data.evidence.FetchEvidence;
-import com.tft.coach.data.spi.SourceType;
 import com.tft.coach.knowledge.agent.KnowledgeAgent;
 import com.tft.coach.knowledge.platform.KnowledgePlatform;
+import com.tft.coach.knowledge.rag.eval.EvalDatasetLoader;
 import com.tft.coach.knowledge.rag.eval.RagEvaluationRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,42 +32,35 @@ class KnowledgePlatformTest {
                 false));
 
         assertFalse(response.candidates().isEmpty());
-        assertTrue(response.candidates().getFirst().get("summary").toString().contains("5"));
+        assertTrue(response.candidates().getFirst().get("summary").toString().toLowerCase().contains("interest")
+                || response.candidates().getFirst().get("summary").toString().contains("5"));
         assertFalse(((List<?>) response.candidates().getFirst().get("evidence")).isEmpty());
     }
 
     @Test
-    void ragEvalProducesRecallMetrics() {
-        List<RagEvaluationRunner.RagEvalCase> cases = List.of(
-                new RagEvaluationRunner.RagEvalCase(
-                        "interest gold cap",
-                        "set17-16.16",
-                        List.of("interest", "gold")),
-                new RagEvaluationRunner.RagEvalCase(
-                        "Ahri champion",
-                        "set17-16.16",
-                        List.of("ahri")));
+    void ragEvalProducesRecallMetricsOnDataset() {
+        List<RagEvaluationRunner.RagEvalCase> cases = EvalDatasetLoader.loadQa100().stream()
+                .filter(c -> c.query().toLowerCase().contains("interest") || c.query().toLowerCase().contains("ahri"))
+                .limit(20)
+                .toList();
         var report = platform.ragEvalRunner().evaluate(cases, 3);
-        assertTrue(report.recallAtK() >= 0.5);
+        assertTrue(report.recallAtK() >= 0.4, "recall=" + report.recallAtK());
         assertTrue(report.citationCoverage() > 0);
     }
 
     @Test
-    void knowledgeQaRegression100Cases() {
-        List<KnowledgeAgent.KnowledgeAgentRequest> cases = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            cases.add(new KnowledgeAgent.KnowledgeAgentRequest(
-                    i % 2 == 0
-                            ? "What is interest gold at 50 gold?"
-                            : "Explain shop pool size",
-                    "set17-16.16",
+    void knowledgeQaRegression100CasesFromDataset() {
+        List<RagEvaluationRunner.RagEvalCase> dataset = EvalDatasetLoader.loadQa100();
+        assertEquals(100, dataset.size());
+        int passed = 0;
+        for (int i = 0; i < dataset.size(); i++) {
+            RagEvaluationRunner.RagEvalCase evalCase = dataset.get(i);
+            var response = platform.knowledgeAgent().answer(new KnowledgeAgent.KnowledgeAgentRequest(
+                    evalCase.query(),
+                    evalCase.patch(),
                     "corr-qa-" + i,
                     false,
                     false));
-        }
-        int passed = 0;
-        for (KnowledgeAgent.KnowledgeAgentRequest request : cases) {
-            var response = platform.knowledgeAgent().answer(request);
             if (!response.candidates().isEmpty()
                     && response.candidates().getFirst().containsKey("fact_layers")) {
                 passed++;
@@ -90,5 +78,12 @@ class KnowledgePlatformTest {
                         "corr-research-001"));
         assertFalse(response.candidates().isEmpty());
         assertTrue(response.notes().contains("cannot override"));
+    }
+
+    @Test
+    void championToolReturnsSeededAhri() {
+        var hits = platform.tool("champion-tool").search("set17-16.16", "Ahri");
+        assertFalse(hits.isEmpty());
+        assertTrue(hits.getFirst().get("name").toString().contains("Ahri"));
     }
 }

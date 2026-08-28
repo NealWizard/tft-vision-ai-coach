@@ -1,21 +1,43 @@
 package com.tft.coach.knowledge.rag.search;
 
 import com.tft.coach.knowledge.rag.chunk.TextChunk;
+import com.tft.coach.knowledge.rag.vector.VectorFilter;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
-/** Simple BM25-like keyword index for hybrid search. */
-public final class Bm25Index {
+/** In-memory BM25-like keyword index for hybrid search and offline tests. */
+public final class Bm25Index implements TextSearchIndex {
 
     private final Map<String, TextChunk> chunks = new HashMap<>();
 
+    @Override
     public void index(TextChunk chunk) {
         chunks.put(chunk.chunkId(), chunk);
     }
 
-    public double score(TextChunk chunk, String query) {
+    @Override
+    public List<HybridSearchService.SearchHit> search(String query, VectorFilter filter, int topK) {
+        return chunks.entrySet().stream()
+                .filter(entry -> filter == null || matchesFilter(entry.getValue(), filter))
+                .map(entry -> Map.entry(entry.getKey(), score(entry.getValue(), query)))
+                .filter(entry -> entry.getValue() > 0)
+                .sorted(Comparator.comparingDouble(Map.Entry<String, Double>::getValue).reversed())
+                .limit(topK)
+                .map(entry -> new HybridSearchService.SearchHit(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    @Override
+    public Optional<TextChunk> get(String chunkId) {
+        return Optional.ofNullable(chunks.get(chunkId));
+    }
+
+    double score(TextChunk chunk, String query) {
         String[] terms = query.toLowerCase(Locale.ROOT).split("\\s+");
         String text = chunk.text().toLowerCase(Locale.ROOT);
         double score = 0;
@@ -31,8 +53,14 @@ public final class Bm25Index {
         return score;
     }
 
-    public Map<String, TextChunk> chunks() {
-        return Map.copyOf(chunks);
+    private static boolean matchesFilter(TextChunk chunk, VectorFilter filter) {
+        if (filter.patch() != null && !filter.patch().equals(chunk.patch())) {
+            return false;
+        }
+        if (filter.setId() != null && !filter.setId().equals(chunk.setId())) {
+            return false;
+        }
+        return filter.sourceType() == null || filter.sourceType().equals(chunk.sourceType());
     }
 
     private static int countOccurrences(String text, String term) {

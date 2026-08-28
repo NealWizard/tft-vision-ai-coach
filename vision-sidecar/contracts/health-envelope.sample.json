@@ -1,0 +1,14 @@
+{
+  "request_id": "req-sample-health",
+  "status": "OK",
+  "error_code": null,
+  "data": {
+    "ocr_ready": false,
+    "ready": true,
+    "provider": "stub"
+  },
+  "meta": {
+    "service_version": "0.1.0",
+    "latency_ms": 1
+  }
+}

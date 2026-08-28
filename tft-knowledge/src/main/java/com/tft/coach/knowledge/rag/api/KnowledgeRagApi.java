@@ -2,8 +2,8 @@ package com.tft.coach.knowledge.rag.api;
 
 import com.tft.coach.knowledge.rag.chunk.TextChunk;
 import com.tft.coach.knowledge.rag.rerank.RerankerProvider;
-import com.tft.coach.knowledge.rag.search.Bm25Index;
 import com.tft.coach.knowledge.rag.search.HybridSearchService;
+import com.tft.coach.knowledge.rag.search.TextSearchIndex;
 import com.tft.coach.knowledge.rag.vector.VectorFilter;
 
 import java.util.List;
@@ -14,16 +14,16 @@ public final class KnowledgeRagApi {
 
     private final HybridSearchService hybridSearch;
     private final RerankerProvider reranker;
-    private final Bm25Index bm25Index;
+    private final TextSearchIndex textSearchIndex;
 
     public KnowledgeRagApi(
             HybridSearchService hybridSearch,
             RerankerProvider reranker,
-            Bm25Index bm25Index
+            TextSearchIndex textSearchIndex
     ) {
         this.hybridSearch = Objects.requireNonNull(hybridSearch, "hybridSearch");
         this.reranker = Objects.requireNonNull(reranker, "reranker");
-        this.bm25Index = Objects.requireNonNull(bm25Index, "bm25Index");
+        this.textSearchIndex = Objects.requireNonNull(textSearchIndex, "textSearchIndex");
     }
 
     public RagResponse retrieve(String query, VectorFilter filter, int topK) {
@@ -31,7 +31,7 @@ public final class KnowledgeRagApi {
         List<HybridSearchService.SearchHit> reranked = reranker.rerank(query, hits);
         List<RagCitation> citations = reranked.stream()
                 .map(hit -> {
-                    TextChunk chunk = bm25Index.chunks().get(hit.chunkId());
+                    TextChunk chunk = textSearchIndex.get(hit.chunkId()).orElse(null);
                     return new RagCitation(
                             hit.chunkId(),
                             hit.score(),

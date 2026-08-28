@@ -2,8 +2,11 @@ package com.tft.coach.knowledge.platform;
 
 import com.tft.coach.common.degrade.DegradeRouter;
 import com.tft.coach.data.conflict.ConflictQueue;
+import com.tft.coach.data.conflict.InMemoryConflictQueue;
 import com.tft.coach.data.evidence.EvidenceStore;
+import com.tft.coach.data.evidence.InMemoryEvidenceStore;
 import com.tft.coach.data.normalize.KnowledgeNormalizer;
+import com.tft.coach.data.patch.InMemoryPatchManager;
 import com.tft.coach.data.patch.PatchManager;
 import com.tft.coach.data.patch.PatchRecord;
 import com.tft.coach.data.patch.PatchStatus;
@@ -23,9 +26,12 @@ import com.tft.coach.knowledge.rag.embedding.HashEmbeddingProvider;
 import com.tft.coach.knowledge.rag.eval.RagEvaluationRunner;
 import com.tft.coach.knowledge.rag.ingest.DocumentIngestionPipeline;
 import com.tft.coach.knowledge.rag.rerank.ScoreReranker;
+import com.tft.coach.knowledge.research.StubWebSearchProvider;
 import com.tft.coach.knowledge.rag.search.Bm25Index;
 import com.tft.coach.knowledge.rag.search.HybridSearchService;
+import com.tft.coach.knowledge.rag.search.TextSearchIndex;
 import com.tft.coach.knowledge.rag.vector.InMemoryVectorStore;
+import com.tft.coach.knowledge.rag.vector.VectorStore;
 import com.tft.coach.knowledge.tools.AugmentTool;
 import com.tft.coach.knowledge.tools.ChampionTool;
 import com.tft.coach.knowledge.tools.GameRuleTool;
@@ -58,7 +64,7 @@ public final class KnowledgePlatform {
     private final KnowledgeAgent knowledgeAgent;
     private final ResearchAgent researchAgent;
 
-    private KnowledgePlatform(
+    public KnowledgePlatform(
             PatchManager patchManager,
             KnowledgeNormalizer normalizer,
             EvidenceStore evidenceStore,
@@ -135,7 +141,7 @@ public final class KnowledgePlatform {
     }
 
     public static KnowledgePlatform createDefault() {
-        PatchManager patchManager = new PatchManager();
+        PatchManager patchManager = new InMemoryPatchManager();
         patchManager.register(new PatchRecord(
                 "set17-16.16",
                 "set17",
@@ -145,18 +151,25 @@ public final class KnowledgePlatform {
                 Duration.ofDays(14)));
 
         KnowledgeNormalizer normalizer = new KnowledgeNormalizer();
-        EvidenceStore evidenceStore = new EvidenceStore();
-        ConflictQueue conflictQueue = new ConflictQueue();
-        SourceQualityScorer qualityScorer = new SourceQualityScorer();
+        try {
+            com.tft.coach.knowledge.bootstrap.OfflineEntityBootstrap.seedChampions(normalizer, "set17-16.16");
+        } catch (Exception ex) {
+            throw new IllegalStateException("Failed to seed offline entities", ex);
+        }
 
-        GameRuleTool gameRuleTool = new GameRuleTool(patchManager, evidenceStore);
+        EvidenceStore evidenceStore = new InMemoryEvidenceStore();
+        ConflictQueue conflictQueue = new InMemoryConflictQueue();
+        SourceQualityScorer qualityScorer = new SourceQualityScorer();
+        var catalog = com.tft.coach.knowledge.catalog.KnowledgeCatalog.loadDefault();
+
+        GameRuleTool gameRuleTool = new GameRuleTool(patchManager, evidenceStore, catalog);
         ChampionTool championTool = new ChampionTool(patchManager, normalizer.store());
         TraitTool traitTool = new TraitTool(patchManager, normalizer.store());
         ItemTool itemTool = new ItemTool(patchManager, normalizer.store());
         AugmentTool augmentTool = new AugmentTool(patchManager, normalizer.store());
-        MechanicTool mechanicTool = new MechanicTool(patchManager);
-        ProbabilityTool probabilityTool = new ProbabilityTool(patchManager);
-        UnitPoolTool unitPoolTool = new UnitPoolTool(patchManager);
+        MechanicTool mechanicTool = new MechanicTool(patchManager, catalog);
+        ProbabilityTool probabilityTool = new ProbabilityTool(patchManager, catalog);
+        UnitPoolTool unitPoolTool = new UnitPoolTool(patchManager, catalog);
 
         Map<String, KnowledgeTool> tools = new LinkedHashMap<>();
         tools.put(gameRuleTool.toolId(), gameRuleTool);
@@ -169,9 +182,9 @@ public final class KnowledgePlatform {
         tools.put(unitPoolTool.toolId(), unitPoolTool);
 
         HashEmbeddingProvider embeddingProvider = new HashEmbeddingProvider();
-        Bm25Index bm25Index = new Bm25Index();
-        InMemoryVectorStore vectorStore = new InMemoryVectorStore();
-        RagIndexer ragIndexer = new RagIndexer(bm25Index, vectorStore, embeddingProvider);
+        TextSearchIndex textSearchIndex = new Bm25Index();
+        VectorStore vectorStore = new InMemoryVectorStore();
+        RagIndexer ragIndexer = new RagIndexer(textSearchIndex, vectorStore, embeddingProvider);
         DocumentIngestionPipeline ingestion = new DocumentIngestionPipeline();
         ragIndexer.index(ingestion.ingestText(
                 "manual",
@@ -183,9 +196,19 @@ public final class KnowledgePlatform {
                 "set17-16.16",
                 "set17",
                 "Ahri is a 2-cost champion in Set 17."));
+        catalog.searchRules("interest").forEach(rule -> ragIndexer.index(ingestion.ingestText(
+                "catalog",
+                "set17-16.16",
+                "set17",
+                String.valueOf(rule.get("summary")))));
+        catalog.searchRules("shop").forEach(rule -> ragIndexer.index(ingestion.ingestText(
+                "catalog",
+                "set17-16.16",
+                "set17",
+                String.valueOf(rule.get("summary")))));
 
-        HybridSearchService hybridSearch = new HybridSearchService(vectorStore, bm25Index, embeddingProvider);
-        KnowledgeRagApi ragApi = new KnowledgeRagApi(hybridSearch, new ScoreReranker(), bm25Index);
+        HybridSearchService hybridSearch = new HybridSearchService(vectorStore, textSearchIndex, embeddingProvider);
+        KnowledgeRagApi ragApi = new KnowledgeRagApi(hybridSearch, new ScoreReranker(), textSearchIndex);
         RagEvaluationRunner ragEvalRunner = new RagEvaluationRunner(ragApi);
 
         LlmUsageMeter meter = new LlmUsageMeter();
@@ -207,7 +230,7 @@ public final class KnowledgePlatform {
                 "published"));
 
         KnowledgeAgent knowledgeAgent = new KnowledgeAgent(tools, ragApi, llmGateway, promptRegistry, evidenceStore);
-        ResearchAgent researchAgent = new ResearchAgent(knowledgeAgent);
+        ResearchAgent researchAgent = new ResearchAgent(knowledgeAgent, new StubWebSearchProvider());
 
         return new KnowledgePlatform(
                 patchManager,

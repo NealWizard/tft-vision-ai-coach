@@ -6,6 +6,26 @@ tft:
     live-experiment: false
     live-dynamic-recommendation: false
     live-opponent-analysis: false
+  platform:
+    # auto | offline | online
+    mode: auto
+    patch: set18-16.17
+    env-file: .env
+    seed-datadragon: false
+    snapshot-dir: data/snapshots
+  rag:
+    index: tft_rag_chunks
+    embedding-dims: 1024
+  research:
+    provider: tavily
+  vision:
+    sidecar:
+      base-url: http://127.0.0.1:19090
+      auto-start: false
+      connect-timeout-ms: 500
+      read-timeout-ms: 2000
+    profile:
+      default-id: 1920x1080-default
 
 server:
   port: 8080
@@ -25,3 +45,7 @@ logging:
 spring:
   application:
     name: tft-orchestrator
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration

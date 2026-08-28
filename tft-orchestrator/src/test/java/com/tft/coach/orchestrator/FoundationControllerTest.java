@@ -12,10 +12,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "tft.platform.mode=offline")
 @AutoConfigureMockMvc
 class FoundationControllerTest {
 
@@ -55,5 +56,46 @@ class FoundationControllerTest {
         var decision = degradeRouter.route(ProviderKind.LLM, false, false, false);
 
         assertEquals(ExecutionPath.DETERMINISTIC, decision.path());
+    }
+
+    @Test
+    void knowledgeAskReturnsInterestRule() throws Exception {
+        mockMvc.perform(get("/api/v1/knowledge/ask")
+                        .param("question", "What does interest gold look like at 50 gold?")
+                        .param("patch", "set17-16.16"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.patch", is("set17-16.16")))
+                .andExpect(jsonPath("$.notes", is("Tool-backed answer only; no free-form invention.")))
+                .andExpect(jsonPath("$.candidates[0].summary").exists())
+                .andExpect(jsonPath("$.degraded", is(true)));
+    }
+
+    @Test
+    void knowledgeAskPostRejectsBlankQuestion() throws Exception {
+        mockMvc.perform(post("/api/v1/knowledge/ask")
+                        .contentType("application/json")
+                        .content("{\"question\":\"\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void dataDragonIngestEndpointIsMapped() throws Exception {
+        // Offline CI may lack CDN access; endpoint must respond (200 or 502), never 404.
+        int status = mockMvc.perform(post("/api/v1/data/ingest/datadragon")
+                        .param("patch", "set17-16.16")
+                        .param("locale", "en_US"))
+                .andReturn()
+                .getResponse()
+                .getStatus();
+        org.junit.jupiter.api.Assertions.assertTrue(status == 200 || status == 502,
+                "unexpected status=" + status);
+    }
+
+    @Test
+    void visionHealthDegradesWhenSidecarDown() throws Exception {
+        mockMvc.perform(get("/api/v1/vision/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.status", is("DEGRADED")));
     }
 }
