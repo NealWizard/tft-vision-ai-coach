@@ -7,15 +7,31 @@
   "required": ["schema_version", "field", "value", "confidence", "source", "timestamp"],
   "properties": {
     "schema_version": { "type": "string", "const": "1.0.0" },
+    "observation_id": { "type": "string", "minLength": 1 },
     "field": { "type": "string", "minLength": 1 },
     "value": {},
+    "raw_value": { "type": "string" },
     "confidence": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/confidence" },
     "source": {
       "type": "string",
       "enum": ["ocr", "icon", "manual", "derived", "fixture"]
     },
+    "detector": { "type": "string" },
+    "model": { "type": "string" },
+    "model_version": { "type": "string" },
+    "preprocess_version": { "type": "string" },
     "timestamp": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/isoDateTime" },
     "roi": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number" },
+        "h": { "type": "number" }
+      }
+    },
+    "bbox": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

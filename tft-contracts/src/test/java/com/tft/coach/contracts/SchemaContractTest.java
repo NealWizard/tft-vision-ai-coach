@@ -101,7 +101,7 @@ class SchemaContractTest {
                         """),
                 Map.entry("canonical/observation.schema.json",
                         """
-                        {"schema_version":"1.0.0","field":"gold","value":50,"confidence":{"score":0.99,"level":"certain"},"source":"fixture","timestamp":"2026-08-22T00:00:00Z"}
+                        {"schema_version":"1.0.0","observation_id":"obs-1","field":"gold","value":50,"raw_value":"5O","confidence":{"score":0.99,"level":"certain"},"source":"fixture","detector":"stub","model":"fixture","model_version":"0","timestamp":"2026-08-22T00:00:00Z","frame_id":"frame-1","bbox":{"x":1,"y":2,"w":3,"h":4}}
                         """),
                 Map.entry("canonical/gamestate.schema.json",
                         """

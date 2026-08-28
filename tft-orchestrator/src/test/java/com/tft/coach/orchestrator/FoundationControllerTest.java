@@ -90,4 +90,12 @@ class FoundationControllerTest {
         org.junit.jupiter.api.Assertions.assertTrue(status == 200 || status == 502,
                 "unexpected status=" + status);
     }
+
+    @Test
+    void visionHealthDegradesWhenSidecarDown() throws Exception {
+        mockMvc.perform(get("/api/v1/vision/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.status", is("DEGRADED")));
+    }
 }

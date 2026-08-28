@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-26 16:49 +08:00
-> 当前阶段：**P1 做浅项真实化已落地（Stats-002 仍搁置）→ 准备 P2**
+> 更新时间：2026-08-27 15:25 +08:00
+> 当前阶段：**P2 Vision Batch A 地基已落地 → 下一步 Batch B（真实数值 OCR）**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -18,6 +18,8 @@
 | 整合需求与开发规格 | `docs/product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md` |
 | P1 数据层          | `docs/architecture/data-layer.md`                             |
 | P1 做浅硬化设计    | `docs/superpowers/specs/2026-08-26-p1-shallow-hardening-design.md` |
+| P2 Vision Batch A  | `docs/superpowers/specs/2026-08-27-p2-vision-batch-a-design.md` |
+| P2 Batch A 实现计划 | `docs/superpowers/plans/2026-08-27-p2-vision-batch-a.md` |
 | 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
 | 代码示例           | `goodcode.md`                                                 |
 
@@ -32,6 +34,7 @@
 | P1-RAG-*   | Hybrid RAG（InMemory / Elasticsearch）           | DONE                                      |
 | P1-LLM-*   | Cloud LLM Gateway（OpenAI 兼容 / 智谱）          | DONE                                      |
 | P1-AGENT-* | Knowledge / Research（Tavily+SerpAPI）           | DONE                                      |
+| P2-VISION-Frame/ROI + Observation | Vision Batch A（Frame/Profile/Sidecar/Observation） | **DONE**（OCR → Batch B） |
 
 ## 运行模式
 
@@ -63,11 +66,19 @@ $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 mvn -pl tft-orchestrator -am spring-boot:run
 ```
 
+可选：启动 Python 视觉侧车（Batch A 仅 health/ready/stub）：
+
+```powershell
+cd vision-sidecar
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
+```
+
 接口：
 
 - `GET /api/v1/knowledge/ask?question=...`
 - `GET /api/v1/research/ask?topic=...`（外网检索候选，不可覆盖官方事实）
 - `POST /api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US`（全量灌入 Data Dragon 基础实体）
+- `GET /api/v1/vision/health`（侧车探活；侧车未启返回 `degraded=true`，HTTP 200）
 
 ## Wiki 本地预览
 

@@ -18,6 +18,14 @@ tft:
     embedding-dims: 1024
   research:
     provider: tavily
+  vision:
+    sidecar:
+      base-url: http://127.0.0.1:19090
+      auto-start: false
+      connect-timeout-ms: 500
+      read-timeout-ms: 2000
+    profile:
+      default-id: 1920x1080-default
 
 server:
   port: 8080
