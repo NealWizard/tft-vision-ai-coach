@@ -77,4 +77,17 @@ class FoundationControllerTest {
                         .content("{\"question\":\"\"}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void dataDragonIngestEndpointIsMapped() throws Exception {
+        // Offline CI may lack CDN access; endpoint must respond (200 or 502), never 404.
+        int status = mockMvc.perform(post("/api/v1/data/ingest/datadragon")
+                        .param("patch", "set17-16.16")
+                        .param("locale", "en_US"))
+                .andReturn()
+                .getResponse()
+                .getStatus();
+        org.junit.jupiter.api.Assertions.assertTrue(status == 200 || status == 502,
+                "unexpected status=" + status);
+    }
 }

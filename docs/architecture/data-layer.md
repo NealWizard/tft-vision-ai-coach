@@ -40,9 +40,28 @@ mvn -pl tft-orchestrator -am spring-boot:run
 ```
 GET http://localhost:8080/api/v1/knowledge/ask?question=What%20does%20interest%20gold%20look%20like%20at%2050%20gold%3F
 GET http://localhost:8080/api/v1/research/ask?topic=set17%20meta%20trend
+POST http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US
 ```
 
 默认 `patch=set17-16.16`。`tft.platform.mode=auto` 时若 `.env` 含 MySQL+ES 则走在线栈。
+
+### Data Dragon 全量灌库
+
+表已建好后，在线启动服务，再调用：
+
+```powershell
+curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US"
+```
+
+或 JSON：
+
+```powershell
+curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon" `
+  -H "Content-Type: application/json" `
+  -d "{\"patch\":\"set17-16.16\",\"locale\":\"en_US\"}"
+```
+
+会拉取 champion/trait/item/augments → 写入当前 `CanonicalKnowledgeStore`（在线即 MySQL `canonical_entity`），原始包落 `data/snapshots/`。成功返回 `entity_count` / `dragon_version`。
 
 ## 存储
 

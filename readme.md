@@ -67,6 +67,7 @@ mvn -pl tft-orchestrator -am spring-boot:run
 
 - `GET /api/v1/knowledge/ask?question=...`
 - `GET /api/v1/research/ask?topic=...`（外网检索候选，不可覆盖官方事实）
+- `POST /api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US`（全量灌入 Data Dragon 基础实体）
 
 ## Wiki 本地预览
 

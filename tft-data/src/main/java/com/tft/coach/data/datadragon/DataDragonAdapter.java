@@ -16,7 +16,7 @@ public class DataDragonAdapter implements SourceAdapter {
 
     public static final String ADAPTER_ID = "riot-datadragon";
     public static final String PARAM_LOCALE = "locale";
-    public static final String DEFAULT_LOCALE = "en_US";
+    public static final String DEFAULT_LOCALE = "zh_CN";
 
     private final DataDragonHttpClient httpClient;
     private final DataDragonVersionResolver versionResolver;
