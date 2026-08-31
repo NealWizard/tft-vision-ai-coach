@@ -1,4 +1,4 @@
-# P1 / P2 缺口与待办
+# P1 / P2 / P3 缺口与待办
 
 > 更新时间：2026-08-31  
 > 对照 Roadmap V3.1 与当前代码。能本地补的已补；下列为**做不了或不应假装完成**的项。
@@ -9,7 +9,7 @@
 |----|------|------|----------|
 | `P1-DATA-Stats-002` 第二统计源 | **BLOCKED** | DataTFT 未接入；原 LoLChess 已弃 | 选定源 + 合法 API/MCP |
 | Data Dragon HTTP 灌库 | 接口有，CDN 常失败 | 国内访问 `ddragon.leagueoflegends.com` 连接重置 | 镜像/代理，或本地已下载包 |
-| Knowledge Catalog / HTTP 默认 patch | 文档与配置分裂 | Catalog 与单测仍是 `set17-16.16`；`application.yml` 为 `set18-16.17` | 用 Data Dragon/官方源重建 set18 catalog 后再改 HTTP 默认值 |
+| Catalog 经济/商店数值 | 仅改了 patch 键 | 利息/商店人数等沿用既有表，未用 18.1 官方表重算 | 有官方 18.1 商店概率与单位池后再改 JSON |
 | Offline bootstrap 实体 | 仅少量 fixture | 未灌库时 Champion 列表不完整 | 灌库成功或扩 catalog JSON |
 
 ## P2
@@ -25,6 +25,14 @@
 | Cloud Vision 真调用 | 只做开关，默认关 | 避免厂商锁定 | 产品确认供应商与预算 |
 | 侧车 PyInstaller 打包 / auto-spawn | 未做 | 商用客户端后续 | 发布任务 |
 | `/roi/crop` OpenCV | 未做 | Java 已 ImageIO crop | 非必须 |
+
+## P3
+
+| 项 | 状态 | 原因 | 解阻条件 |
+|----|------|------|----------|
+| 在线 Meta 走 OP.GG MCP 写入 MySQL | **未接线** | `DecisionPlatform` 仍 seed fixture + InMemory；V2 DDL 已有 | Orchestrator online 把 DataSource 交给 Jdbc store |
+| Rank/Queue 过滤 | degraded | 现有 Snapshot 无该维 | OP.GG 查询参数可用后补 |
+| PatchImpact 实体 diff | degraded | 缺第二 patch 实体目录 | 双 patch Canonical 灌库 |
 
 ## 已在本轮补上的小缺口
 

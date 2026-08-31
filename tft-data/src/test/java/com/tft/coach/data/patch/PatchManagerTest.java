@@ -14,14 +14,14 @@ class PatchManagerTest {
     void requiresExplicitPatchOnQuery() {
         PatchManager manager = new InMemoryPatchManager();
         manager.register(new PatchRecord(
-                "set17-16.16",
-                "set17",
+                "set18-18.1",
+                "set18",
                 Instant.parse("2026-08-01T00:00:00Z"),
                 null,
                 PatchStatus.CURRENT,
                 Duration.ofDays(7)));
 
-        assertEquals("set17-16.16", manager.require("set17-16.16").id());
+        assertEquals("set18-18.1", manager.require("set18-18.1").id());
         assertThrows(PatchRequiredException.class, () -> manager.require(null));
     }
 }

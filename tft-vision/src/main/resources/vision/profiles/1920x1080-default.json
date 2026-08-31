@@ -5,7 +5,7 @@
   "ui_scale": "100",
   "language": "zh_CN",
   "client_version": null,
-  "patch_hint": "set18-16.17",
+  "patch_hint": "set18-18.1",
   "regions": {
     "player.gold": {
       "id": "player.gold",

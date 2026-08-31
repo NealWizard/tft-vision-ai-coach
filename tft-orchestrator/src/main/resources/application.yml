@@ -9,7 +9,7 @@ tft:
   platform:
     # auto | offline | online
     mode: auto
-    patch: set18-16.17
+    patch: set18-18.1
     env-file: .env
     seed-datadragon: false
     snapshot-dir: data/snapshots

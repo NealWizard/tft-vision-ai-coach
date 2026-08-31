@@ -20,7 +20,7 @@ class GameStatePipelineTest {
 
     @Test
     void buildsPlayerAndFiveShopSlotsFromFixtures() {
-        GameState state = builder.build("match-1", "set18-16.17", shopFixtures());
+        GameState state = builder.build("match-1", "set18-18.1", shopFixtures());
         new GameStateValidator().requireValid(state);
         assertEquals("3-3", state.stage());
         assertEquals(6, state.player().level());
@@ -52,7 +52,7 @@ class GameStatePipelineTest {
     @Test
     void missingPlayerFieldFails() {
         assertThrows(IllegalArgumentException.class, () ->
-                builder.build("m", "set18-16.17", List.of(
+                builder.build("m", "set18-18.1", List.of(
                         ObservationFactory.fromFixture("stage", "3-3"),
                         ObservationFactory.fromFixture("player.level", 6),
                         ObservationFactory.fromFixture("player.gold", 65)
@@ -61,7 +61,7 @@ class GameStatePipelineTest {
 
     @Test
     void diffAndTimelineDetectGoldAndShopChange() {
-        GameState a = builder.build("match-1", "set18-16.17", shopFixtures());
+        GameState a = builder.build("match-1", "set18-18.1", shopFixtures());
         List<Observation> next = List.of(
                 ObservationFactory.fromFixture("stage", "3-3"),
                 ObservationFactory.fromFixture("player.level", 6),
@@ -70,7 +70,7 @@ class GameStatePipelineTest {
                 ObservationFactory.fromFixture("shop.0.champion_id", "warwick"),
                 ObservationFactory.fromFixture("shop.0.cost", 2)
         );
-        GameState b = builder.build("match-1", "set18-16.17", next);
+        GameState b = builder.build("match-1", "set18-18.1", next);
         List<GameStateDiff.Event> events = GameStateDiff.diff(a, b);
         assertTrue(events.stream().anyMatch(e -> "GoldChanged".equals(e.type())));
         assertTrue(events.stream().anyMatch(e -> "ShopChanged".equals(e.type()) || "Sell".equals(e.type()) || "Buy".equals(e.type())));

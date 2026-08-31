@@ -1,5 +1,5 @@
 {
-  "patch": "set17-16.16",
+  "patch": "set18-18.1",
   "mechanics": [
     {
       "id": "mechanic.carousel",
@@ -17,7 +17,13 @@
       "id": "mechanic.portal",
       "kind": "portal",
       "name": "Portal",
-      "description": "Set portal / encounter modifiers can alter starting conditions for a lobby."
+      "description": "Opening encounter modifiers can alter starting conditions for a lobby."
+    },
+    {
+      "id": "mechanic.wisp",
+      "kind": "wisp",
+      "name": "Wisps",
+      "description": "Wisps appear in the shop as purchasable power-ups in Set 18 Enchanted Wilds."
     }
   ],
   "source_url": "https://support-leagueoflegends.riotgames.com/hc/en-us/articles/4404069660947"

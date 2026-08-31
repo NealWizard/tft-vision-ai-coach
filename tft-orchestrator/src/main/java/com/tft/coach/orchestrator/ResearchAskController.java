@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/research")
 public class ResearchAskController {
 
-    static final String DEFAULT_PATCH = "set17-16.16";
+    static final String DEFAULT_PATCH = "set18-18.1";
 
     private final KnowledgePlatform platform;
 

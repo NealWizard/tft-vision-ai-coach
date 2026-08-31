@@ -37,7 +37,7 @@ class MultiSourceMetaFetchServiceTest {
         MultiSourceMetaFetchService service = MultiSourceMetaFetchService.createDefault(
                 tempDir, dualClient, dualClient);
 
-        MultiSourceMetaResult result = service.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+        MultiSourceMetaResult result = service.fetch(MetaSnapshotQuery.of("set18-18.1", "global", "24h"));
 
         assertEquals(2, result.outcomes().size());
         assertEquals(OpGgMcpStatsAdapter.ADAPTER_ID, result.outcomes().get(0).sourceId());
@@ -53,10 +53,10 @@ class MultiSourceMetaFetchServiceTest {
         MultiSourceMetaFetchService service = MultiSourceMetaFetchService.createDefault(
                 tempDir, dualClient, dualClient);
 
-        service.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+        service.fetch(MetaSnapshotQuery.of("set18-18.1", "global", "24h"));
         dualClient.failOpggNext = true;
 
-        MultiSourceMetaResult result = service.fetch(MetaSnapshotQuery.of("set17-16.16", "global", "24h"));
+        MultiSourceMetaResult result = service.fetch(MetaSnapshotQuery.of("set18-18.1", "global", "24h"));
 
         assertTrue(result.outcomes().get(0).fetchResult().degraded());
         assertTrue(result.outcomes().get(1).fetchResult().live());

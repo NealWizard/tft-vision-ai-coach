@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tft.coach/schemas/canonical/candidate-set.schema.json",
+  "title": "CandidateSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "candidate_set_id",
+    "decision_type",
+    "based_on",
+    "candidates",
+    "degraded",
+    "degraded_reasons",
+    "trace"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "candidate_set_id": { "type": "string", "minLength": 1 },
+    "decision_type": {
+      "type": "string",
+      "enum": ["SHOP", "ECONOMY", "COMPOSITION", "ITEM", "AUGMENT", "TRANSITION"]
+    },
+    "based_on": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patch", "observed_at", "game_state_fingerprint"],
+      "properties": {
+        "match_id": { "type": "string" },
+        "patch": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/patchId" },
+        "observed_at": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/isoDateTime" },
+        "game_state_fingerprint": { "type": "string", "minLength": 1 }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/candidateOption" }
+    },
+    "degraded": { "type": "boolean" },
+    "degraded_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correlation_id", "agent_run_id"],
+      "properties": {
+        "correlation_id": { "type": "string", "minLength": 1 },
+        "agent_run_id": { "type": "string", "minLength": 1 },
+        "status": { "type": "string", "enum": ["ok", "degraded", "failed"] },
+        "latency_ms": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "actionType": {
+      "type": "string",
+      "enum": [
+        "BUY",
+        "HOLD",
+        "ROLL",
+        "LOCK",
+        "LEVEL",
+        "SAVE",
+        "ALL_IN",
+        "PIVOT",
+        "CRAFT",
+        "SELECT_AUGMENT"
+      ]
+    },
+    "candidateOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "action_type",
+        "score",
+        "risk",
+        "preconditions",
+        "evidence",
+        "confidence",
+        "summary"
+      ],
+      "properties": {
+        "candidate_id": { "type": "string", "minLength": 1 },
+        "action_type": { "$ref": "#/$defs/actionType" },
+        "score": { "type": "number" },
+        "risk": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["upside", "downside", "uncertainty"],
+          "properties": {
+            "upside": { "type": "string" },
+            "downside": { "type": "string" },
+            "uncertainty": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidence": { "$ref": "https://tft.coach/schemas/canonical/common-defs.schema.json#/$defs/confidence" },
+        "summary": { "type": "string", "minLength": 1 },
+        "reasoning": { "type": "string" },
+        "tradeoffs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

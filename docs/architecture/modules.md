@@ -87,3 +87,14 @@ flowchart BT
 | P0-FOUND-FeatureFlag-001 | `tft.flags.*`，Live 默认 false |
 | P0-FOUND-TestData-001 | `fixtures/*` 七类 manifest |
 | P0-FOUND-Degrade-001 | `DegradeRouter`、`docs/architecture/degrade-matrix.md` |
+
+## P3 交付映射
+
+| ID | 落地位置 |
+|----|----------|
+| P3-META-* | `tft-meta` Snapshot/Score/Trend/PatchImpact + fixture |
+| P3-DECISION-Candidate-001 | `schemas/canonical/candidate-set.schema.json` |
+| P3-DECISION-Shop/Economy/Composition/Item/Augment/Transition | `tft-decision` DomainAgent |
+| P3-DECISION-Risk/Simulator | `RiskAnnotator`、`EconomySimulator`（无战斗） |
+| P3-RAG-DecisionContext/Case | `KnowledgeRagApi` + patch filter |
+| P3-LLM-Reasoning/Grounding | `ChatModelGateway` + `ReasoningGrounder`（不改 score） |

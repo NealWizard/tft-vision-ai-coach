@@ -1,6 +1,6 @@
 # Good Code Examples
 
-> 更新时间：2026-08-28 14:54 +08:00
+> 更新时间：2026-08-31 14:50 +08:00
 
 ## 1. Feature Flag 默认关闭 Live（P0-FOUND-FeatureFlag-001）
 
@@ -58,9 +58,21 @@ Optional<Object> value = NumericNormalizer.normalize("player.gold", "4l");
 ## 6. Observation → GameState（P2-STATE-Builder-001）
 
 ```java
-GameState state = new GameStateBuilder().build("match-1", "set18-16.17", observations);
+GameState state = new GameStateBuilder().build("match-1", "set18-18.1", observations);
 List<GameStateDiff.Event> events = GameStateDiff.diff(before, after);
 MatchTimeline.Timeline timeline = MatchTimeline.fromStates(List.of(before, after));
 ```
 
 要点：confidence 低于 0.80 的 Observation 在融合阶段丢弃；Cloud Vision 仅 `tft.vision.cloud.enabled=true` 且低置信度才可能调用。
+
+## 7. CandidateSet + ChatModelGateway（P3 V1.1）
+
+```java
+CandidateSet set = DecisionPlatform.createDefault().pipeline()
+    .analyze(gameState, DecisionPipeline.AnalyzeRequest.defaults());
+// 2～3 候选；LLM 只填 reasoning，不改 score
+ChatModelGateway mock = ChatModelGateway.mock();
+ChatModelGateway cloud = ChatModelGateway.openAiCompatible(baseUrl, key, model, "openai");
+```
+
+要点：Domain Agent 不 import 厂商 SDK；无 GameState/Patch 拒绝决策；Simulator 只投影金币/利息/商店赔率。

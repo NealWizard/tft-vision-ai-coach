@@ -1,6 +1,6 @@
 # P1 数据层与知识平台
 
-> 更新时间：2026-08-31 11:31 +08:00
+> 更新时间：2026-08-31 16:52 +08:00
 
 ## 模块
 
@@ -39,18 +39,18 @@ mvn -pl tft-orchestrator -am spring-boot:run
 
 ```
 GET http://localhost:8080/api/v1/knowledge/ask?question=What%20does%20interest%20gold%20look%20like%20at%2050%20gold%3F
-GET http://localhost:8080/api/v1/research/ask?topic=set17%20meta%20trend
-POST http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US
+GET http://localhost:8080/api/v1/research/ask?topic=set18%20meta%20trend
+POST http://localhost:8080/api/v1/data/ingest/datadragon?patch=set18-18.1&locale=en_US
 ```
 
-默认 HTTP 示例仍用 catalog 的 `set17-16.16`；`application.yml` 里 `tft.platform.patch` 现为 `set18-16.17`（视觉 Profile 键）。对齐见 [P1/P2 待办](../dev/p1-p2-backlog.md)。
+当前默认 patch 为线上 Set 18 / TFT 18.1：`set18-18.1`（Catalog、`tft.platform.patch`、HTTP 缺省值同一键）。Data Dragon 灌库用该 id 的后缀 `18.1` 去匹配 CDN `versions.json`。
 
 ### Data Dragon 全量灌库
 
 表已建好后，在线启动服务，再调用：
 
 ```powershell
-curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US"
+curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon?patch=set18-18.1&locale=en_US"
 ```
 
 或 JSON：
@@ -58,7 +58,7 @@ curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16
 ```powershell
 curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon" `
   -H "Content-Type: application/json" `
-  -d "{\"patch\":\"set17-16.16\",\"locale\":\"en_US\"}"
+  -d "{\"patch\":\"set18-18.1\",\"locale\":\"en_US\"}"
 ```
 
 会拉取 champion/trait/item/augments → 写入当前 `CanonicalKnowledgeStore`（在线即 MySQL `canonical_entity`），原始包落 `data/snapshots/`。成功返回 `entity_count` / `dragon_version`。

@@ -30,7 +30,7 @@ public final class EvalDatasetLoader {
                 node.path("expected_terms").forEach(t -> terms.add(t.asText()));
                 cases.add(new RagEvaluationRunner.RagEvalCase(
                         node.path("query").asText(),
-                        node.path("patch").asText("set17-16.16"),
+                        node.path("patch").asText("set18-18.1"),
                         List.copyOf(terms)));
             }
             return List.copyOf(cases);

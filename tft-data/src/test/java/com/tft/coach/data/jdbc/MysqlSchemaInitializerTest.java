@@ -15,4 +15,12 @@ class MysqlSchemaInitializerTest {
         assertTrue(statements.length >= 4);
         assertEquals("CREATE TABLE IF NOT EXISTS evidence", statements[0].substring(0, 35));
     }
+
+    @Test
+    void splitsP3Script() throws Exception {
+        String script = MysqlSchemaInitializer.loadScript("db/mysql/V2__p3_meta_candidate.sql");
+        String[] statements = MysqlSchemaInitializer.splitStatements(script);
+        assertTrue(statements.length >= 2);
+        assertTrue(statements[0].startsWith("CREATE TABLE IF NOT EXISTS meta_snapshot"));
+    }
 }

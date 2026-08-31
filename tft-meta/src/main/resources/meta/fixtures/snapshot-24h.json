@@ -1,0 +1,88 @@
+{
+  "source_id": "fixture",
+  "patch": "set18-18.1",
+  "region": "global",
+  "time_window": "24h",
+  "captured_at": "2026-08-31T00:00:00Z",
+  "sample_size": 120000,
+  "comps": [
+    {
+      "comp_id": "magnificent-ahri",
+      "name": "Magnificent Ahri",
+      "tier": "S",
+      "avg_place": 3.87,
+      "first_rate": 0.21,
+      "top4_rate": 0.60,
+      "pick_rate": 0.12,
+      "sample_size": 8000,
+      "core_units": ["champ.ahri"]
+    },
+    {
+      "comp_id": "vanguard-aphelios",
+      "name": "Vanguard Aphelios",
+      "tier": "A",
+      "avg_place": 4.20,
+      "first_rate": 0.14,
+      "top4_rate": 0.52,
+      "pick_rate": 0.08,
+      "sample_size": 5000,
+      "core_units": ["champ.aphelios"]
+    },
+    {
+      "comp_id": "xayah-rakan",
+      "name": "Xayah Rakan Reroll",
+      "tier": "B",
+      "avg_place": 4.40,
+      "first_rate": 0.11,
+      "top4_rate": 0.48,
+      "pick_rate": 0.06,
+      "sample_size": 3000,
+      "core_units": ["champ.xayah"]
+    }
+  ],
+  "units": [
+    {
+      "unit_id": "champ.ahri",
+      "name": "Ahri",
+      "win_rate": 0.52,
+      "pick_rate": 0.18,
+      "avg_place": 3.9,
+      "sample_size": 104000,
+      "top_items": ["item.infinity_edge"]
+    }
+  ],
+  "items": [
+    {
+      "item_id": "item.infinity_edge",
+      "name": "Infinity Edge",
+      "win_rate": 0.55,
+      "pick_rate": 0.12,
+      "sample_size": 69000
+    },
+    {
+      "item_id": "item.warmogs",
+      "name": "Warmog's Armor",
+      "win_rate": 0.51,
+      "pick_rate": 0.09,
+      "sample_size": 40000
+    }
+  ],
+  "augments": [
+    {
+      "augment_id": "augment.combat-training",
+      "name": "Combat Training",
+      "win_rate": 0.54,
+      "pick_rate": 0.08,
+      "avg_place": 3.8,
+      "sample_size": 46000
+    },
+    {
+      "augment_id": "augment.econ",
+      "name": "Golden Egg",
+      "win_rate": 0.50,
+      "pick_rate": 0.06,
+      "avg_place": 4.1,
+      "sample_size": 20000
+    }
+  ]
+}

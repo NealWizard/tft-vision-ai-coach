@@ -1,6 +1,6 @@
 # 优秀代码示例
 
-> 更新时间：2026-08-22
+> 更新时间：2026-08-31
 
 ## 1. Feature Flag 默认关闭 Live（P0-FOUND-FeatureFlag-001）
 
@@ -30,6 +30,6 @@ List<AgentRun> chain = traceService.findByCorrelationId(ctx.correlationId());
 
 ## 3. Schema 先行（P0-FOUND-Contract-001 / P0-FOUND-AgentContract-001）
 
-Agent 样例必须通过 `agent-contract.schema.json` 校验；Domain Agent 不允许输出单一强制动作，必须是 `candidates[]`。
+Agent 样例必须通过 `agent-contract.schema.json` 校验；Domain Agent 不允许输出单一强制动作，必须是 `candidates[]`。P3 使用 `candidate-set.schema.json`。
 
 完整文件见仓库 [`goodcode.md`](https://github.com/NealWizard/tft-vision-ai-coach/blob/develop/goodcode.md)。

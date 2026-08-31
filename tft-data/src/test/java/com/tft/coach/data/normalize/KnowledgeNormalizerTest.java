@@ -14,12 +14,12 @@ class KnowledgeNormalizerTest {
         KnowledgeNormalizer normalizer = new KnowledgeNormalizer();
         CanonicalEntityResolver resolver = new CanonicalEntityResolver();
 
-        var entities = normalizer.ingestChampions(payload, "set17-16.16", resolver);
+        var entities = normalizer.ingestChampions(payload, "set18-18.1", resolver);
 
         assertEquals(1, entities.size());
         assertEquals("champ.ahri", entities.getFirst().canonicalId());
         assertFalse(entities.getFirst().rawPayload().length == 0);
-        assertEquals("Ahri", normalizer.requireEntity("set17-16.16", "champ.ahri").canonical().get("name"));
+        assertEquals("Ahri", normalizer.requireEntity("set18-18.1", "champ.ahri").canonical().get("name"));
     }
 
     private static byte[] readResource(String path) throws Exception {

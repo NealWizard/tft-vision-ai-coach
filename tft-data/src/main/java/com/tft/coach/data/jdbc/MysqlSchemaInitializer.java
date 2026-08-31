@@ -17,7 +17,9 @@ import javax.sql.DataSource;
 public final class MysqlSchemaInitializer {
 
     private static final String SCHEMA_RESOURCE = "db/mysql/V1__p1_stores.sql";
+    private static final String SCHEMA_V2_RESOURCE = "db/mysql/V2__p3_meta_candidate.sql";
     private static final String PROBE_TABLE = "evidence";
+    private static final String PROBE_TABLE_V2 = "meta_snapshot";
 
     private final DataSource dataSource;
 
@@ -25,12 +27,14 @@ public final class MysqlSchemaInitializer {
         this.dataSource = Objects.requireNonNull(dataSource, "dataSource");
     }
 
-    /** Runs {@code V1__p1_stores.sql} when the evidence table does not exist. */
+    /** Runs bundled DDL when store tables are missing. */
     public void initializeIfNeeded() throws SQLException {
-        if (tableExists(PROBE_TABLE)) {
-            return;
+        if (!tableExists(PROBE_TABLE)) {
+            executeScript(loadScript(SCHEMA_RESOURCE));
         }
-        executeScript(loadScript(SCHEMA_RESOURCE));
+        if (!tableExists(PROBE_TABLE_V2)) {
+            executeScript(loadScript(SCHEMA_V2_RESOURCE));
+        }
     }
 
     private boolean tableExists(String tableName) throws SQLException {

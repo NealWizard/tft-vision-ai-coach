@@ -26,6 +26,9 @@
 | `observation.schema.json` | 观测事件 |
 | `evidence.schema.json` | 证据链 |
 | `gamestate.schema.json` | 对局状态聚合 |
+| `candidate-set.schema.json` | P3 决策输出（2～3 候选） |
+| `contest-snapshot.schema.json` | 争抢快照 |
+| `projected-state.schema.json` | 经济/商店投影 |
 
 源码：[schemas/canonical/](https://github.com/NealWizard/tft-vision-ai-coach/tree/develop/schemas/canonical)
 

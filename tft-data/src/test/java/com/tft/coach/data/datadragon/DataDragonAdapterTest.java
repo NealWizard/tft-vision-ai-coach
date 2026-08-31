@@ -59,7 +59,7 @@ class DataDragonAdapterTest {
         var payload = adapter.fetch(request);
 
         assertEquals("16.16.1", payload.patch());
-        assertTrue(new String(payload.body()).contains("TFT17_Ahri"));
+        assertTrue(new String(payload.body()).contains("TFT18_Ahri"));
     }
 
     @Test
@@ -84,7 +84,7 @@ class DataDragonAdapterTest {
 
         assertFalse(result.live());
         assertTrue(result.degraded());
-        assertTrue(new String(result.body()).contains("TFT17_Ahri"));
+        assertTrue(new String(result.body()).contains("TFT18_Ahri"));
     }
 
     @Test

@@ -56,7 +56,7 @@ class OpGgStatsAdapterTest {
                 OpGgMcpStatsAdapter.ADAPTER_ID,
                 OpGgStatsResource.META_BUNDLE.resourceKey(),
                 OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
-                "set17-16.16",
+                "set18-18.1",
                 Map.of(
                         OpGgStatsAdapter.PARAM_REGION, "global",
                         OpGgStatsAdapter.PARAM_TIME_WINDOW, "24h"
@@ -77,7 +77,7 @@ class OpGgStatsAdapterTest {
     @Test
     void fetchServiceReturnsMetaSnapshotWithEvidence() throws Exception {
         OpGgStatsFetchService service = OpGgStatsFetchService.createDefault(tempDir, mcpClient);
-        var outcome = service.fetchMetaBundle("set17-16.16", "global", "24h");
+        var outcome = service.fetchMetaBundle("set18-18.1", "global", "24h");
 
         assertTrue(outcome.result().live());
         assertEquals(SourceType.STATS, outcome.evidence().sourceType());
@@ -100,7 +100,7 @@ class OpGgStatsAdapterTest {
                 OpGgMcpStatsAdapter.ADAPTER_ID,
                 OpGgStatsResource.META_BUNDLE.resourceKey(),
                 OpGgMcpStatsAdapter.mcpToolUrl(OpGgMcpStatsAdapter.TOOL_NAME),
-                "set17-16.16",
+                "set18-18.1",
                 Map.of()
         );
         fetchService.fetch(request);

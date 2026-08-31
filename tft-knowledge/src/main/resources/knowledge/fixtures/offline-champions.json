@@ -2,20 +2,20 @@
   "type": "tft-champion",
   "version": "offline-fixture",
   "data": {
-    "TFT17_Ahri": {
-      "id": "TFT17_Ahri",
+    "TFT18_Ahri": {
+      "id": "TFT18_Ahri",
       "name": "Ahri",
-      "tier": 2,
-      "cost": 2
+      "tier": 4,
+      "cost": 4
     },
-    "TFT17_Xayah": {
-      "id": "TFT17_Xayah",
+    "TFT18_Xayah": {
+      "id": "TFT18_Xayah",
       "name": "Xayah",
       "tier": 4,
       "cost": 4
     },
-    "TFT17_Jax": {
-      "id": "TFT17_Jax",
+    "TFT18_Jax": {
+      "id": "TFT18_Jax",
       "name": "Jax",
       "tier": 2,
       "cost": 2

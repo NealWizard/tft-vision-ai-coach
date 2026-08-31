@@ -26,7 +26,7 @@ class KnowledgePlatformTest {
     void knowledgeAgentAnswersInterestRuleWithEvidence() {
         var response = platform.knowledgeAgent().answer(new KnowledgeAgent.KnowledgeAgentRequest(
                 "What does interest gold rule look like at 50 gold?",
-                "set17-16.16",
+                "set18-18.1",
                 "corr-test-001",
                 false,
                 false));
@@ -74,7 +74,7 @@ class KnowledgePlatformTest {
         var response = platform.researchAgent().research(
                 new com.tft.coach.knowledge.agent.ResearchAgent.ResearchAgentRequest(
                         "latest patch trend",
-                        "set17-16.16",
+                        "set18-18.1",
                         "corr-research-001"));
         assertFalse(response.candidates().isEmpty());
         assertTrue(response.notes().contains("cannot override"));
@@ -82,7 +82,7 @@ class KnowledgePlatformTest {
 
     @Test
     void championToolReturnsSeededAhri() {
-        var hits = platform.tool("champion-tool").search("set17-16.16", "Ahri");
+        var hits = platform.tool("champion-tool").search("set18-18.1", "Ahri");
         assertFalse(hits.isEmpty());
         assertTrue(hits.getFirst().get("name").toString().contains("Ahri"));
     }

@@ -68,6 +68,7 @@ nav:
     - 分支策略: branching/BRANCHING.md
     - 任务完成收尾: dev/task-completion.md
     - P1/P2 待办: dev/p1-p2-backlog.md
+    - P3 设计: superpowers/specs/2026-08-31-p3-decision-design.md
   - 代码规范:
     - 优秀示例: goodcode/index.md
 

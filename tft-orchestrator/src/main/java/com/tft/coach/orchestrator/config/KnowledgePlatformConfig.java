@@ -79,7 +79,7 @@ public class KnowledgePlatformConfig {
     @Bean
     public KnowledgePlatform knowledgePlatform(
             @Value("${tft.platform.mode:auto}") String mode,
-            @Value("${tft.platform.patch:set17-16.16}") String patch,
+            @Value("${tft.platform.patch:set18-18.1}") String patch,
             @Value("${tft.platform.env-file:.env}") String envFile,
             @Value("${tft.platform.seed-datadragon:false}") boolean seedDataDragon,
             @Value("${tft.platform.snapshot-dir:data/snapshots}") String snapshotDir,

@@ -42,7 +42,7 @@ public class DataDragonIngestController {
 
     public DataDragonIngestController(
             KnowledgePlatform platform,
-            @Value("${tft.platform.patch:set17-16.16}") String defaultPatch,
+            @Value("${tft.platform.patch:set18-18.1}") String defaultPatch,
             @Value("${tft.platform.snapshot-dir:data/snapshots}") String snapshotDir
     ) {
         this.platform = platform;

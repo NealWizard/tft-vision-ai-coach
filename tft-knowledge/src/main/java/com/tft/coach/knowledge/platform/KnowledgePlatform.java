@@ -140,19 +140,25 @@ public final class KnowledgePlatform {
         return tools.get(toolId);
     }
 
+    public Map<String, KnowledgeTool> tools() {
+        return tools;
+    }
+
     public static KnowledgePlatform createDefault() {
+        String patch = "set18-18.1";
+        String setId = "set18";
         PatchManager patchManager = new InMemoryPatchManager();
         patchManager.register(new PatchRecord(
-                "set17-16.16",
-                "set17",
-                Instant.parse("2026-08-01T00:00:00Z"),
+                patch,
+                setId,
+                Instant.parse("2026-08-26T00:00:00Z"),
                 null,
                 PatchStatus.CURRENT,
                 Duration.ofDays(14)));
 
         KnowledgeNormalizer normalizer = new KnowledgeNormalizer();
         try {
-            com.tft.coach.knowledge.bootstrap.OfflineEntityBootstrap.seedChampions(normalizer, "set17-16.16");
+            com.tft.coach.knowledge.bootstrap.OfflineEntityBootstrap.seedChampions(normalizer, patch);
         } catch (Exception ex) {
             throw new IllegalStateException("Failed to seed offline entities", ex);
         }
@@ -188,23 +194,33 @@ public final class KnowledgePlatform {
         DocumentIngestionPipeline ingestion = new DocumentIngestionPipeline();
         ragIndexer.index(ingestion.ingestText(
                 "manual",
-                "set17-16.16",
-                "set17",
+                patch,
+                setId,
                 "Interest gold is capped at 5 when holding 50 gold under standard economy rules."));
         ragIndexer.index(ingestion.ingestText(
                 "manual",
-                "set17-16.16",
-                "set17",
-                "Ahri is a 2-cost champion in Set 17."));
+                patch,
+                setId,
+                "Ahri is a 4-cost champion in Set 18 Enchanted Wilds."));
+        ragIndexer.index(ingestion.ingestText(
+                "stats",
+                patch,
+                setId,
+                "Magnificent Ahri is a high top4 AP shell in the 24h diamond+ meta."));
+        ragIndexer.index(ingestion.ingestText(
+                "community",
+                patch,
+                setId,
+                "Case: stage 3-2 gold 50 with champ.ahri in shop. Candidate action BUY champ.ahri. This is a similar-state case, not a numeric fact."));
         catalog.searchRules("interest").forEach(rule -> ragIndexer.index(ingestion.ingestText(
                 "catalog",
-                "set17-16.16",
-                "set17",
+                patch,
+                setId,
                 String.valueOf(rule.get("summary")))));
         catalog.searchRules("shop").forEach(rule -> ragIndexer.index(ingestion.ingestText(
                 "catalog",
-                "set17-16.16",
-                "set17",
+                patch,
+                setId,
                 String.valueOf(rule.get("summary")))));
 
         HybridSearchService hybridSearch = new HybridSearchService(vectorStore, textSearchIndex, embeddingProvider);

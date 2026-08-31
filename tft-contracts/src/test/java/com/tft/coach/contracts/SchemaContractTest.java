@@ -69,35 +69,35 @@ class SchemaContractTest {
         Map<String, String> payloads = Map.ofEntries(
                 Map.entry("canonical/champion.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"champ.ahri","patch":"set17-16.16","name":"Ahri","cost":4}
+                        {"schema_version":"1.0.0","id":"champ.ahri","patch":"set18-18.1","name":"Ahri","cost":4}
                         """),
                 Map.entry("canonical/trait.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"trait.stargazer","patch":"set17-16.16","name":"Stargazer","breakpoints":[{"units":2,"style":"bronze"}]}
+                        {"schema_version":"1.0.0","id":"trait.stargazer","patch":"set18-18.1","name":"Stargazer","breakpoints":[{"units":2,"style":"bronze"}]}
                         """),
                 Map.entry("canonical/item.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"item.infinity_edge","patch":"set17-16.16","name":"Infinity Edge","kind":"completed"}
+                        {"schema_version":"1.0.0","id":"item.infinity_edge","patch":"set18-18.1","name":"Infinity Edge","kind":"completed"}
                         """),
                 Map.entry("canonical/augment.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"augment.space_groove","patch":"set17-16.16","name":"Space Groove","tier":"gold"}
+                        {"schema_version":"1.0.0","id":"augment.space_groove","patch":"set18-18.1","name":"Space Groove","tier":"gold"}
                         """),
                 Map.entry("canonical/mechanic.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"mechanic.portal","patch":"set17-16.16","name":"Portal","kind":"portal"}
+                        {"schema_version":"1.0.0","id":"mechanic.portal","patch":"set18-18.1","name":"Portal","kind":"portal"}
                         """),
                 Map.entry("canonical/rule.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"rule.interest_cap","patch":"set17-16.16","category":"economy","key":"interest_cap","value":5}
+                        {"schema_version":"1.0.0","id":"rule.interest_cap","patch":"set18-18.1","category":"economy","key":"interest_cap","value":5}
                         """),
                 Map.entry("canonical/patch.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"set17-16.16","set_id":"set17","effective_at":"2026-08-22T00:00:00Z"}
+                        {"schema_version":"1.0.0","id":"set18-18.1","set_id":"set18","effective_at":"2026-08-26T00:00:00Z"}
                         """),
                 Map.entry("canonical/evidence.schema.json",
                         """
-                        {"schema_version":"1.0.0","id":"evidence:riot:set17","source_type":"riot","captured_at":"2026-08-22T00:00:00Z","patch":"set17-16.16"}
+                        {"schema_version":"1.0.0","id":"evidence:riot:set18","source_type":"riot","captured_at":"2026-08-26T00:00:00Z","patch":"set18-18.1"}
                         """),
                 Map.entry("canonical/observation.schema.json",
                         """
@@ -105,7 +105,19 @@ class SchemaContractTest {
                         """),
                 Map.entry("canonical/gamestate.schema.json",
                         """
-                        {"schema_version":"1.0.0","match_id":"match-1","patch":"set17-16.16","stage":"3-2","observed_at":"2026-08-22T00:00:00Z","player":{"level":6,"gold":50,"hp":80}}
+                        {"schema_version":"1.0.0","match_id":"match-1","patch":"set18-18.1","stage":"3-2","observed_at":"2026-08-22T00:00:00Z","player":{"level":6,"gold":50,"hp":80}}
+                        """),
+                Map.entry("canonical/candidate-set.schema.json",
+                        """
+                        {"schema_version":"1.0.0","candidate_set_id":"cs-1","decision_type":"COMPOSITION","based_on":{"patch":"set18-18.1","observed_at":"2026-08-22T00:00:00Z","game_state_fingerprint":"abc"},"candidates":[{"candidate_id":"c1","action_type":"PIVOT","score":0.8,"risk":{"upside":"u","downside":"d","uncertainty":"low"},"preconditions":[],"evidence":["evidence:meta:s1"],"confidence":{"score":0.8,"level":"high"},"summary":"Pivot A"},{"candidate_id":"c2","action_type":"HOLD","score":0.5,"risk":{"upside":"u","downside":"d","uncertainty":"medium"},"preconditions":[],"evidence":["evidence:meta:s1"],"confidence":{"score":0.5,"level":"medium"},"summary":"Hold"}],"degraded":false,"degraded_reasons":[],"trace":{"correlation_id":"c","agent_run_id":"r"}}
+                        """),
+                Map.entry("canonical/contest-snapshot.schema.json",
+                        """
+                        {"unit_id":"champ.xayah","contested_level":0.4,"source":"META","confidence":{"score":0.6,"level":"medium"}}
+                        """),
+                Map.entry("canonical/projected-state.schema.json",
+                        """
+                        {"gold":48,"interest":4,"xp":2,"level":6,"roll_count":1,"degraded":false,"evidence":["evidence:rule:economy.interest"]}
                         """)
         );
 
@@ -143,6 +155,9 @@ class SchemaContractTest {
                 "/schemas/canonical/evidence.schema.json",
                 "/schemas/canonical/observation.schema.json",
                 "/schemas/canonical/gamestate.schema.json",
+                "/schemas/canonical/candidate-set.schema.json",
+                "/schemas/canonical/contest-snapshot.schema.json",
+                "/schemas/canonical/projected-state.schema.json",
                 "/schemas/agent/agent-contract.schema.json"
         };
         for (String path : required) {

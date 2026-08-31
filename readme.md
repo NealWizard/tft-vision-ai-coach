@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-31 11:31 +08:00
-> 当前阶段：**P2 fixture 收尾已落地；缺口见 [P1/P2 待办](docs/dev/p1-p2-backlog.md）**
+> 更新时间：2026-08-31 16:52 +08:00
+> 当前阶段：**P3 Meta & Decision（V1.1）已落地；默认 patch=`set18-18.1`（线上 Set 18 / TFT 18.1）；缺口见 [P1/P2 待办](docs/dev/p1-p2-backlog.md）**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -22,6 +22,7 @@
 | P2 Batch A 实现计划 | `docs/superpowers/plans/2026-08-27-p2-vision-batch-a.md` |
 | P2 Vision Batch B  | `docs/superpowers/specs/2026-08-28-p2-vision-batch-b-ocr-design.md` |
 | P2 收尾（fixture） | `docs/superpowers/specs/2026-08-31-p2-remainder-fixture-design.md` |
+| P3 Meta & Decision V1.1 | `docs/superpowers/specs/2026-08-31-p3-decision-design.md` |
 | P1/P2 待办 | `docs/dev/p1-p2-backlog.md` |
 | 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
 | 代码示例           | `goodcode.md`                                                 |
@@ -40,6 +41,7 @@
 | P2-VISION-Frame/ROI + Observation | Vision Batch A | **DONE** |
 | P2-VISION-OCR-001 | 数值 OCR 链路（Paddle 可选） | **链路已通**（≥97% 受控集仍 TODO） |
 | P2 其余 STATE/VISION | Builder/Fusion/Diff/Timeline、Shop fixture、Fallback 关闭、Benchmark | **DONE**（实机识别未校准） |
+| P3-META-* / P3-DECISION-* / P3-RAG-* / P3-LLM-* | Meta + CandidateSet + Domain Agents + Mock/Grounding LLM | **DONE**（在线 Meta 仍走 fixture；MySQL V2 表已备未接线） |
 
 ## 运行模式
 
@@ -83,10 +85,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
 
 - `GET /api/v1/knowledge/ask?question=...`
 - `GET /api/v1/research/ask?topic=...`（外网检索候选，不可覆盖官方事实）
-- `POST /api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US`（全量灌入 Data Dragon 基础实体）
+- `POST /api/v1/data/ingest/datadragon?patch=set18-18.1&locale=en_US`（全量灌入 Data Dragon 基础实体）
 - `GET /api/v1/vision/health`（侧车探活；侧车未启返回 `degraded=true`，HTTP 200）
 - `POST /api/v1/vision/analyze`（JSON：`field` + `image_base64`；需 1920×1080；侧车无 Paddle 时 `degraded=true`）
 - `POST /api/v1/state/build`（JSON：`match_id` + `patch` + `observations[]` → GameState；Cloud Vision 默认关闭）
+- `POST /api/v1/recommendations/analyze`（JSON：`gamestate` + 可选 `decision_type`；无 MCP 时 `degraded=true` 仍返回 2～3 候选）
+- `POST /api/v1/meta/search`、`GET /api/v1/meta/snapshot/{id}`
 
 ## Wiki 本地预览
 

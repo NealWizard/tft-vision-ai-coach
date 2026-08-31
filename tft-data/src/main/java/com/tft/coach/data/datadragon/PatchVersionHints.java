@@ -1,6 +1,6 @@
 package com.tft.coach.data.datadragon;
 
-/** Extracts Data Dragon version hints from internal patch ids like {@code set17-16.16}. */
+/** Extracts Data Dragon version hints from internal patch ids like {@code set18-18.1}. */
 public final class PatchVersionHints {
 
     private PatchVersionHints() {}

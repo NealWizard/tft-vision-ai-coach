@@ -14,10 +14,10 @@ class Bm25IndexTest {
     @Test
     void searchReturnsScoredHitsForMatchingTerms() {
         TextSearchIndex index = new Bm25Index();
-        index.index(new TextChunk("c1", "d1", "set17-16.16", "set17", "manual", 0, "interest gold cap at 50"));
-        index.index(new TextChunk("c2", "d1", "set17-16.16", "set17", "manual", 1, "Ahri is a champion"));
+        index.index(new TextChunk("c1", "d1", "set18-18.1", "set18", "manual", 0, "interest gold cap at 50"));
+        index.index(new TextChunk("c2", "d1", "set18-18.1", "set18", "manual", 1, "Ahri is a champion"));
 
-        var hits = index.search("interest gold", VectorFilter.ofPatch("set17-16.16"), 3);
+        var hits = index.search("interest gold", VectorFilter.ofPatch("set18-18.1"), 3);
 
         assertEquals(1, hits.size());
         assertEquals("c1", hits.getFirst().chunkId());
@@ -27,7 +27,7 @@ class Bm25IndexTest {
     @Test
     void getReturnsIndexedChunk() {
         Bm25Index index = new Bm25Index();
-        TextChunk chunk = new TextChunk("c1", "d1", "set17-16.16", "set17", "manual", 0, "text");
+        TextChunk chunk = new TextChunk("c1", "d1", "set18-18.1", "set18", "manual", 0, "text");
         index.index(chunk);
         assertTrue(index.get("c1").isPresent());
         assertEquals("text", index.get("c1").orElseThrow().text());

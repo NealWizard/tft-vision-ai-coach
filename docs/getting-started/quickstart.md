@@ -56,13 +56,16 @@ mvn -pl tft-orchestrator -am spring-boot:run
 | GET | `/api/v1/health/foundation` | 健康检查 + Feature Flag |
 | GET | `/api/v1/trace/demo` | Trace 演示（可带 `X-Correlation-Id`） |
 | GET | `/api/v1/trace/{correlationId}` | 查询调用链 |
-| GET | `/api/v1/knowledge/ask?question=...` | Knowledge Agent（默认 patch=`set17-16.16`，云 LLM 关闭） |
+| GET | `/api/v1/knowledge/ask?question=...` | Knowledge Agent（默认 patch=`set18-18.1`，云 LLM 关闭） |
 | POST | `/api/v1/knowledge/ask` | JSON：`question` / `patch` / `cloud` |
 | GET | `/api/v1/research/ask?topic=...` | Research Agent（不可覆盖官方事实） |
 | POST | `/api/v1/data/ingest/datadragon` | Data Dragon 灌库（CDN 不通会 502） |
 | GET | `/api/v1/vision/health` | 视觉侧车探活（未启动则 `degraded=true`） |
 | POST | `/api/v1/vision/analyze` | 数值 OCR（需 1920×1080；无 Paddle 则 degraded） |
 | POST | `/api/v1/state/build` | Observation[] → GameState |
+| POST | `/api/v1/recommendations/analyze` | GameState → CandidateSet（`decision_type` 可选） |
+| POST | `/api/v1/meta/search` | patch 必填；无 MCP 时 fixture + degraded |
+| GET | `/api/v1/meta/snapshot/{id}` | 按 id 取 Meta 快照 |
 
 浏览器直接打开 GET 即可看 JSON。含 `gold`/`interest` 的问题走规则工具；其它问题走本地 RAG。
 

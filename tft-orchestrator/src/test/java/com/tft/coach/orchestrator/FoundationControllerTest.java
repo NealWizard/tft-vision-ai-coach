@@ -64,9 +64,9 @@ class FoundationControllerTest {
     void knowledgeAskReturnsInterestRule() throws Exception {
         mockMvc.perform(get("/api/v1/knowledge/ask")
                         .param("question", "What does interest gold look like at 50 gold?")
-                        .param("patch", "set17-16.16"))
+                        .param("patch", "set18-18.1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.patch", is("set17-16.16")))
+                .andExpect(jsonPath("$.patch", is("set18-18.1")))
                 .andExpect(jsonPath("$.notes", is("Tool-backed answer only; no free-form invention.")))
                 .andExpect(jsonPath("$.candidates[0].summary").exists())
                 .andExpect(jsonPath("$.degraded", is(true)));
@@ -84,7 +84,7 @@ class FoundationControllerTest {
     void dataDragonIngestEndpointIsMapped() throws Exception {
         // Offline CI may lack CDN access; endpoint must respond (200 or 502), never 404.
         int status = mockMvc.perform(post("/api/v1/data/ingest/datadragon")
-                        .param("patch", "set17-16.16")
+                        .param("patch", "set18-18.1")
                         .param("locale", "en_US"))
                 .andReturn()
                 .getResponse()
@@ -129,7 +129,7 @@ class FoundationControllerTest {
     @Test
     void stateBuildFromFixtureObservations() throws Exception {
         String json = """
-                {"match_id":"match-1","patch":"set18-16.17","observations":[
+                {"match_id":"match-1","patch":"set18-18.1","observations":[
                   {"schema_version":"1.0.0","field":"stage","value":"3-3","confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
                   {"schema_version":"1.0.0","field":"player.level","value":6,"confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
                   {"schema_version":"1.0.0","field":"player.gold","value":65,"confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
@@ -145,5 +145,77 @@ class FoundationControllerTest {
                 .andExpect(jsonPath("$.cloud_would_call", is(false)))
                 .andExpect(jsonPath("$.gamestate.stage", is("3-3")))
                 .andExpect(jsonPath("$.gamestate.player.gold", is(65)));
+    }
+
+    @Test
+    void recommendationsAnalyzeReturnsCandidateSet() throws Exception {
+        String json = """
+                {"gamestate":{
+                  "schema_version":"1.0.0",
+                  "match_id":"match-1",
+                  "patch":"set18-18.1",
+                  "stage":"3-2",
+                  "observed_at":"2026-08-31T00:00:00Z",
+                  "player":{"level":6,"gold":50,"hp":80}
+                }}
+                """;
+        mockMvc.perform(post("/api/v1/recommendations/analyze")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.decision_type", is("COMPOSITION")))
+                .andExpect(jsonPath("$.candidates.length()", is(org.hamcrest.Matchers.allOf(
+                        org.hamcrest.Matchers.greaterThanOrEqualTo(2),
+                        org.hamcrest.Matchers.lessThanOrEqualTo(3)))))
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.candidates[0].action_type").exists())
+                .andExpect(jsonPath("$.candidates[0].evidence").isArray());
+    }
+
+    @Test
+    void recommendationsAnalyzeShopDecisionType() throws Exception {
+        String json = """
+                {"decision_type":"SHOP","gamestate":{
+                  "schema_version":"1.0.0",
+                  "match_id":"match-1",
+                  "patch":"set18-18.1",
+                  "stage":"3-2",
+                  "observed_at":"2026-08-31T00:00:00Z",
+                  "player":{"level":6,"gold":50,"hp":80},
+                  "shop":[{"slot":0,"champion_id":"champ.xayah","cost":4}]
+                }}
+                """;
+        mockMvc.perform(post("/api/v1/recommendations/analyze")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.decision_type", is("SHOP")))
+                .andExpect(jsonPath("$.candidates[0].action_type").exists());
+    }
+
+    @Test
+    void recommendationsAnalyzeWithoutGameStateIs400() throws Exception {
+        mockMvc.perform(post("/api/v1/recommendations/analyze")
+                        .contentType("application/json")
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("NO_GAMESTATE")));
+    }
+
+    @Test
+    void metaSearchUsesFixtureWhenMcpUnavailable() throws Exception {
+        mockMvc.perform(post("/api/v1/meta/search")
+                        .contentType("application/json")
+                        .content("{\"patch\":\"set18-18.1\",\"region\":\"global\",\"time_window\":\"24h\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.snapshot_id", is("meta-fixture-24h")));
+    }
+
+    @Test
+    void metaSnapshotById() throws Exception {
+        mockMvc.perform(get("/api/v1/meta/snapshot/meta-fixture-24h"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("meta-fixture-24h")));
     }
 }
