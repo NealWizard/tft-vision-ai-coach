@@ -63,8 +63,9 @@ mvn -pl tft-orchestrator -am spring-boot:run
 | GET | `/api/v1/vision/health` | 视觉侧车探活（未启动则 `degraded=true`） |
 | POST | `/api/v1/vision/analyze` | 数值 OCR（需 1920×1080；无 Paddle 则 degraded） |
 | POST | `/api/v1/state/build` | Observation[] → GameState |
-| POST | `/api/v1/recommendations/analyze` | GameState → CandidateSet（`decision_type` 可选） |
+| POST | `/api/v1/recommendations/analyze` | GameState → CandidateSet（`decision_type` 可选；offline 用 mock 解释，非 offline 且 `.env` LLM 齐全则走同一套 OpenAI 兼容接口） |
 | POST | `/api/v1/meta/search` | patch 必填；无 MCP 时 fixture + degraded |
+| POST | `/api/v1/meta/patch-impact` | JSON：`from_patch` + `to_patch`（缺一则 400） |
 | GET | `/api/v1/meta/snapshot/{id}` | 按 id 取 Meta 快照 |
 
 浏览器直接打开 GET 即可看 JSON。含 `gold`/`interest` 的问题走规则工具；其它问题走本地 RAG。

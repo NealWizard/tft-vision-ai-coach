@@ -14,6 +14,16 @@ import java.util.Map;
 public final class EconomySimulator {
 
     public ProjectedState simulate(GameState state, ActionType action, KnowledgeTool rules, KnowledgeTool odds) {
+        return simulate(state, action, rules, odds, null);
+    }
+
+    public ProjectedState simulate(
+            GameState state,
+            ActionType action,
+            KnowledgeTool rules,
+            KnowledgeTool odds,
+            Integer buyCost
+    ) {
         List<String> evidence = new ArrayList<>();
         boolean degraded = false;
         int gold = state.player().gold();
@@ -63,7 +73,11 @@ public final class EconomySimulator {
                 xp = xp + buyXpAmount;
             }
         } else if (action == ActionType.BUY) {
-            gold = Math.max(0, gold - 3);
+            if (buyCost == null || buyCost < 0) {
+                degraded = true;
+            } else {
+                gold = Math.max(0, gold - buyCost);
+            }
         } else if (action == ActionType.ALL_IN) {
             gold = 0;
         }

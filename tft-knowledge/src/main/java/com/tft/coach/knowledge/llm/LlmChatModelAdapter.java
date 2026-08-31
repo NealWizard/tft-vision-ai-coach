@@ -24,7 +24,8 @@ public final class LlmChatModelAdapter implements ChatModelProvider {
                 Map.of(
                         "question", request.user(),
                         "system", request.system(),
-                        "facts", request.variables().getOrDefault("facts", "")),
+                        "facts", request.variables().getOrDefault("facts", ""),
+                        "candidates", request.variables().getOrDefault("candidates", "[]")),
                 256);
         LlmResponse response = inner.complete(llmRequest);
         return new ChatResponse(response.content(), response.providerId(), response.degraded());

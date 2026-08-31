@@ -62,6 +62,8 @@ class MetaServiceTest {
         PatchImpact impact = service.patchImpact("set18-18.1", "set18-18.2", Instant.parse("2026-08-31T12:00:00Z"));
         assertTrue(impact.degraded());
         assertEquals("MISSING_PATCH_SNAPSHOT", impact.reason());
+        assertEquals("set18-18.1", impact.fromPatch());
+        assertEquals("set18-18.2", impact.toPatch());
         assertFalse(impact.evidence().size() > 0 && impact.reason() == null);
     }
 }

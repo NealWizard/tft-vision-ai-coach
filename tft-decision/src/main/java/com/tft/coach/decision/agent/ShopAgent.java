@@ -11,6 +11,7 @@ import com.tft.coach.state.gamestate.GameState;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** BUY/HOLD/ROLL/LOCK on the current shop only. */
@@ -40,16 +41,15 @@ public final class ShopAgent implements DomainAgent {
 
         GameState.ShopSlot buy = null;
         for (GameState.ShopSlot slot : shop) {
-            if (slot.championId() != null && cores.contains(slot.championId())) {
-                int cost = slot.cost() == null ? 3 : slot.cost();
-                if (gold >= cost) {
+            if (slot.championId() != null && cores.contains(slot.championId()) && slot.cost() != null) {
+                if (gold >= slot.cost()) {
                     buy = slot;
                     break;
                 }
             }
         }
         if (buy != null) {
-            int cost = buy.cost() == null ? 3 : buy.cost();
+            int cost = buy.cost();
             options.add(CandidateSets.option(
                     "shop-buy-" + buy.championId(),
                     ActionType.BUY,
@@ -61,7 +61,7 @@ public final class ShopAgent implements DomainAgent {
                     evidence,
                     "high",
                     "Buy " + buy.championId() + " from shop.",
-                    null));
+                    Map.of("champion_id", buy.championId(), "buy_cost", cost)));
         }
         options.add(CandidateSets.option(
                 "shop-hold",

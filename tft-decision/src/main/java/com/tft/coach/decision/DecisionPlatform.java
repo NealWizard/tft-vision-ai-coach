@@ -1,6 +1,7 @@
 package com.tft.coach.decision;
 
 import com.tft.coach.decision.pipeline.DecisionPipeline;
+import com.tft.coach.knowledge.llm.ChatModelGateway;
 import com.tft.coach.knowledge.platform.KnowledgePlatform;
 import com.tft.coach.meta.MetaService;
 
@@ -22,7 +23,11 @@ public final class DecisionPlatform {
     }
 
     public static DecisionPlatform createDefault(KnowledgePlatform knowledge) {
-        return new DecisionPlatform(knowledge, DecisionPipeline.createDefault(knowledge));
+        return createDefault(knowledge, ChatModelGateway.mock());
+    }
+
+    public static DecisionPlatform createDefault(KnowledgePlatform knowledge, ChatModelGateway chatGateway) {
+        return new DecisionPlatform(knowledge, DecisionPipeline.createDefault(knowledge, chatGateway));
     }
 
     public KnowledgePlatform knowledge() {

@@ -1,6 +1,6 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-31 16:52 +08:00
+> 更新时间：2026-08-31 18:31 +08:00
 > 当前阶段：**P3 Meta & Decision（V1.1）已落地；默认 patch=`set18-18.1`（线上 Set 18 / TFT 18.1）；缺口见 [P1/P2 待办](docs/dev/p1-p2-backlog.md）**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
@@ -89,8 +89,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
 - `GET /api/v1/vision/health`（侧车探活；侧车未启返回 `degraded=true`，HTTP 200）
 - `POST /api/v1/vision/analyze`（JSON：`field` + `image_base64`；需 1920×1080；侧车无 Paddle 时 `degraded=true`）
 - `POST /api/v1/state/build`（JSON：`match_id` + `patch` + `observations[]` → GameState；Cloud Vision 默认关闭）
-- `POST /api/v1/recommendations/analyze`（JSON：`gamestate` + 可选 `decision_type`；无 MCP 时 `degraded=true` 仍返回 2～3 候选）
-- `POST /api/v1/meta/search`、`GET /api/v1/meta/snapshot/{id}`
+- `POST /api/v1/recommendations/analyze`（JSON：`gamestate` + 可选 `decision_type`；无 MCP 时 `degraded=true` 仍返回 2～3 候选；`tft.platform.mode=offline` 用 mock 解释，否则读 `.env` 的 `LLM_*`）
+- `POST /api/v1/meta/search`、`GET /api/v1/meta/snapshot/{id}`、`POST /api/v1/meta/patch-impact`（`from_patch` + `to_patch`）
 
 ## Wiki 本地预览
 

@@ -218,4 +218,33 @@ class FoundationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is("meta-fixture-24h")));
     }
+
+    @Test
+    void metaPatchImpactMissingToPatchIs400() throws Exception {
+        mockMvc.perform(post("/api/v1/meta/patch-impact")
+                        .contentType("application/json")
+                        .content("{\"from_patch\":\"set18-18.1\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void metaPatchImpactRequiresTwoPatches() throws Exception {
+        mockMvc.perform(post("/api/v1/meta/patch-impact")
+                        .contentType("application/json")
+                        .content("{\"from_patch\":\"set18-18.1\",\"to_patch\":\"set18-18.2\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.from_patch", is("set18-18.1")))
+                .andExpect(jsonPath("$.to_patch", is("set18-18.2")))
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.reason", is("MISSING_PATCH_SNAPSHOT")));
+    }
+
+    @Test
+    void metaPatchImpactSamePatchIsDegraded() throws Exception {
+        mockMvc.perform(post("/api/v1/meta/patch-impact")
+                        .contentType("application/json")
+                        .content("{\"from_patch\":\"set18-18.1\",\"to_patch\":\"set18-18.1\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reason", is("SAME_PATCH")));
+    }
 }

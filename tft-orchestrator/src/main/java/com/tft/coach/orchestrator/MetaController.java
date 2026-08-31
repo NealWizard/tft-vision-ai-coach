@@ -70,12 +70,20 @@ public class MetaController {
         return body;
     }
 
+    public record PatchImpactRequest(
+            @JsonProperty("from_patch") String fromPatch,
+            @JsonProperty("to_patch") String toPatch
+    ) {
+    }
+
     @PostMapping("/patch-impact")
-    public PatchImpact patchImpact(@RequestBody SearchRequest request) {
-        if (request == null || request.patch() == null || request.patch().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "patch is required");
+    public PatchImpact patchImpact(@RequestBody PatchImpactRequest request) {
+        if (request == null
+                || request.fromPatch() == null || request.fromPatch().isBlank()
+                || request.toPatch() == null || request.toPatch().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "from_patch and to_patch are required");
         }
-        return platform.metaService().patchImpact(request.patch(), request.patch(), Instant.now());
+        return platform.metaService().patchImpact(request.fromPatch(), request.toPatch(), Instant.now());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

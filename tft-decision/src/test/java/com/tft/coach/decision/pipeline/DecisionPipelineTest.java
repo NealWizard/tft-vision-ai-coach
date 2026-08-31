@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,6 +62,13 @@ class DecisionPipelineTest {
         assertEquals(DecisionType.SHOP, shop.decisionType());
         assertTrue(shop.candidates().stream().anyMatch(c -> c.actionType() == ActionType.BUY));
         assertTrue(shop.candidates().size() >= 2 && shop.candidates().size() <= 3);
+        CandidateSet.CandidateOption buy = shop.candidates().stream()
+                .filter(c -> c.actionType() == ActionType.BUY)
+                .findFirst()
+                .orElseThrow();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> projected = (Map<String, Object>) buy.details().get("projected");
+        assertEquals(46, ((Number) projected.get("gold")).intValue());
 
         CandidateSet econ = platform.pipeline().analyze(
                 shopState,

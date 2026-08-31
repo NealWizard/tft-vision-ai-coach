@@ -51,9 +51,9 @@ public final class ReasoningGrounder {
                     "candidates", mapper.writeValueAsString(slim));
             ChatResponse response = gateway.chat(new ChatRequest(
                     "Explain candidates. Do not change scores or invent TFT numbers.",
-                    "Write reasoning for each candidate_id.",
+                    "Reply with a JSON array only: [{\"candidate_id\":\"id\",\"reasoning\":\"text\"}]. No markdown.",
                     variables));
-            JsonNode parsed = mapper.readTree(response.content());
+            JsonNode parsed = mapper.readTree(stripFence(response.content()));
             Map<String, String> byId = new LinkedHashMap<>();
             if (parsed.isArray()) {
                 for (JsonNode node : parsed) {
@@ -105,6 +105,22 @@ public final class ReasoningGrounder {
             }
         }
         return false;
+    }
+
+    static String stripFence(String content) {
+        if (content == null) {
+            return "";
+        }
+        String trimmed = content.trim();
+        if (!trimmed.startsWith("```")) {
+            return trimmed;
+        }
+        int start = trimmed.indexOf('\n');
+        int end = trimmed.lastIndexOf("```");
+        if (start < 0 || end <= start) {
+            return trimmed;
+        }
+        return trimmed.substring(start + 1, end).trim();
     }
 
     static CandidateSet uncertain(CandidateSet set, String reason) {

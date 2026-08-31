@@ -97,4 +97,4 @@ flowchart BT
 | P3-DECISION-Shop/Economy/Composition/Item/Augment/Transition | `tft-decision` DomainAgent |
 | P3-DECISION-Risk/Simulator | `RiskAnnotator`、`EconomySimulator`（无战斗） |
 | P3-RAG-DecisionContext/Case | `KnowledgeRagApi` + patch filter |
-| P3-LLM-Reasoning/Grounding | `ChatModelGateway` + `ReasoningGrounder`（不改 score） |
+| P3-LLM-Reasoning/Grounding | `ChatModelGateway` + `ReasoningGrounder`（不改 score；offline=mock，否则 `.env` LLM_*） |

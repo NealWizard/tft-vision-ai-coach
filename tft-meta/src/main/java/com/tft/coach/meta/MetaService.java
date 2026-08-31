@@ -81,7 +81,7 @@ public final class MetaService {
     public PatchImpact patchImpact(String fromPatch, String toPatch, Instant now) {
         Optional<StoredMetaSnapshot> from = store.findLatest(MetaQuery.of(fromPatch, "global", "24h"));
         Optional<StoredMetaSnapshot> to = store.findLatest(MetaQuery.of(toPatch, "global", "24h"));
-        return patchImpactService.impact(from, to, now);
+        return patchImpactService.impact(fromPatch, toPatch, from, to, now);
     }
 
     private Optional<StoredMetaSnapshot> otherWindow(MetaQuery query) {

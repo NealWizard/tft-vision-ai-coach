@@ -25,7 +25,8 @@ public final class SimulatorAnnotator {
         List<CandidateSet.CandidateOption> next = new ArrayList<>();
         List<String> degraded = new ArrayList<>(set.degradedReasons());
         for (CandidateSet.CandidateOption option : set.candidates()) {
-            ProjectedState projected = simulator.simulate(state, option.actionType(), rules, odds);
+            ProjectedState projected = simulator.simulate(
+                    state, option.actionType(), rules, odds, buyCost(option));
             if (projected.degraded()) {
                 degraded.add("SIMULATOR");
             }
@@ -60,6 +61,17 @@ public final class SimulatorAnnotator {
 
     public EconomySimulator simulator() {
         return simulator;
+    }
+
+    static Integer buyCost(CandidateSet.CandidateOption option) {
+        if (option.details() == null) {
+            return null;
+        }
+        Object raw = option.details().get("buy_cost");
+        if (raw instanceof Number n) {
+            return n.intValue();
+        }
+        return null;
     }
 
     public static KnowledgeTool rules(com.tft.coach.knowledge.platform.KnowledgePlatform knowledge) {
