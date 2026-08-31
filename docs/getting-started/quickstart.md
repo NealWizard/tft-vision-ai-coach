@@ -56,8 +56,13 @@ mvn -pl tft-orchestrator -am spring-boot:run
 | GET | `/api/v1/health/foundation` | 健康检查 + Feature Flag |
 | GET | `/api/v1/trace/demo` | Trace 演示（可带 `X-Correlation-Id`） |
 | GET | `/api/v1/trace/{correlationId}` | 查询调用链 |
-| GET | `/api/v1/knowledge/ask?question=...` | Knowledge Agent 问答（默认 patch=`set17-16.16`，云 LLM 关闭） |
-| POST | `/api/v1/knowledge/ask` | 同上，JSON：`question` / `patch` / `cloud` |
+| GET | `/api/v1/knowledge/ask?question=...` | Knowledge Agent（默认 patch=`set17-16.16`，云 LLM 关闭） |
+| POST | `/api/v1/knowledge/ask` | JSON：`question` / `patch` / `cloud` |
+| GET | `/api/v1/research/ask?topic=...` | Research Agent（不可覆盖官方事实） |
+| POST | `/api/v1/data/ingest/datadragon` | Data Dragon 灌库（CDN 不通会 502） |
+| GET | `/api/v1/vision/health` | 视觉侧车探活（未启动则 `degraded=true`） |
+| POST | `/api/v1/vision/analyze` | 数值 OCR（需 1920×1080；无 Paddle 则 degraded） |
+| POST | `/api/v1/state/build` | Observation[] → GameState |
 
 浏览器直接打开 GET 即可看 JSON。含 `gold`/`interest` 的问题走规则工具；其它问题走本地 RAG。
 

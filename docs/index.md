@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-24  
-> 当前阶段：**P1 做浅项真实化（MySQL/ES/LLM/Research）；Stats-002 搁置**
+> 更新时间：2026-08-31  
+> 当前阶段：**P2 fixture 收尾已落地；OCR≥97% / Stats-002 / 实机 ROI 仍待办**
 
 纯视觉/截图输入的云顶之弈辅助决策系统（**副驾驶**）。
 
@@ -13,6 +13,7 @@
 | 章节 | 说明 |
 |------|------|
 | [快速开始](getting-started/quickstart.md) | 克隆、JDK 21、构建与本地 CI |
+| [P1/P2 待办](dev/p1-p2-backlog.md) | 未完成与解阻条件 |
 | [整合需求与开发规格 V3.1](product/TFT_Vision_AI_Coach_整合需求与开发规格_V3.1.md) | P0–P7 产品、架构、技术与门禁基线 |
 | [需求概述](product/requirements.md) | 产品定位、目标与架构摘要 |
 | [任务路线图](roadmap/user-story.md) | Roadmap V3.1（P0–P7） |

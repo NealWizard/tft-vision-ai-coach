@@ -1,6 +1,6 @@
 # P1 数据层与知识平台
 
-> 更新时间：2026-08-26 16:49 +08:00
+> 更新时间：2026-08-31 11:31 +08:00
 
 ## 模块
 
@@ -43,7 +43,7 @@ GET http://localhost:8080/api/v1/research/ask?topic=set17%20meta%20trend
 POST http://localhost:8080/api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US
 ```
 
-默认 `patch=set17-16.16`。`tft.platform.mode=auto` 时若 `.env` 含 MySQL+ES 则走在线栈。
+默认 HTTP 示例仍用 catalog 的 `set17-16.16`；`application.yml` 里 `tft.platform.patch` 现为 `set18-16.17`（视觉 Profile 键）。对齐见 [P1/P2 待办](../dev/p1-p2-backlog.md)。
 
 ### Data Dragon 全量灌库
 
@@ -73,3 +73,4 @@ curl -X POST "http://localhost:8080/api/v1/data/ingest/datadragon" `
 ## 搁置项
 
 - **P1-DATA-Stats-002**：第二统计源本轮不做（可后续接 DataTFT）
+- **Data Dragon CDN**：灌库接口已有；CDN 不通时不要空转重试。完整待办见 [P1/P2 待办](../dev/p1-p2-backlog.md)。

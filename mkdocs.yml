@@ -67,6 +67,7 @@ nav:
     - GitHub 协作: github/GITHUB.md
     - 分支策略: branching/BRANCHING.md
     - 任务完成收尾: dev/task-completion.md
+    - P1/P2 待办: dev/p1-p2-backlog.md
   - 代码规范:
     - 优秀示例: goodcode/index.md
 

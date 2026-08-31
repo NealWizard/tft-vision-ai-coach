@@ -17,6 +17,8 @@ tft-vision-ai-coach (parent)
 └── tft-orchestrator   # Spring Boot 入口
 ```
 
+仓库根目录另有 `vision-sidecar/`（Python FastAPI，非 Maven 模块）。
+
 ## 域与 Phase
 
 | 模块 | 域 | 最早 Phase | 职责 |
@@ -32,6 +34,7 @@ tft-vision-ai-coach (parent)
 | tft-replay | REPLAY | P4 | 赛后复盘 |
 | tft-learning | LEARNING | P4 | 个人化教练 |
 | tft-orchestrator | 编排 | P0 | HTTP 入口、模块装配 |
+| vision-sidecar | VISION | P2 | 本地 HTTP OCR/CV（可选 Paddle） |
 
 ## 依赖方向
 
@@ -60,8 +63,7 @@ flowchart BT
   DEC --> STA
   DEC --> MET
   DEC --> KNO
-  STA --> VIS
-  STA --> DAT
+  STA --> CON
   DAT --> CON
   KNO --> CON
   VIS --> COM

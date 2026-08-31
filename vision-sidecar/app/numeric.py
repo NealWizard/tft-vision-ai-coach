@@ -36,7 +36,14 @@ def normalize(field: str | None, raw_value: str | None):
     if field == "stage":
         m = STAGE_RE.search(canonical)
         return f"{m.group(1)}-{m.group(2)}" if m else None
-    if field.lower() in INT_FIELDS:
+    if _is_int_field(field):
         m = DIGITS_RE.search(canonical)
         return int(m.group(1)) if m else None
     return None
+
+
+def _is_int_field(field: str) -> bool:
+    lowered = field.lower()
+    if lowered in INT_FIELDS:
+        return True
+    return lowered.startswith("shop.") and lowered.endswith(".cost")

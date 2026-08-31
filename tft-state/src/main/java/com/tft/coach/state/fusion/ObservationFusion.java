@@ -3,7 +3,6 @@ package com.tft.coach.state.fusion;
 import com.tft.coach.state.observation.Observation;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +38,5 @@ public final class ObservationFusion {
             return cmp > 0;
         }
         return candidate.timestamp().isAfter(current.timestamp());
-    }
-
-    public static Comparator<Observation> byTimestamp() {
-        return Comparator.comparing(Observation::timestamp);
     }
 }

@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-31 11:05 +08:00
-> 当前阶段：**P2 fixture 收尾已落地（实机 ROI/OCR≥97% 仍搁置）**
+> 更新时间：2026-08-31 11:31 +08:00
+> 当前阶段：**P2 fixture 收尾已落地；缺口见 [P1/P2 待办](docs/dev/p1-p2-backlog.md）**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -22,6 +22,7 @@
 | P2 Batch A 实现计划 | `docs/superpowers/plans/2026-08-27-p2-vision-batch-a.md` |
 | P2 Vision Batch B  | `docs/superpowers/specs/2026-08-28-p2-vision-batch-b-ocr-design.md` |
 | P2 收尾（fixture） | `docs/superpowers/specs/2026-08-31-p2-remainder-fixture-design.md` |
+| P1/P2 待办 | `docs/dev/p1-p2-backlog.md` |
 | 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
 | 代码示例           | `goodcode.md`                                                 |
 
