@@ -1,0 +1,4 @@
+# Optional real OCR (not used by Maven CI)
+# paddlepaddle>=2.6.0
+# paddleocr>=2.7.0
+paddleocr>=2.7.0

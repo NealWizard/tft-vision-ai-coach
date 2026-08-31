@@ -1,23 +1,18 @@
-# TFT Vision Sidecar (Batch A)
+# TFT Vision Sidecar
 
-本地 HTTP 侧车：`127.0.0.1:19090`。Batch A 仅提供 `/health`、`/ready`、`POST /vision/analyze` Stub（无真实 OCR）。
+本地 HTTP 侧车：`127.0.0.1:19090`。
 
-## 开发启动
+- 默认：`/health` `/ready` + Stub `POST /vision/analyze`（`MODEL_NOT_READY`）
+- 可选：`pip install -r requirements-ocr.txt` 后自动切 PaddleOCR；`ocr_ready=true`
 
 ```powershell
 cd vision-sidecar
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+# 可选真实 OCR：
+# pip install -r requirements-ocr.txt
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
 ```
 
-探测：
-
-```text
-GET  http://127.0.0.1:19090/health
-GET  http://127.0.0.1:19090/ready
-POST http://127.0.0.1:19090/vision/analyze
-```
-
-Java CI **不**依赖本目录或 Paddle。商用 spawn / PyInstaller 后续任务。
+Java CI **不**安装 Paddle。

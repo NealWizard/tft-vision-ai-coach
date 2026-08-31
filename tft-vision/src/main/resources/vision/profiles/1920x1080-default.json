@@ -37,6 +37,26 @@
       "height": 36,
       "expected_field": "player.hp"
     },
+    "player.xp": {
+      "id": "player.xp",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 400,
+      "y": 1010,
+      "width": 80,
+      "height": 36,
+      "expected_field": "player.xp"
+    },
+    "player.streak": {
+      "id": "player.streak",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 1100,
+      "y": 1010,
+      "width": 50,
+      "height": 36,
+      "expected_field": "player.streak"
+    },
     "stage": {
       "id": "stage",
       "type": "TEXT",
@@ -46,6 +66,106 @@
       "width": 100,
       "height": 40,
       "expected_field": "stage"
+    },
+    "shop.0.cost": {
+      "id": "shop.0.cost",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 480,
+      "y": 900,
+      "width": 36,
+      "height": 28,
+      "expected_field": "shop.0.cost"
+    },
+    "shop.1.cost": {
+      "id": "shop.1.cost",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 680,
+      "y": 900,
+      "width": 36,
+      "height": 28,
+      "expected_field": "shop.1.cost"
+    },
+    "shop.2.cost": {
+      "id": "shop.2.cost",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 880,
+      "y": 900,
+      "width": 36,
+      "height": 28,
+      "expected_field": "shop.2.cost"
+    },
+    "shop.3.cost": {
+      "id": "shop.3.cost",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 1080,
+      "y": 900,
+      "width": 36,
+      "height": 28,
+      "expected_field": "shop.3.cost"
+    },
+    "shop.4.cost": {
+      "id": "shop.4.cost",
+      "type": "TEXT",
+      "coordinate_system": "SCREEN",
+      "x": 1280,
+      "y": 900,
+      "width": 36,
+      "height": 28,
+      "expected_field": "shop.4.cost"
+    },
+    "shop.0.champion": {
+      "id": "shop.0.champion",
+      "type": "AREA",
+      "coordinate_system": "SCREEN",
+      "x": 450,
+      "y": 920,
+      "width": 160,
+      "height": 140,
+      "expected_field": "shop.0.champion_id"
+    },
+    "shop.1.champion": {
+      "id": "shop.1.champion",
+      "type": "AREA",
+      "coordinate_system": "SCREEN",
+      "x": 650,
+      "y": 920,
+      "width": 160,
+      "height": 140,
+      "expected_field": "shop.1.champion_id"
+    },
+    "shop.2.champion": {
+      "id": "shop.2.champion",
+      "type": "AREA",
+      "coordinate_system": "SCREEN",
+      "x": 850,
+      "y": 920,
+      "width": 160,
+      "height": 140,
+      "expected_field": "shop.2.champion_id"
+    },
+    "shop.3.champion": {
+      "id": "shop.3.champion",
+      "type": "AREA",
+      "coordinate_system": "SCREEN",
+      "x": 1050,
+      "y": 920,
+      "width": 160,
+      "height": 140,
+      "expected_field": "shop.3.champion_id"
+    },
+    "shop.4.champion": {
+      "id": "shop.4.champion",
+      "type": "AREA",
+      "coordinate_system": "SCREEN",
+      "x": 1250,
+      "y": 920,
+      "width": 160,
+      "height": 140,
+      "expected_field": "shop.4.champion_id"
     }
   }
 }

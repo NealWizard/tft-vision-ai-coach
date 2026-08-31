@@ -1,6 +1,6 @@
 # Good Code Examples
 
-> 更新时间：2026-08-27 15:25 +08:00
+> 更新时间：2026-08-28 14:54 +08:00
 
 ## 1. Feature Flag 默认关闭 Live（P0-FOUND-FeatureFlag-001）
 
@@ -45,3 +45,22 @@ SidecarHealthResult result = new SidecarClient(SidecarClientConfig.defaults()).h
 ```
 
 要点：上层只依赖 `FrameSource`；未知分辨率抛 `UNSUPPORTED_PROFILE`；Observation 保持 `schema_version=1.0.0` 并可选扩展 `raw_value` 等字段。
+
+## 5. 数值 OCR 归一化（P2-VISION-OCR-001 链路）
+
+```java
+Optional<Object> value = NumericNormalizer.normalize("player.gold", "4l");
+// 41；Java 按 VisionProfile crop 后把小图交给 sidecar PaddleOCR
+```
+
+要点：CI 不装 Paddle；未装模型时 `/vision/analyze` 返回 `MODEL_NOT_READY`；受控集 ≥97% 需标注截图后再关门。
+
+## 6. Observation → GameState（P2-STATE-Builder-001）
+
+```java
+GameState state = new GameStateBuilder().build("match-1", "set18-16.17", observations);
+List<GameStateDiff.Event> events = GameStateDiff.diff(before, after);
+MatchTimeline.Timeline timeline = MatchTimeline.fromStates(List.of(before, after));
+```
+
+要点：confidence 低于 0.80 的 Observation 在融合阶段丢弃；Cloud Vision 仅 `tft.vision.cloud.enabled=true` 且低置信度才可能调用。

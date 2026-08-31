@@ -31,7 +31,7 @@ public final class StubVisionProvider implements VisionProvider {
         out.put("value", null);
         out.put("confidence", 0.0);
         out.put("error_code", "MODEL_NOT_READY");
-        out.put("message", "Batch A stub; real OCR in Batch B");
+        out.put("message", "PaddleOCR not installed; use vision-sidecar requirements-ocr.txt");
         return out;
     }
 }

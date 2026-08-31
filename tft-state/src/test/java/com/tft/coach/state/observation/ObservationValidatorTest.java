@@ -24,6 +24,15 @@ class ObservationValidatorTest {
     }
 
     @Test
+    void ocrObservationIsValid() {
+        Observation obs = ObservationFactory.fromOcr(
+                "player.gold", 41, "4l", 0.96, "paddle", "paddleocr", "frame-1",
+                new Observation.Rect(1, 2, 3, 4)
+        );
+        assertTrue(validator.isValid(obs));
+    }
+
+    @Test
     void missingFieldRejected() {
         Observation bad = new Observation(
                 "1.0.0",

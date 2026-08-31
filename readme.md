@@ -1,7 +1,7 @@
 # TFT Vision AI Coach
 
-> 更新时间：2026-08-27 15:25 +08:00
-> 当前阶段：**P2 Vision Batch A 地基已落地 → 下一步 Batch B（真实数值 OCR）**
+> 更新时间：2026-08-31 11:05 +08:00
+> 当前阶段：**P2 fixture 收尾已落地（实机 ROI/OCR≥97% 仍搁置）**
 > 代码托管：**GitHub** — https://github.com/NealWizard/tft-vision-ai-coach
 > **Wiki**：https://nealwizard.github.io/tft-vision-ai-coach/
 
@@ -20,6 +20,8 @@
 | P1 做浅硬化设计    | `docs/superpowers/specs/2026-08-26-p1-shallow-hardening-design.md` |
 | P2 Vision Batch A  | `docs/superpowers/specs/2026-08-27-p2-vision-batch-a-design.md` |
 | P2 Batch A 实现计划 | `docs/superpowers/plans/2026-08-27-p2-vision-batch-a.md` |
+| P2 Vision Batch B  | `docs/superpowers/specs/2026-08-28-p2-vision-batch-b-ocr-design.md` |
+| P2 收尾（fixture） | `docs/superpowers/specs/2026-08-31-p2-remainder-fixture-design.md` |
 | 历史需求文档       | `历史需求文档/`（仅归档，不再更新）                           |
 | 代码示例           | `goodcode.md`                                                 |
 
@@ -34,7 +36,9 @@
 | P1-RAG-*   | Hybrid RAG（InMemory / Elasticsearch）           | DONE                                      |
 | P1-LLM-*   | Cloud LLM Gateway（OpenAI 兼容 / 智谱）          | DONE                                      |
 | P1-AGENT-* | Knowledge / Research（Tavily+SerpAPI）           | DONE                                      |
-| P2-VISION-Frame/ROI + Observation | Vision Batch A（Frame/Profile/Sidecar/Observation） | **DONE**（OCR → Batch B） |
+| P2-VISION-Frame/ROI + Observation | Vision Batch A | **DONE** |
+| P2-VISION-OCR-001 | 数值 OCR 链路（Paddle 可选） | **链路已通**（≥97% 受控集仍 TODO） |
+| P2 其余 STATE/VISION | Builder/Fusion/Diff/Timeline、Shop fixture、Fallback 关闭、Benchmark | **DONE**（实机识别未校准） |
 
 ## 运行模式
 
@@ -70,6 +74,7 @@ mvn -pl tft-orchestrator -am spring-boot:run
 
 ```powershell
 cd vision-sidecar
+# 可选：pip install -r vision-sidecar/requirements-ocr.txt 后侧车走 PaddleOCR
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
 ```
 
@@ -79,6 +84,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run-dev.ps1
 - `GET /api/v1/research/ask?topic=...`（外网检索候选，不可覆盖官方事实）
 - `POST /api/v1/data/ingest/datadragon?patch=set17-16.16&locale=en_US`（全量灌入 Data Dragon 基础实体）
 - `GET /api/v1/vision/health`（侧车探活；侧车未启返回 `degraded=true`，HTTP 200）
+- `POST /api/v1/vision/analyze`（JSON：`field` + `image_base64`；需 1920×1080；侧车无 Paddle 时 `degraded=true`）
+- `POST /api/v1/state/build`（JSON：`match_id` + `patch` + `observations[]` → GameState；Cloud Vision 默认关闭）
 
 ## Wiki 本地预览
 

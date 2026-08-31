@@ -17,7 +17,7 @@ class VisionProfileTest {
         VisionProfile profile = new VisionProfileLoader().loadDefault();
         assertEquals("1920x1080-default", profile.profileId());
         assertEquals(1920, profile.resolution().width());
-        assertEquals(4, profile.regions().size());
+        assertEquals(16, profile.regions().size());
         assertTrue(profile.regions().containsKey("player.gold"));
     }
 

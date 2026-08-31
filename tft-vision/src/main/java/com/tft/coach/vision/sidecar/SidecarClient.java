@@ -39,6 +39,38 @@ public final class SidecarClient {
         return getProbe("/ready");
     }
 
+    public SidecarAnalyzeResult analyze(SidecarAnalyzeRequest request) {
+        try {
+            byte[] body = mapper.writeValueAsBytes(request);
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(trimSlash(config.baseUrl()) + "/vision/analyze"))
+                    .timeout(Duration.ofMillis(config.analyzeTimeoutMs()))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(body))
+                    .build();
+            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 400) {
+                return SidecarAnalyzeResult.degraded(
+                        response.statusCode() >= 500 ? "INTERNAL_ERROR" : "INVALID_IMAGE",
+                        "sidecar HTTP " + response.statusCode()
+                );
+            }
+            SidecarEnvelope envelope = mapper.readValue(response.body(), SidecarEnvelope.class);
+            return SidecarAnalyzeResult.fromEnvelope(envelope);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return SidecarAnalyzeResult.degraded("TIMEOUT", "interrupted");
+        } catch (HttpTimeoutException e) {
+            return SidecarAnalyzeResult.degraded("TIMEOUT", e.getMessage());
+        } catch (ConnectException e) {
+            return SidecarAnalyzeResult.degraded("INTERNAL_ERROR", e.getMessage());
+        } catch (IOException e) {
+            return SidecarAnalyzeResult.degraded(mapIoErrorCode(e), e.getMessage());
+        } catch (Exception e) {
+            return SidecarAnalyzeResult.degraded("INTERNAL_ERROR", e.getMessage());
+        }
+    }
+
     private SidecarHealthResult getProbe(String path) {
         long started = System.nanoTime();
         try {

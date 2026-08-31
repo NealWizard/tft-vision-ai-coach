@@ -23,5 +23,5 @@ class StubVisionProvider:
             "raw_value": None,
             "value": None,
             "confidence": 0.0,
-            "message": "Batch A stub; real OCR in Batch B",
+            "message": "PaddleOCR not installed; pip install -r requirements-ocr.txt",
         }

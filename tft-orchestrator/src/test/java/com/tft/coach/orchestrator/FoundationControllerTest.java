@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Base64;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -97,5 +99,51 @@ class FoundationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.degraded", is(true)))
                 .andExpect(jsonPath("$.status", is("DEGRADED")));
+    }
+
+    @Test
+    void visionAnalyzeRejectsBlankPayload() throws Exception {
+        mockMvc.perform(post("/api/v1/vision/analyze")
+                        .contentType("application/json")
+                        .content("{\"field\":\"\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void visionAnalyzeUnknownResolutionIsDegraded() throws Exception {
+        byte[] png;
+        try (var in = FoundationControllerTest.class.getResourceAsStream("/vision/fixtures/1x1.png")) {
+            org.junit.jupiter.api.Assertions.assertNotNull(in);
+            png = in.readAllBytes();
+        }
+        String json = "{\"field\":\"player.gold\",\"image_base64\":\""
+                + Base64.getEncoder().encodeToString(png) + "\"}";
+        mockMvc.perform(post("/api/v1/vision/analyze")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.degraded", is(true)))
+                .andExpect(jsonPath("$.error_code", is("UNSUPPORTED_PROFILE")));
+    }
+
+    @Test
+    void stateBuildFromFixtureObservations() throws Exception {
+        String json = """
+                {"match_id":"match-1","patch":"set18-16.17","observations":[
+                  {"schema_version":"1.0.0","field":"stage","value":"3-3","confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
+                  {"schema_version":"1.0.0","field":"player.level","value":6,"confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
+                  {"schema_version":"1.0.0","field":"player.gold","value":65,"confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"},
+                  {"schema_version":"1.0.0","field":"player.hp","value":80,"confidence":{"score":1,"level":"certain"},"source":"fixture","timestamp":"2026-08-31T00:00:00Z"}
+                ]}
+                """;
+        mockMvc.perform(post("/api/v1/state/build")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.degraded", is(false)))
+                .andExpect(jsonPath("$.cloud_vision_enabled", is(false)))
+                .andExpect(jsonPath("$.cloud_would_call", is(false)))
+                .andExpect(jsonPath("$.gamestate.stage", is("3-3")))
+                .andExpect(jsonPath("$.gamestate.player.gold", is(65)));
     }
 }

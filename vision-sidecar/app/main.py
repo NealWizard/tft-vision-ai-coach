@@ -1,4 +1,4 @@
-"""FastAPI entry for TFT vision sidecar (Batch A)."""
+"""FastAPI entry for TFT vision sidecar."""
 
 from __future__ import annotations
 
@@ -9,11 +9,21 @@ from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from app.provider.paddle_ocr import PaddleOcrProvider
 from app.provider.stub import StubVisionProvider
 
 SERVICE_VERSION = "0.1.0"
 app = FastAPI(title="tft-vision-sidecar", version=SERVICE_VERSION)
-provider = StubVisionProvider()
+
+
+def _load_provider():
+    paddle = PaddleOcrProvider()
+    if paddle.available():
+        return paddle
+    return StubVisionProvider()
+
+
+provider = _load_provider()
 
 
 def envelope(
@@ -37,12 +47,16 @@ def envelope(
     }
 
 
+def _ocr_ready() -> bool:
+    return bool(provider.capabilities().get("ocr"))
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     started = time.perf_counter()
     return envelope(
         data={
-            "ocr_ready": False,
+            "ocr_ready": _ocr_ready(),
             "ready": True,
             "provider": provider.name(),
         },
@@ -74,10 +88,15 @@ class AnalyzeRequest(BaseModel):
 def analyze(body: AnalyzeRequest) -> dict[str, Any]:
     started = time.perf_counter()
     result = provider.analyze(body.model_dump())
+    error_code = result.get("error_code")
+    ocr_ok = provider.name() != "stub" and not error_code
+    status = "OK" if ocr_ok else "DEGRADED"
+    if status == "DEGRADED" and not error_code:
+        error_code = "MODEL_NOT_READY"
     return envelope(
         request_id=body.request_id,
-        status="DEGRADED",
-        error_code="MODEL_NOT_READY",
+        status=status,
+        error_code=error_code,
         data=result,
         started=started,
     )

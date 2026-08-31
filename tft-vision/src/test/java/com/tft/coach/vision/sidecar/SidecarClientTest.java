@@ -49,4 +49,16 @@ class SidecarClientTest {
         assertFalse(result.degraded());
         assertEquals("OK", result.status());
     }
+
+    @Test
+    void downSidecarAnalyzeIsDegraded() {
+        SidecarClient client = new SidecarClient(
+                new SidecarClientConfig("http://127.0.0.1:1", 200, 500, 500)
+        );
+        SidecarAnalyzeResult result = client.analyze(
+                new SidecarAnalyzeRequest("req-1", "player.gold", "AAAA")
+        );
+        assertTrue(result.degraded());
+        assertEquals("INTERNAL_ERROR", result.errorCode());
+    }
 }

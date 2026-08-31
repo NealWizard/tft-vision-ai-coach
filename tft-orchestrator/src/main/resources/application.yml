@@ -24,8 +24,11 @@ tft:
       auto-start: false
       connect-timeout-ms: 500
       read-timeout-ms: 2000
+      analyze-timeout-ms: 15000
     profile:
       default-id: 1920x1080-default
+    cloud:
+      enabled: false
 
 server:
   port: 8080
